@@ -1,0 +1,16 @@
+{
+  ".github/workflows/backend-ci.yml": "20393f1b85a1dc3b4ace7a9d0cdc00941ed22376e5de03a5dd5eff607d375028",
+  ".github/workflows/backend-deploy-dev.yml": "22a7ea05ea5f879bfc047d62eb51856ba084514a1abbb939dbf2a4c990d6a68c",
+  ".github/workflows/backend-deploy-prod.yml": "27d20cd588982303c7200105ab7858b16bffce642daf843e599b16c9181362d5",
+  "README.md": "361d8499f6cfc19fe1aa1cce0221b70851b6029e55cf65ac23d239777a911a7c",
+  "docs/backend-deployment.md": "ca0b73f43a4a797a72e0d02c9132838468c5323ed573212b47a2e6701a56904a",
+  "docs/production-smoke-and-rollback.md": "6c142b90022572e1d414e502f07e45af428057a08e2b6b4fd28448e290a0f0ba",
+  "infra/backend-environments.json": "56b1a9be16db3c9ea5f68c889fcd1998169caf04b8e27e45ca6953a0c9c404cf",
+  "infra/provision-backend.py": "abe5744d002014fcfb0d1601411be7c08fc0d1bfe290d8d4ac715bd35c1b8bad",
+  "src/backend/README.md": "02dedf360d56a52915474884f344abc23cfaccd87fe7139539ce0a91f26ab22e",
+  "src/scripts/backend-release.py": "c8b284853d7a8f58af446abe2b44351d59ae31ea78c35c7d805229d4a4b47ffb",
+  "src/scripts/backend-release-tests.py": "dcfe4ea11670a6d6fc0dc31cbd6ae885c26e63a17738c7232a676336fe167f7d",
+  "docs/reviews/backend-deployment-2026-09-26/evidence.json": "c551edbf3985f624da69a717d1995ca429ed4c99a24ab07bb847cb253ed43dca",
+  "infra/configure-backend-budget.py": "ce9ec2990f5a378ce418427d778039f2ed782280dfe35b2e04a35fd6316f4ac3",
+  "infra/test_backend_budget.py": "6f7ce6bc339fccd1773c9f917e1e8283879495b53848ac0db245dcce2c00b64e"
+}

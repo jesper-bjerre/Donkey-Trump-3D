@@ -1,0 +1,1010 @@
+{
+  "date": "2026-09-26",
+  "baselineCommit": "a47af91b5f6e9c9514613f7e55b3e593367116ab",
+  "referenceRepo": "jesper-bjerre/byens-hemmeligheder",
+  "referenceProdWorkflowBlob": "85cd12e98e8979ba289dc7edfd22db83293cc630",
+  "baseline": {
+    "existingProdHealth": 200,
+    "existingDevHealth": {
+      "initial": "30 second cold-start timeout",
+      "followUp": 200
+    },
+    "prodPlanLastHourMemoryPercent": {
+      "min": 70,
+      "max": 75
+    },
+    "prodPlanLast24HourMemoryMaxPercent": 92
+  },
+  "localChecks": {
+    "backendUnitTests": 45,
+    "backendWithAzuriteTests": 49,
+    "releaseValidationTests": 9,
+    "actionlint": "1.7.12 passed all three workflows",
+    "publish": "passed; ZIP root assembly and deployment manifest verified",
+    "pythonCompilation": "passed",
+    "diffWhitespace": "passed",
+    "documentationLinks": "passed: local links in all changed user documentation",
+    "budgetTests": "3 passed; wrong currency/new recipient rejected; VAT/scope/thresholds checked"
+  },
+  "environmentConfiguration": {
+    "subscriptionId": "6b6dcc04-7490-42ed-bedf-68f60946485e",
+    "repository": "jesper-bjerre/Donkey-Trump-3D",
+    "location": "westeurope",
+    "appResourceGroup": "Gulvet",
+    "environments": {
+      "development": {
+        "appName": "donkeytrump-api-d",
+        "planName": "asp-vejles-koder-d",
+        "storageResourceGroup": "donkeytrump-d_rg",
+        "storageAccount": "donkeytrumpd",
+        "deployIdentity": "oidc-donkeytrump-d",
+        "existingApp": "byensgaader-api-d"
+      },
+      "production": {
+        "appName": "donkeytrump-api-p",
+        "planName": "asp-vejles-koder-p",
+        "storageResourceGroup": "donkeytrump-p_rg",
+        "storageAccount": "donkeytrumpp",
+        "deployIdentity": "oidc-donkeytrump-p",
+        "existingApp": "byensgaader-api-p"
+      }
+    }
+  },
+  "resources": {
+    "development": {
+      "app": "donkeytrump-api-d",
+      "origin": "https://donkeytrump-api-d.azurewebsites.net",
+      "httpsOnly": true,
+      "planId": "/subscriptions/6b6dcc04-7490-42ed-bedf-68f60946485e/resourceGroups/Gulvet/providers/Microsoft.Web/serverfarms/asp-vejles-koder-d",
+      "config": {
+        "linuxFxVersion": "DOTNETCORE|10.0",
+        "alwaysOn": false,
+        "minTlsVersion": "1.2",
+        "scmMinTlsVersion": "1.2",
+        "ftpsState": "Disabled",
+        "healthCheckPath": null,
+        "httpLoggingEnabled": false,
+        "detailedErrorLoggingEnabled": false,
+        "requestTracingEnabled": false
+      },
+      "storage": {
+        "name": "donkeytrumpd",
+        "allowSharedKeyAccess": false,
+        "allowBlobPublicAccess": false,
+        "enableHttpsTrafficOnly": true,
+        "minimumTlsVersion": "TLS1_2"
+      },
+      "runtimeRoles": [
+        {
+          "role": "Storage Blob Data Contributor",
+          "scope": "/subscriptions/6b6dcc04-7490-42ed-bedf-68f60946485e/resourceGroups/donkeytrump-d_rg/providers/Microsoft.Storage/storageAccounts/donkeytrumpd/blobServices/default/containers/highscores"
+        }
+      ],
+      "deploymentRoles": [
+        {
+          "role": "Website Contributor",
+          "scope": "/subscriptions/6b6dcc04-7490-42ed-bedf-68f60946485e/resourceGroups/Gulvet/providers/Microsoft.Web/sites/donkeytrump-api-d"
+        }
+      ],
+      "appSettings": {
+        "ASPNETCORE_ENVIRONMENT": "Production",
+        "Highscores__UseAzurite": "false",
+        "Highscores__BlobServiceUri": "https://donkeytrumpd.blob.core.windows.net/",
+        "Highscores__ContainerName": "highscores",
+        "Highscores__BlobName": "global-v1.json",
+        "SCM_DO_BUILD_DURING_DEPLOYMENT": "false",
+        "WEBSITE_RUN_FROM_PACKAGE": "1"
+      },
+      "basicPublishingAuth": {
+        "scm": false,
+        "ftp": false
+      },
+      "oidc": [
+        {
+          "name": "github-development",
+          "issuer": "https://token.actions.githubusercontent.com",
+          "subject": "repo:jesper-bjerre@260194575/Donkey-Trump-3D@1386156234:environment:development",
+          "audiences": [
+            "api://AzureADTokenExchange"
+          ]
+        }
+      ],
+      "anonymousBlob": {
+        "status": 409,
+        "errorCode": null
+      },
+      "githubBranchProtection": {
+        "policy": {
+          "protected_branches": false,
+          "custom_branch_policies": true
+        },
+        "branches": [
+          {
+            "name": "main",
+            "type": "branch"
+          }
+        ]
+      }
+    },
+    "production": {
+      "app": "donkeytrump-api-p",
+      "origin": "https://donkeytrump-api-p.azurewebsites.net",
+      "httpsOnly": true,
+      "planId": "/subscriptions/6b6dcc04-7490-42ed-bedf-68f60946485e/resourceGroups/Gulvet/providers/Microsoft.Web/serverfarms/asp-vejles-koder-p",
+      "config": {
+        "linuxFxVersion": "DOTNETCORE|10.0",
+        "alwaysOn": true,
+        "minTlsVersion": "1.2",
+        "scmMinTlsVersion": "1.2",
+        "ftpsState": "Disabled",
+        "healthCheckPath": "/health/live",
+        "httpLoggingEnabled": false,
+        "detailedErrorLoggingEnabled": false,
+        "requestTracingEnabled": false
+      },
+      "storage": {
+        "name": "donkeytrumpp",
+        "allowSharedKeyAccess": false,
+        "allowBlobPublicAccess": false,
+        "enableHttpsTrafficOnly": true,
+        "minimumTlsVersion": "TLS1_2"
+      },
+      "runtimeRoles": [
+        {
+          "role": "Storage Blob Data Contributor",
+          "scope": "/subscriptions/6b6dcc04-7490-42ed-bedf-68f60946485e/resourceGroups/donkeytrump-p_rg/providers/Microsoft.Storage/storageAccounts/donkeytrumpp/blobServices/default/containers/highscores"
+        }
+      ],
+      "deploymentRoles": [
+        {
+          "role": "Website Contributor",
+          "scope": "/subscriptions/6b6dcc04-7490-42ed-bedf-68f60946485e/resourceGroups/Gulvet/providers/Microsoft.Web/sites/donkeytrump-api-p"
+        }
+      ],
+      "appSettings": {
+        "ASPNETCORE_ENVIRONMENT": "Production",
+        "Highscores__UseAzurite": "false",
+        "Highscores__BlobServiceUri": "https://donkeytrumpp.blob.core.windows.net/",
+        "Highscores__ContainerName": "highscores",
+        "Highscores__BlobName": "global-v1.json",
+        "SCM_DO_BUILD_DURING_DEPLOYMENT": "false",
+        "WEBSITE_RUN_FROM_PACKAGE": "1"
+      },
+      "basicPublishingAuth": {
+        "scm": false,
+        "ftp": false
+      },
+      "oidc": [
+        {
+          "name": "github-production",
+          "issuer": "https://token.actions.githubusercontent.com",
+          "subject": "repo:jesper-bjerre@260194575/Donkey-Trump-3D@1386156234:environment:production",
+          "audiences": [
+            "api://AzureADTokenExchange"
+          ]
+        }
+      ],
+      "anonymousBlob": {
+        "status": 409,
+        "errorCode": null
+      },
+      "githubBranchProtection": {
+        "policy": {
+          "protected_branches": false,
+          "custom_branch_policies": true
+        },
+        "branches": [
+          {
+            "name": "main",
+            "type": "branch"
+          }
+        ]
+      }
+    }
+  },
+  "devLiveWrite": {
+    "origin": "https://donkeytrump-api-d.azurewebsites.net",
+    "firstCreate": 200,
+    "restartPersistence": true,
+    "sameIdDeduplicated": true,
+    "changedSameIdRejected": 409,
+    "devSyntheticRowsRetained": 1,
+    "productionWritesPerformed": false
+  },
+  "artifact": {
+    "commit": "db52f2b359945d5b1a4584f8fa7718509a14eca9",
+    "sha256": "5a5a095217d4c38b96aaa801e05d3998fbde3382d14a3d6be77d045d28dfc2a3"
+  },
+  "storageRates": [
+    {
+      "productName": "General Block Blob v2 Hierarchical Namespace",
+      "skuName": "Hot LRS",
+      "meterName": "Hot LRS Delete Operations",
+      "retailPrice": 0.0,
+      "unitOfMeasure": "10K",
+      "currencyCode": "DKK",
+      "effectiveStartDate": "2021-10-01T00:00:00Z"
+    },
+    {
+      "productName": "General Block Blob v2",
+      "skuName": "Hot LRS",
+      "meterName": "Hot LRS Data Stored",
+      "retailPrice": 0.1258,
+      "unitOfMeasure": "1 GB/Month",
+      "currencyCode": "DKK",
+      "effectiveStartDate": "2017-02-03T00:00:00Z"
+    },
+    {
+      "productName": "General Block Blob v2",
+      "skuName": "Hot LRS",
+      "meterName": "Hot LRS Data Stored",
+      "retailPrice": 0.1208,
+      "unitOfMeasure": "1 GB/Month",
+      "currencyCode": "DKK",
+      "effectiveStartDate": "2017-02-03T00:00:00Z"
+    },
+    {
+      "productName": "General Block Blob v2",
+      "skuName": "Hot LRS",
+      "meterName": "Hot LRS Data Stored",
+      "retailPrice": 0.1157,
+      "unitOfMeasure": "1 GB/Month",
+      "currencyCode": "DKK",
+      "effectiveStartDate": "2017-02-03T00:00:00Z"
+    },
+    {
+      "productName": "General Block Blob v2",
+      "skuName": "Hot LRS",
+      "meterName": "Hot LRS Blob Inventory",
+      "retailPrice": 0.0173,
+      "unitOfMeasure": "1M",
+      "currencyCode": "DKK",
+      "effectiveStartDate": "2021-10-01T00:00:00Z"
+    },
+    {
+      "productName": "General Block Blob v2 Hierarchical Namespace",
+      "skuName": "Hot LRS",
+      "meterName": "Hot LRS Blob Inventory",
+      "retailPrice": 0.0225,
+      "unitOfMeasure": "1M",
+      "currencyCode": "DKK",
+      "effectiveStartDate": "2021-10-01T00:00:00Z"
+    },
+    {
+      "productName": "General Block Blob v2 Hierarchical Namespace",
+      "skuName": "Hot LRS",
+      "meterName": "Hot LRS Data Stored",
+      "retailPrice": 0.1284,
+      "unitOfMeasure": "1 GB/Month",
+      "currencyCode": "DKK",
+      "effectiveStartDate": "2020-03-01T00:00:00Z"
+    },
+    {
+      "productName": "General Block Blob v2 Hierarchical Namespace",
+      "skuName": "Hot LRS",
+      "meterName": "Hot LRS Data Stored",
+      "retailPrice": 0.1207,
+      "unitOfMeasure": "1 GB/Month",
+      "currencyCode": "DKK",
+      "effectiveStartDate": "2020-03-01T00:00:00Z"
+    },
+    {
+      "productName": "General Block Blob v2 Hierarchical Namespace",
+      "skuName": "Hot LRS",
+      "meterName": "Hot LRS Data Stored",
+      "retailPrice": 0.1155,
+      "unitOfMeasure": "1 GB/Month",
+      "currencyCode": "DKK",
+      "effectiveStartDate": "2020-03-01T00:00:00Z"
+    },
+    {
+      "productName": "General Block Blob v2",
+      "skuName": "Hot LRS",
+      "meterName": "Index Tags",
+      "retailPrice": 0.2503,
+      "unitOfMeasure": "10K/Month",
+      "currencyCode": "DKK",
+      "effectiveStartDate": "2021-02-01T00:00:00Z"
+    },
+    {
+      "productName": "General Block Blob v2",
+      "skuName": "Hot LRS",
+      "meterName": "Hot Read Operations",
+      "retailPrice": 0.0276,
+      "unitOfMeasure": "10K",
+      "currencyCode": "DKK",
+      "effectiveStartDate": "2016-05-09T00:00:00Z"
+    },
+    {
+      "productName": "General Block Blob v2 Hierarchical Namespace",
+      "skuName": "Hot LRS",
+      "meterName": "Hot LRS Other Operations",
+      "retailPrice": 0.0385,
+      "unitOfMeasure": "10K",
+      "currencyCode": "DKK",
+      "effectiveStartDate": "2020-03-01T00:00:00Z"
+    },
+    {
+      "productName": "General Block Blob v2",
+      "skuName": "Hot LRS",
+      "meterName": "All Other Operations",
+      "retailPrice": 0.0276,
+      "unitOfMeasure": "10K",
+      "currencyCode": "DKK",
+      "effectiveStartDate": "2017-10-01T00:00:00Z"
+    },
+    {
+      "productName": "General Block Blob v2",
+      "skuName": "Hot LRS",
+      "meterName": "LRS List and Create Container Operations",
+      "retailPrice": 0.3466,
+      "unitOfMeasure": "10K",
+      "currencyCode": "DKK",
+      "effectiveStartDate": "2016-05-09T00:00:00Z"
+    },
+    {
+      "productName": "General Block Blob v2 Hierarchical Namespace",
+      "skuName": "Hot LRS",
+      "meterName": "Hot LRS Read Operations",
+      "retailPrice": 0.0385,
+      "unitOfMeasure": "10K",
+      "currencyCode": "DKK",
+      "effectiveStartDate": "2020-03-01T00:00:00Z"
+    },
+    {
+      "productName": "General Block Blob v2",
+      "skuName": "Hot LRS",
+      "meterName": "Hot LRS Write Operations",
+      "retailPrice": 0.3466,
+      "unitOfMeasure": "10K",
+      "currencyCode": "DKK",
+      "effectiveStartDate": "2016-05-09T00:00:00Z"
+    },
+    {
+      "productName": "General Block Blob v2 Hierarchical Namespace",
+      "skuName": "Hot LRS",
+      "meterName": "Hot LRS Write Operations",
+      "retailPrice": 0.4493,
+      "unitOfMeasure": "10K",
+      "currencyCode": "DKK",
+      "effectiveStartDate": "2020-03-01T00:00:00Z"
+    }
+  ],
+  "limitations": [
+    "One deliberately synthetic test row remains in DEV only.",
+    "PROD smoke performs no player submissions.",
+    "No iOS distribution or physical-device acceptance is part of this deployment.",
+    "This does not establish App Store moderation/release readiness.",
+    "DEV F1 cold-start/quotas and shared B1 capacity remain operational constraints.",
+    "Artifact rollback is implemented and validation-tested; no previous live release existed for an actual rollback exercise.",
+    "GitHub forced pinned Node 20 actions onto Node 24; this run succeeded."
+  ],
+  "activePackages": {
+    "development": {
+      "activePackage": "20260926152038.zip",
+      "sha256": "5a5a095217d4c38b96aaa801e05d3998fbde3382d14a3d6be77d045d28dfc2a3"
+    },
+    "production": {
+      "activePackage": "20260926152408.zip",
+      "sha256": "5a5a095217d4c38b96aaa801e05d3998fbde3382d14a3d6be77d045d28dfc2a3"
+    }
+  },
+  "prodFirstStartup": {
+    "platformRemountFailureAtUtc": "2026-09-26T15:24:20Z",
+    "platformAutomaticallyRecovered": true,
+    "startupProbeSucceededAtUtc": "2026-09-26T15:26:08Z",
+    "siteStartedAtUtc": "2026-09-26T15:26:12Z",
+    "earlyLocalProbes": "Two 15-second timeouts while starting; later both HTTP 200",
+    "kuduWwwrootInspection": "deployment.json not visible in SCM wwwroot (404); active SitePackages ZIP bytes verified instead"
+  },
+  "githubRuns": {
+    "ci": {
+      "conclusion": "success",
+      "createdAt": "2026-09-26T15:18:48Z",
+      "databaseId": 36251496007,
+      "headSha": "db52f2b359945d5b1a4584f8fa7718509a14eca9",
+      "status": "completed",
+      "updatedAt": "2026-09-26T15:19:26Z",
+      "url": "https://github.com/jesper-bjerre/Donkey-Trump-3D/actions/runs/36251496007",
+      "workflowName": "Backend CI"
+    },
+    "dev": {
+      "conclusion": "success",
+      "createdAt": "2026-09-26T15:18:48Z",
+      "databaseId": 36251495999,
+      "headSha": "db52f2b359945d5b1a4584f8fa7718509a14eca9",
+      "status": "completed",
+      "updatedAt": "2026-09-26T15:21:48Z",
+      "url": "https://github.com/jesper-bjerre/Donkey-Trump-3D/actions/runs/36251495999",
+      "workflowName": "Backend Deploy DEV"
+    },
+    "prod": {
+      "conclusion": "success",
+      "createdAt": "2026-09-26T15:22:59Z",
+      "databaseId": 36251740755,
+      "headSha": "db52f2b359945d5b1a4584f8fa7718509a14eca9",
+      "status": "completed",
+      "updatedAt": "2026-09-26T15:27:34Z",
+      "url": "https://github.com/jesper-bjerre/Donkey-Trump-3D/actions/runs/36251740755",
+      "workflowName": "Backend Deploy PROD"
+    }
+  },
+  "sharedPlansAfter": {
+    "asp-vejles-koder-d": {
+      "sku": {
+        "capacity": 1,
+        "family": "F",
+        "name": "F1",
+        "size": "F1",
+        "tier": "Free"
+      },
+      "numberOfSites": 2
+    },
+    "asp-vejles-koder-p": {
+      "sku": {
+        "capacity": 1,
+        "family": "B",
+        "name": "B1",
+        "size": "B1",
+        "tier": "Basic"
+      },
+      "numberOfSites": 2
+    }
+  },
+  "prodPlanPostDeploymentMetrics": {
+    "MemoryPercentage": [
+      {
+        "timeStamp": "2026-09-26T15:20:00Z",
+        "average": 75.0,
+        "maximum": 75.0
+      },
+      {
+        "timeStamp": "2026-09-26T15:21:00Z",
+        "average": 78.0,
+        "maximum": 78.0
+      },
+      {
+        "timeStamp": "2026-09-26T15:22:00Z",
+        "average": 80.0,
+        "maximum": 80.0
+      },
+      {
+        "timeStamp": "2026-09-26T15:23:00Z",
+        "average": 83.0,
+        "maximum": 83.0
+      },
+      {
+        "timeStamp": "2026-09-26T15:24:00Z",
+        "average": 81.0,
+        "maximum": 81.0
+      },
+      {
+        "timeStamp": "2026-09-26T15:25:00Z",
+        "average": 80.0,
+        "maximum": 80.0
+      },
+      {
+        "timeStamp": "2026-09-26T15:26:00Z",
+        "average": 80.0,
+        "maximum": 80.0
+      },
+      {
+        "timeStamp": "2026-09-26T15:27:00Z",
+        "average": 79.0,
+        "maximum": 79.0
+      }
+    ],
+    "CpuPercentage": [
+      {
+        "timeStamp": "2026-09-26T15:20:00Z",
+        "average": 15.0,
+        "maximum": 15.0
+      },
+      {
+        "timeStamp": "2026-09-26T15:21:00Z",
+        "average": 54.0,
+        "maximum": 54.0
+      },
+      {
+        "timeStamp": "2026-09-26T15:22:00Z",
+        "average": 92.0,
+        "maximum": 92.0
+      },
+      {
+        "timeStamp": "2026-09-26T15:23:00Z",
+        "average": 99.0,
+        "maximum": 99.0
+      },
+      {
+        "timeStamp": "2026-09-26T15:24:00Z",
+        "average": 83.0,
+        "maximum": 83.0
+      },
+      {
+        "timeStamp": "2026-09-26T15:25:00Z",
+        "average": 74.0,
+        "maximum": 74.0
+      },
+      {
+        "timeStamp": "2026-09-26T15:26:00Z",
+        "average": 89.0,
+        "maximum": 89.0
+      },
+      {
+        "timeStamp": "2026-09-26T15:27:00Z",
+        "average": 99.0,
+        "maximum": 99.0
+      }
+    ]
+  },
+  "existingAppsAfter": {
+    "byensgaader-api-d": {
+      "status": 200,
+      "seconds": 0.3
+    },
+    "byensgaader-api-p": {
+      "status": 200,
+      "seconds": 0.21
+    }
+  },
+  "prodSnapshot": {
+    "status": 200,
+    "rowCount": 0,
+    "cacheControl": "no-store",
+    "revisionPresent": true
+  },
+  "finalObservedAtUtc": "2026-09-26T15:28:30.180527+00:00",
+  "prodPlanLaterMetrics": {
+    "CpuPercentage": [
+      {
+        "timeStamp": "2026-09-26T15:25:00Z",
+        "average": 74.0,
+        "maximum": 74.0
+      },
+      {
+        "timeStamp": "2026-09-26T15:26:00Z",
+        "average": 89.0,
+        "maximum": 89.0
+      },
+      {
+        "timeStamp": "2026-09-26T15:27:00Z",
+        "average": 99.0,
+        "maximum": 99.0
+      },
+      {
+        "timeStamp": "2026-09-26T15:28:00Z",
+        "average": 89.0,
+        "maximum": 89.0
+      },
+      {
+        "timeStamp": "2026-09-26T15:29:00Z",
+        "average": 70.0,
+        "maximum": 70.0
+      }
+    ],
+    "MemoryPercentage": [
+      {
+        "timeStamp": "2026-09-26T15:25:00Z",
+        "average": 80.0,
+        "maximum": 80.0
+      },
+      {
+        "timeStamp": "2026-09-26T15:26:00Z",
+        "average": 80.0,
+        "maximum": 80.0
+      },
+      {
+        "timeStamp": "2026-09-26T15:27:00Z",
+        "average": 79.0,
+        "maximum": 79.0
+      },
+      {
+        "timeStamp": "2026-09-26T15:28:00Z",
+        "average": 77.0,
+        "maximum": 77.0
+      },
+      {
+        "timeStamp": "2026-09-26T15:29:00Z",
+        "average": 76.0,
+        "maximum": 76.0
+      }
+    ]
+  },
+  "laterMetricsObservedAtUtc": "2026-09-26T15:30:02.596928+00:00",
+  "settledPlanMetrics": {
+    "CpuPercentage": [
+      {
+        "timeStamp": "2026-09-26T15:36:00Z",
+        "average": 21.0,
+        "maximum": 21.0
+      },
+      {
+        "timeStamp": "2026-09-26T15:37:00Z",
+        "average": 18.0,
+        "maximum": 18.0
+      },
+      {
+        "timeStamp": "2026-09-26T15:38:00Z",
+        "average": 21.0,
+        "maximum": 21.0
+      },
+      {
+        "timeStamp": "2026-09-26T15:39:00Z",
+        "average": 34.0,
+        "maximum": 34.0
+      },
+      {
+        "timeStamp": "2026-09-26T15:40:00Z",
+        "average": 17.0,
+        "maximum": 17.0
+      },
+      {
+        "timeStamp": "2026-09-26T15:41:00Z",
+        "average": 27.0,
+        "maximum": 27.0
+      },
+      {
+        "timeStamp": "2026-09-26T15:42:00Z",
+        "average": 16.0,
+        "maximum": 16.0
+      },
+      {
+        "timeStamp": "2026-09-26T15:43:00Z",
+        "average": 23.0,
+        "maximum": 23.0
+      },
+      {
+        "timeStamp": "2026-09-26T15:44:00Z",
+        "average": 36.0,
+        "maximum": 36.0
+      },
+      {
+        "timeStamp": "2026-09-26T15:45:00Z",
+        "average": 21.0,
+        "maximum": 21.0
+      },
+      {
+        "timeStamp": "2026-09-26T15:46:00Z",
+        "average": 23.0,
+        "maximum": 23.0
+      },
+      {
+        "timeStamp": "2026-09-26T15:47:00Z",
+        "average": 19.0,
+        "maximum": 19.0
+      },
+      {
+        "timeStamp": "2026-09-26T15:48:00Z",
+        "average": 23.0,
+        "maximum": 23.0
+      },
+      {
+        "timeStamp": "2026-09-26T15:49:00Z",
+        "average": 39.0,
+        "maximum": 39.0
+      },
+      {
+        "timeStamp": "2026-09-26T15:50:00Z",
+        "average": 16.0,
+        "maximum": 16.0
+      },
+      {
+        "timeStamp": "2026-09-26T15:51:00Z",
+        "average": 22.0,
+        "maximum": 22.0
+      },
+      {
+        "timeStamp": "2026-09-26T15:52:00Z",
+        "average": 20.0,
+        "maximum": 20.0
+      },
+      {
+        "timeStamp": "2026-09-26T15:53:00Z",
+        "average": 22.0,
+        "maximum": 22.0
+      },
+      {
+        "timeStamp": "2026-09-26T15:54:00Z",
+        "average": 33.0,
+        "maximum": 33.0
+      },
+      {
+        "timeStamp": "2026-09-26T15:55:00Z",
+        "average": 17.0,
+        "maximum": 17.0
+      }
+    ],
+    "MemoryPercentage": [
+      {
+        "timeStamp": "2026-09-26T15:36:00Z",
+        "average": 82.0,
+        "maximum": 82.0
+      },
+      {
+        "timeStamp": "2026-09-26T15:37:00Z",
+        "average": 82.0,
+        "maximum": 82.0
+      },
+      {
+        "timeStamp": "2026-09-26T15:38:00Z",
+        "average": 81.0,
+        "maximum": 81.0
+      },
+      {
+        "timeStamp": "2026-09-26T15:39:00Z",
+        "average": 81.0,
+        "maximum": 81.0
+      },
+      {
+        "timeStamp": "2026-09-26T15:40:00Z",
+        "average": 82.0,
+        "maximum": 82.0
+      },
+      {
+        "timeStamp": "2026-09-26T15:41:00Z",
+        "average": 81.0,
+        "maximum": 81.0
+      },
+      {
+        "timeStamp": "2026-09-26T15:42:00Z",
+        "average": 81.0,
+        "maximum": 81.0
+      },
+      {
+        "timeStamp": "2026-09-26T15:43:00Z",
+        "average": 81.0,
+        "maximum": 81.0
+      },
+      {
+        "timeStamp": "2026-09-26T15:44:00Z",
+        "average": 82.0,
+        "maximum": 82.0
+      },
+      {
+        "timeStamp": "2026-09-26T15:45:00Z",
+        "average": 82.0,
+        "maximum": 82.0
+      },
+      {
+        "timeStamp": "2026-09-26T15:46:00Z",
+        "average": 82.0,
+        "maximum": 82.0
+      },
+      {
+        "timeStamp": "2026-09-26T15:47:00Z",
+        "average": 83.0,
+        "maximum": 83.0
+      },
+      {
+        "timeStamp": "2026-09-26T15:48:00Z",
+        "average": 83.0,
+        "maximum": 83.0
+      },
+      {
+        "timeStamp": "2026-09-26T15:49:00Z",
+        "average": 82.0,
+        "maximum": 82.0
+      },
+      {
+        "timeStamp": "2026-09-26T15:50:00Z",
+        "average": 81.0,
+        "maximum": 81.0
+      },
+      {
+        "timeStamp": "2026-09-26T15:51:00Z",
+        "average": 82.0,
+        "maximum": 82.0
+      },
+      {
+        "timeStamp": "2026-09-26T15:52:00Z",
+        "average": 81.0,
+        "maximum": 81.0
+      },
+      {
+        "timeStamp": "2026-09-26T15:53:00Z",
+        "average": 81.0,
+        "maximum": 81.0
+      },
+      {
+        "timeStamp": "2026-09-26T15:54:00Z",
+        "average": 81.0,
+        "maximum": 81.0
+      },
+      {
+        "timeStamp": "2026-09-26T15:55:00Z",
+        "average": 81.0,
+        "maximum": 81.0
+      }
+    ]
+  },
+  "settledMetricsObservedAtUtc": "2026-09-26T15:56:04.664091+00:00",
+  "budget": {
+    "budget": "donkeytrump-monthly-budget",
+    "currency": "DKK",
+    "netMonthlyAmount": 80.0,
+    "includingVatDkk": 100.0,
+    "scope": {
+      "tags": {
+        "name": "Project",
+        "operator": "In",
+        "values": [
+          "DonkeyTrump"
+        ]
+      }
+    },
+    "timePeriod": {
+      "startDate": "2026-09-01T00:00:00Z",
+      "endDate": "2036-09-01T00:00:00Z"
+    },
+    "notifications": {
+      "actual_50": {
+        "enabled": true,
+        "threshold": 50.0,
+        "thresholdType": "Actual"
+      },
+      "actual_75": {
+        "enabled": true,
+        "threshold": 75.0,
+        "thresholdType": "Actual"
+      },
+      "actual_100": {
+        "enabled": true,
+        "threshold": 100.0,
+        "thresholdType": "Actual"
+      },
+      "forecasted_90": {
+        "enabled": true,
+        "threshold": 90.0,
+        "thresholdType": "Forecasted"
+      }
+    },
+    "recipient": "signed-in owner, already configured on existing subscription budget",
+    "recipientCount": 1,
+    "testNotificationSent": false,
+    "hardSpendingCap": false
+  },
+  "referenceNaming": {
+    "apps": [
+      "byensgaader-api-d",
+      "byensgaader-api-p"
+    ],
+    "storageAccounts": [
+      "byensgaaderd",
+      "byensgaaderp"
+    ],
+    "storageGroups": [
+      "byensgaader-d_rg",
+      "byensgaader-p_rg"
+    ],
+    "existingDeploymentIdentityNames": [
+      "oidc-msi-a6eb",
+      "oidc-msi-bd36",
+      "oidc-msi-8800"
+    ],
+    "identityNamingDecision": "Preserve oidc- prefix; use explicit project and -d/-p environment names rather than opaque generated suffixes."
+  },
+  "runtimeRevisionIdentity": {
+    "deployedCommit": "db52f2b359945d5b1a4584f8fa7718509a14eca9",
+    "gitDiffCheck": "git diff --exit-code db52f2b -- .github/workflows src/scripts/backend-release.py src/scripts/backend-release-tests.py infra/backend-environments.json infra/provision-backend.py src/backend",
+    "result": "exit 0; runtime, workflows and executed deployment scripts byte-identical; later changes limited to docs/evidence and new operator budget helper/tests"
+  },
+  "settledHealthChecks": [
+    {
+      "app": "byensgaader-api-p",
+      "status": 200,
+      "seconds": 0.197,
+      "observedAtUtc": "2026-09-26T15:56:05.771430+00:00"
+    },
+    {
+      "app": "donkeytrump-api-p",
+      "status": 200,
+      "seconds": 0.317,
+      "observedAtUtc": "2026-09-26T15:56:06.088744+00:00"
+    },
+    {
+      "app": "byensgaader-api-d",
+      "status": 200,
+      "seconds": 2.053,
+      "observedAtUtc": "2026-09-26T15:56:08.143220+00:00"
+    },
+    {
+      "app": "donkeytrump-api-d",
+      "status": 200,
+      "seconds": 0.425,
+      "observedAtUtc": "2026-09-26T15:56:08.569503+00:00"
+    },
+    {
+      "app": "byensgaader-api-p",
+      "status": 200,
+      "seconds": 0.132,
+      "observedAtUtc": "2026-09-26T15:56:18.707743+00:00"
+    },
+    {
+      "app": "donkeytrump-api-p",
+      "status": 200,
+      "seconds": 0.113,
+      "observedAtUtc": "2026-09-26T15:56:18.822639+00:00"
+    },
+    {
+      "app": "byensgaader-api-d",
+      "status": 200,
+      "seconds": 0.169,
+      "observedAtUtc": "2026-09-26T15:56:18.993401+00:00"
+    },
+    {
+      "app": "donkeytrump-api-d",
+      "status": 200,
+      "seconds": 0.124,
+      "observedAtUtc": "2026-09-26T15:56:19.119629+00:00"
+    },
+    {
+      "app": "byensgaader-api-p",
+      "status": 200,
+      "seconds": 0.14,
+      "observedAtUtc": "2026-09-26T15:56:29.266035+00:00"
+    },
+    {
+      "app": "donkeytrump-api-p",
+      "status": 200,
+      "seconds": 0.119,
+      "observedAtUtc": "2026-09-26T15:56:29.386391+00:00"
+    },
+    {
+      "app": "byensgaader-api-d",
+      "status": 200,
+      "seconds": 0.145,
+      "observedAtUtc": "2026-09-26T15:56:29.533493+00:00"
+    },
+    {
+      "app": "donkeytrump-api-d",
+      "status": 200,
+      "seconds": 0.597,
+      "observedAtUtc": "2026-09-26T15:56:30.132293+00:00"
+    }
+  ],
+  "baselineHour": {
+    "start": "2026-09-26T14:00:00Z",
+    "end": "2026-09-26T15:00:00Z",
+    "metrics": {
+      "CpuPercentage": {
+        "samples": 60,
+        "min": 10.0,
+        "max": 41.0,
+        "mean": 18.92
+      },
+      "MemoryPercentage": {
+        "samples": 60,
+        "min": 70.0,
+        "max": 75.0,
+        "mean": 72.77
+      }
+    }
+  },
+  "finalSettledWindow": {
+    "start": "2026-09-26T15:39:28.878681+00:00",
+    "end": "2026-09-26T15:59:28.878681+00:00",
+    "metrics": {
+      "CpuPercentage": {
+        "samples": 20,
+        "min": 16.0,
+        "max": 54.0,
+        "mean": 26.1
+      },
+      "MemoryPercentage": {
+        "samples": 20,
+        "min": 77.0,
+        "max": 83.0,
+        "mean": 81.0
+      }
+    }
+  },
+  "repoRuntimeFilesStillIdenticalToDeployedCommit": true,
+  "prePackageCpuContext": {
+    "newProdSiteStartupTimesObservedInPlatformLog": [
+      "2026-09-26T15:20:58Z",
+      "2026-09-26T15:22:51Z"
+    ],
+    "packageActivation": "2026-09-26T15:24:08Z",
+    "interpretation": "CPU rise preceded package activation but overlapped initial app provisioning and container starts. Aggregate plan metrics do not establish exact per-process attribution."
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "tool": "Claude Code 2.1.283",
+  "vendor": "Anthropic",
+  "requestedModel": "claude-opus-5-5",
+  "effortFlag": "high",
+  "effortEnvironment": "high",
+  "safeMode": true,
+  "tools": [],
+  "mcpServers": {},
+  "probePlainText": "REVIEW_ROUTE_OK; exit 0; empty stderr; no effort cap warning",
+  "probeSession": "fd05af1d-4179-4269-8535-bc8e8d54fe58",
+  "round1": {
+    "session_id": "6d9abf6a-b1e8-4afb-b5a6-7e621e841cf6",
+    "subtype": "success",
+    "is_error": false,
+    "modelUsage": {
+      "claude-opus-5-5": {
+        "inputTokens": 2,
+        "outputTokens": 20094,
+        "cacheReadInputTokens": 1459,
+        "cacheCreationInputTokens": 83277,
+        "webSearchRequests": 0,
+        "costUSD": 1.0683958,
+        "contextWindow": 1000000,
+        "maxOutputTokens": 128000,
+        "thinkingTokens": 16664,
+        "canonicalModel": "claude-opus-5-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      }
+    },
+    "actualAssistantModels": [
+      "claude-opus-5-5"
+    ],
+    "stderrEmpty": true
+  },
+  "effortAttestation": "Explicit flag and env, successful text/JSON probes and absence of warnings. Provider response does not independently attest effective effort.",
+  "round2": {
+    "session_id": "07da179b-bb8c-4a0f-8fb6-91ab7834aa4b",
+    "subtype": "success",
+    "is_error": false,
+    "modelUsage": {
+      "claude-opus-5-5": {
+        "inputTokens": 2,
+        "outputTokens": 10461,
+        "cacheReadInputTokens": 1459,
+        "cacheCreationInputTokens": 49658,
+        "webSearchRequests": 0,
+        "costUSD": 0.6067838,
+        "contextWindow": 1000000,
+        "maxOutputTokens": 128000,
+        "thinkingTokens": 7030,
+        "canonicalModel": "claude-opus-5-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      }
+    },
+    "actualAssistantModels": [
+      "claude-opus-5-5"
+    ],
+    "stderrEmpty": true
+  }
+}

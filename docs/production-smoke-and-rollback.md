@@ -144,10 +144,16 @@ remain separate release prerequisites.
   Blob access; never embed account keys or SAS in app configuration.
 - Distinguish local Azurite concurrency results from live Azure RBAC/write/persistence
   results and pipeline smoke checks. Consult the dated deployment evidence.
-- Keep platform logs within the privacy boundary and inspect incremental costs against
-  the owner's budget. Per-process rate limits do not guarantee a monthly bill.
+- Keep platform logs within the privacy boundary. Maintain the deployed DKK 80/month
+  pre-tax budget and owner cost warnings covering the project-tagged apps and storage; verify them before
+  release and inspect warnings as described in the deployment guide. Per-process
+  rate limits and delayed budget alerts do not guarantee a monthly bill.
 - DEV F1 may cold-start; PROD uses Always On. Backend delays must never block offline
   gameplay. Shared-plan capacity and existing-app health require operational checks.
 - Configure the real `HIGHSCORE_API_BASE_URL` HTTPS origin; verify Release ATS and fixture/integration exclusion. On physical iPhone 13, check ranks 1/50/100, keyboard dismissal, optional public-name notice, VoiceOver focus/labels, large Dynamic Type, both landscapes, buttons during hang/failure, background/reconnect/relaunch without queued uploads, and existing silent-switch/intro audio.
 
 A rollback changes the API/app revision while preserving the private ranking blob. Never reset, delete or overwrite scores to hide a deployment/storage error. Unknown schema/corruption must fail closed; investigate against a protected backup under an explicitly authorized recovery plan. Retain the prior tested release package/configuration and validate compatibility before changing revisions. A lost POST acknowledgement may already have committed; rollback/refresh must not replay that player's submission. Record actual recovery results and remaining limitations.
+
+The initial deployment does not configure Blob versioning or a protected backup.
+Any data-recovery operation must first establish an explicitly authorized protected
+copy; the rollback pipeline only restores API code and never rewrites scores.
