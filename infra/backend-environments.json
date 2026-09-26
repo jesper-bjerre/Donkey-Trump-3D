@@ -1,0 +1,24 @@
+{
+  "subscriptionId": "6b6dcc04-7490-42ed-bedf-68f60946485e",
+  "repository": "jesper-bjerre/Donkey-Trump-3D",
+  "location": "westeurope",
+  "appResourceGroup": "Gulvet",
+  "environments": {
+    "development": {
+      "appName": "donkeytrump-api-d",
+      "planName": "asp-vejles-koder-d",
+      "storageResourceGroup": "donkeytrump-d_rg",
+      "storageAccount": "donkeytrumpd",
+      "deployIdentity": "oidc-donkeytrump-d",
+      "existingApp": "byensgaader-api-d"
+    },
+    "production": {
+      "appName": "donkeytrump-api-p",
+      "planName": "asp-vejles-koder-p",
+      "storageResourceGroup": "donkeytrump-p_rg",
+      "storageAccount": "donkeytrumpp",
+      "deployIdentity": "oidc-donkeytrump-p",
+      "existingApp": "byensgaader-api-p"
+    }
+  }
+}

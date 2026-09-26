@@ -29,7 +29,7 @@ Debug launch arguments (set them in the scheme, or pass them to `simctl launch`)
 
 Open Highscores from the title, or finish a run. A fresh qualifying result offers optional public-name entry; Submit publishes and centres/highlights that exact run. A nonqualifying result shows the bottom and final score. Ties retain earlier successful saves. Close, Start and Play Again work during network requests; list refresh is read-only and stale data is labelled. Failed or unconfirmed submissions are never queued or sent later, while the local best is retained. Scores are client-reported without login or cheat-proof verification.
 
-Set the Xcode `HIGHSCORE_API_BASE_URL` build setting to the real HTTPS backend origin. It is intentionally empty by default. Debug accepts loopback development transport; Release keeps ATS enabled and excludes synthetic fixtures and integration overrides. See the [reproducible local guide](specs/001-global-highscores/quickstart.md) and [validation evidence](specs/001-global-highscores/validation.md). Physical iPhone, container and live Azure checks remain distinct release prerequisites.
+Set the Xcode `HIGHSCORE_API_BASE_URL` build setting to the real HTTPS backend origin. It is intentionally empty by default. Debug accepts loopback development transport; Release keeps ATS enabled and excludes synthetic fixtures and integration overrides. See the [reproducible local guide](specs/001-global-highscores/quickstart.md) and [validation evidence](specs/001-global-highscores/validation.md). Backend delivery uses [DEV/PROD App Service pipelines](docs/backend-deployment.md). Physical iPhone and App Store release checks remain separate prerequisites.
 
 ## Controls
 

@@ -70,9 +70,15 @@ Build from repository root, with Docker available:
 docker build -f src/backend/Dockerfile -t dt3d-highscores .
 ```
 
-The Dockerfile-specific ignore file includes only the SDK pin and API sources/settings. Build verifies SDK 10.0.401; runtime image is ASP.NET 10.0.12, non-root `APP_UID`, port 8080. Docker is not a local emulator prerequisite. Actual container execution and live Azure managed-identity/RBAC validation remain environment-dependent checks.
+The Dockerfile-specific ignore file includes only the SDK pin and API sources/settings. Build verifies SDK 10.0.401; runtime image is ASP.NET 10.0.12, non-root `APP_UID`, port 8080. Docker is not a local emulator prerequisite. Container execution is an alternative packaging check; the active deployment uses App Service ZIP packages and managed identity.
 
-Release target: same-region Container Apps Consumption (0–2 replicas), HTTPS ingress, a private Hot/LRS Blob container and container-scoped managed-identity Blob data access. Cold starts can exceed the app's bounded wait; gameplay remains available. Subscription, region, hostname, retention/cost-alert settings and deployment authorization must come from real release inputs. Nothing here provisions or deploys Azure.
+Release target: separate DEV and PROD apps on the existing Linux App Service plans,
+with private same-region Hot/LRS Blob containers and container-scoped managed
+identities. GitHub Actions deploys DEV from `main`; PROD manually promotes the exact
+successful DEV package. See the [deployment guide](../../docs/backend-deployment.md)
+for real resource names, provisioning, OIDC, checks, costs and rollback. This
+supersedes the original Container Apps proposal. Cloud DEV also uses the Production
+ASP.NET environment; emulator settings stay local.
 
 ## Load test
 

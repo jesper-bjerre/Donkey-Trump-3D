@@ -1,0 +1,72 @@
+name: Backend Deploy PROD
+on:
+  workflow_dispatch:
+    inputs:
+      dev_run_id:
+        description: Successful main-branch Backend Deploy DEV run ID (also used for rollback)
+        required: true
+        type: string
+      dev_verified:
+        description: I have verified this DEV release and intend to deploy it to PROD
+        required: true
+        default: false
+        type: boolean
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: backend-deploy-production
+  cancel-in-progress: false
+jobs:
+  deploy:
+    if: github.ref == 'refs/heads/main' && inputs.dev_verified
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment:
+      name: production
+      url: ${{ steps.target.outputs.origin }}
+    permissions:
+      contents: read
+      actions: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: Validate successful DEV run provenance
+        id: source
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DEV_RUN_ID: ${{ inputs.dev_run_id }}
+        run: |
+          [[ "$DEV_RUN_ID" =~ ^[0-9]+$ ]] || { echo 'DEV run ID must be numeric'; exit 1; }
+          WORKFLOW_ID=$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/backend-deploy-dev.yml" --jq .id)
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/$DEV_RUN_ID" > "$RUNNER_TEMP/dev-run.json"
+          python3 src/scripts/backend-release.py validate-dev-run "$RUNNER_TEMP/dev-run.json" "$GITHUB_REPOSITORY" "$WORKFLOW_ID"
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: backend-release
+          path: ${{ runner.temp }}/release
+          github-token: ${{ github.token }}
+          run-id: ${{ inputs.dev_run_id }}
+      - name: Verify exact DEV package
+        env:
+          SOURCE_SHA: ${{ steps.source.outputs.sha }}
+        run: python3 src/scripts/backend-release.py verify "$RUNNER_TEMP/release" "$SOURCE_SHA"
+      - uses: azure/login@8216e11d8cd9b42fe925c852af8e76311ff067ac # v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      - name: Deploy verified DEV package to existing PROD app
+        id: target
+        run: |
+          APP=$(python3 -c 'import json; print(json.load(open("infra/backend-environments.json"))["environments"]["production"]["appName"])')
+          GROUP=$(python3 -c 'import json; print(json.load(open("infra/backend-environments.json"))["appResourceGroup"])')
+          az webapp deploy --resource-group "$GROUP" --name "$APP" --src-path "$RUNNER_TEMP/release/app.zip" --type zip --clean true --restart true --only-show-errors --output none
+          HOST=$(az webapp show --resource-group "$GROUP" --name "$APP" --query defaultHostName -o tsv)
+          echo "origin=https://$HOST" >> "$GITHUB_OUTPUT"
+      - name: Verify HTTPS and managed identity storage access
+        env:
+          ORIGIN: ${{ steps.target.outputs.origin }}
+        run: python3 src/scripts/backend-release.py smoke "$ORIGIN"

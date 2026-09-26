@@ -4,7 +4,7 @@ Updated: 2026-09-26. This replaces the copied static-web deployment runbook. The
 
 ## Current delivery status
 
-Local Xcode build, test and device installation are the established development workflow. The repository contains no automatic deployment workflow, signed distribution pipeline or verified TestFlight/App Store release configuration. A push does not publish an iOS build. There is no production URL or web smoke script to run.
+Local Xcode build, test and device installation are the established development workflow. The repository has [backend DEV/PROD deployment workflows](backend-deployment.md), but no iOS signed distribution pipeline or verified TestFlight/App Store release configuration. A push does not publish an iOS build. Backend HTTPS origins and smoke checks are described in the deployment guide. They do not validate an iOS release.
 
 This runbook covers candidate verification and recovery preparation. It does not claim that the app has been published. Store recovery depends on a new build and the distribution process; there is no guaranteed 15-minute rollback to every installed device.
 
@@ -128,18 +128,26 @@ An App Store version cannot simply be reverted to an earlier version. Recovering
 
 ## Credentials and release records
 
-Signing identities, certificates, provisioning profiles and any future App Store Connect API credentials must stay in the approved local/build-system credential store. Never put private keys, passwords or tokens in source, docs, command examples or logs. The optional highscore integration needs a real HTTPS API origin in Release; the app never embeds an Azure storage key or service credential. No production origin is assigned by this implementation.
+Signing identities, certificates, provisioning profiles and any future App Store Connect API credentials must stay in the approved local/build-system credential store. Never put private keys, passwords or tokens in source, docs, command examples or logs. The optional highscore integration needs a real HTTPS API origin in Release; the app never embeds an Azure storage key or service credential. The backend deployment guide records Azure origins; the iOS build setting still needs explicit release configuration.
 
 Release records should distinguish automated passes, simulator smoke results and physical-device checks. The last audio-change validation on 2026-09-25 passed 18 tests on iPhone 18 Pro/iOS 27 and reached gameplay after the intro; physical mute-switch verification was still outstanding. Revalidate the actual candidate rather than treating that earlier run as current release approval.
 
 ## Highscore release inputs and recovery
 
-The native highscore UI and .NET 10 API are implemented; see [local validation](../specs/001-global-highscores/validation.md) and [runnable quickstart](../specs/001-global-highscores/quickstart.md). Release remains pending the actual subscription, region, API hostname, signing/distribution channel and environment-specific checks. No cloud resources or app distribution are authorized by these instructions.
+The native highscore UI and .NET 10 API are implemented; see [local validation](../specs/001-global-highscores/validation.md) and [runnable quickstart](../specs/001-global-highscores/quickstart.md). The actual backend resources, GitHub delivery and rollback procedure are described in the
+[backend deployment guide](backend-deployment.md); that App Service target supersedes
+the original Container Apps proposal. Signing/distribution and iPhone acceptance
+remain separate release prerequisites.
 
-- Host one Minimal API in Container Apps Consumption, 0–2 replicas, with HTTPS ingress and private same-region Hot/LRS Block Blob storage. Provision the container outside the app. Grant the API's managed identity container-scoped Storage Blob Data Contributor (or an appropriately reviewed narrower role); no account key/SAS in app configuration. Keep secrets in the platform's approved stores.
-- Validate the Docker image (SDK 10.0.401 selection, runtime 10.0.12, non-root user, port 8080), liveness without storage, denied/public access behavior, managed-identity permissions, conditional first-create/update races, restart persistence and safe Problem Details in actual Azure. Emulator results do not establish RBAC or ingress configuration.
-- Set and record a modest log retention period and cost alert using the actual budget. Logs must exclude names, full score payloads, IPs and credentials, including ingress/platform settings. Blob requests and replica logs still have costs. Monitor safe outcome/duration/contention counts. Per-replica token buckets do not form a global abuse-prevention service.
-- Warm-service targets and cold-start behavior are separate. Scaling to zero may exceed the app's eight-second wait; Start/Play Again must remain immediate. Record a cold-start probe honestly and decide any minimum-replica/cost change before release.
+- Use the separate DEV and PROD App Service apps, existing shared Linux plans and
+  private same-region Hot/LRS containers. Each API identity has only container-scoped
+  Blob access; never embed account keys or SAS in app configuration.
+- Distinguish local Azurite concurrency results from live Azure RBAC/write/persistence
+  results and pipeline smoke checks. Consult the dated deployment evidence.
+- Keep platform logs within the privacy boundary and inspect incremental costs against
+  the owner's budget. Per-process rate limits do not guarantee a monthly bill.
+- DEV F1 may cold-start; PROD uses Always On. Backend delays must never block offline
+  gameplay. Shared-plan capacity and existing-app health require operational checks.
 - Configure the real `HIGHSCORE_API_BASE_URL` HTTPS origin; verify Release ATS and fixture/integration exclusion. On physical iPhone 13, check ranks 1/50/100, keyboard dismissal, optional public-name notice, VoiceOver focus/labels, large Dynamic Type, both landscapes, buttons during hang/failure, background/reconnect/relaunch without queued uploads, and existing silent-switch/intro audio.
 
-A rollback changes the API/app revision while preserving the private ranking blob. Never reset, delete or overwrite scores to hide a deployment/storage error. Unknown schema/corruption must fail closed; investigate against a protected backup under an explicitly authorized recovery plan. Retain the prior service image/configuration and validate compatibility before changing revisions. A lost POST acknowledgement may already have committed; rollback/refresh must not replay that player's submission. Record actual recovery results and remaining limitations.
+A rollback changes the API/app revision while preserving the private ranking blob. Never reset, delete or overwrite scores to hide a deployment/storage error. Unknown schema/corruption must fail closed; investigate against a protected backup under an explicitly authorized recovery plan. Retain the prior tested release package/configuration and validate compatibility before changing revisions. A lost POST acknowledgement may already have committed; rollback/refresh must not replay that player's submission. Record actual recovery results and remaining limitations.
