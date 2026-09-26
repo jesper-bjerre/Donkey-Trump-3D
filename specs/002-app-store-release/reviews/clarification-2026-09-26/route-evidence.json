@@ -1,0 +1,59 @@
+{
+  "tool": "2.1.283 (Claude Code)",
+  "requestedModel": "claude-opus-5-5",
+  "requestedEffort": "high",
+  "environmentEffort": "high",
+  "effortEvidence": "Explicit CLI/environment setting; successful harmless plain-text probe with no effort-cap warning. Provider metadata does not separately attest effective effort.",
+  "probePlainText": {
+    "exit": "0",
+    "response": "REVIEW_ROUTE_OK",
+    "stderr": ""
+  },
+  "probeJSON": {
+    "session_id": "0b6e60cc-5f07-4c3c-aacf-58c253619c08",
+    "subtype": "success",
+    "is_error": false,
+    "modelUsage": {
+      "claude-opus-5-5": {
+        "inputTokens": 2,
+        "outputTokens": 16,
+        "cacheReadInputTokens": 1887,
+        "cacheCreationInputTokens": 0,
+        "webSearchRequests": 0,
+        "costUSD": 0.0007053999999999999,
+        "contextWindow": 1000000,
+        "maxOutputTokens": 128000,
+        "thinkingTokens": 0,
+        "canonicalModel": "claude-opus-5-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      }
+    }
+  },
+  "round1": {
+    "session_id": "a2b3cf48-df0c-42b7-b9f9-f8c745c7e40b",
+    "subtype": "success",
+    "is_error": false,
+    "duration_ms": 87205,
+    "modelUsage": {
+      "claude-opus-5-5": {
+        "inputTokens": 2,
+        "outputTokens": 7954,
+        "cacheReadInputTokens": 1459,
+        "cacheCreationInputTokens": 48338,
+        "webSearchRequests": 0,
+        "costUSD": 0.5460838,
+        "contextWindow": 1000000,
+        "maxOutputTokens": 128000,
+        "thinkingTokens": 6015,
+        "canonicalModel": "claude-opus-5-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      }
+    },
+    "actualAssistantModels": [
+      "claude-opus-5-5"
+    ],
+    "stderr": ""
+  }
+}

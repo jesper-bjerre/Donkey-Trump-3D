@@ -1,0 +1,76 @@
+{
+  "date": "2026-09-26",
+  "task": "speckit-clarify / 002-app-store-release",
+  "questions_asked": 3,
+  "questions_answered": 3,
+  "answers": [
+    {
+      "id": "ban_reinstall_scope",
+      "answer": "B",
+      "meaning": "Current app installation only; reinstall may reset the block; local gameplay remains available.",
+      "integrated": true
+    },
+    {
+      "id": "moderation_owner",
+      "answer": "A",
+      "meaning": "App owner handles reports, responds within one working day, removes offending entries and blocks abusive installations.",
+      "integrated": true
+    },
+    {
+      "id": "monthly_operating_budget",
+      "answer": "A plus mandatory existing PROD App Service Plan reuse",
+      "user_text": "A, Du skal bruge den eksisterende App Service Plan til PROD. Der burde kun køre en app (asp.net) i forvejen.",
+      "meaning": "DKK100/month incl VAT; reuse existing PROD plan; expected one ASP.NET app is unverified. Incremental budget accounting is an explicit planning interpretation of reuse, with existing fixed cost separate.",
+      "integrated": true
+    }
+  ],
+  "checks": {
+    "one_QA_per_answer": "PASS",
+    "allowed_new_headings_only": "PASS",
+    "24_unique_FR_and_8_unique_SC": "PASS",
+    "no_clarification_placeholders": "PASS",
+    "local_links": "PASS (5 references)",
+    "whitespace": "PASS",
+    "terminology_and_no_superseded_choices": "PASS (lead review)",
+    "checklist_before": "16/16",
+    "checklist_after": "16/16",
+    "newly_passing": [],
+    "regressions": [],
+    "still_unchecked": [],
+    "checklist_preservation": "byte-identical; no toggles needed",
+    "checklist_assessment": "Owner-mandated existing hosting is a scope constraint, not an agent-selected implementation. Remaining named execution prerequisites/plan mechanisms are not unresolved product choices.",
+    "hooks": "No extensions.yml: pre/post hooks skipped"
+  },
+  "sections_touched": [
+    "Clarifications",
+    "User Story 2 acceptance scenarios",
+    "User Story 5 acceptance scenarios",
+    "Edge Cases",
+    "Functional Requirements (FR-012, FR-014)",
+    "Measurable Outcomes (SC-004, SC-007)",
+    "Assumptions"
+  ],
+  "coverage": {
+    "Functional Scope & Behavior": "Clear",
+    "Domain & Data Model": "Resolved: installation-scoped blocking; exact retention/credential mechanics deferred to plan",
+    "Interaction & UX Flow": "Clear",
+    "Non-Functional Quality Attributes": "Resolved: owner moderation responsibility and one-working-day response; cost boundary; operational mechanisms deferred to plan",
+    "Integration & External Dependencies": "Deferred: existing PROD plan constraint fixed; inventory/capacity/resource discovery and account inputs in plan",
+    "Edge Cases & Failure Handling": "Resolved: reinstallation limitation and shared-plan/cost blockers",
+    "Constraints & Tradeoffs": "Resolved: DKK100 additional monthly spend with existing baseline separately recorded; mandatory plan reuse",
+    "Terminology & Consistency": "Clear",
+    "Completion Signals": "Clear",
+    "Misc / Placeholders": "Clear: no unresolved product-scope placeholders; execution inputs explicitly gated"
+  },
+  "deferred_to_plan": [
+    "Verify existing PROD plan identity, inventory, capacity and compatibility; actual resource data unavailable in specification phase.",
+    "Choose minimal moderation data retention/access lifecycle, installation credential design, monitoring and budget controls; required in plan before implementation by FR-015 and FR-012.",
+    "Collect real contacts, legal/account facts and physical-device evidence before dependent release actions."
+  ],
+  "limitations": [
+    "No Azure account or infrastructure inspection performed; one existing ASP.NET app is the owner's expectation, not verified fact.",
+    "100 DKK is applied to incremental recurring expense because owner mandates reuse of existing paid hosting; existing committed charges separately recorded as an explicit accounting assumption.",
+    "No runtime changes/builds/UI tests were needed or run for this documentation-only clarification.",
+    "No Apple access, upload, review submission, provisioning or production change."
+  ]
+}

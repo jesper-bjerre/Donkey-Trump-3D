@@ -1,0 +1,8 @@
+{
+  "git_base": "a47af91b5f6e9c9514613f7e55b3e593367116ab",
+  "git_branch": "main",
+  "before": {
+    "specs/002-app-store-release/spec.md": "8e3ce3673f9d1283fb411873d1ebe9319b8bce9acecf7ff71daadbdb76cbca84",
+    "specs/002-app-store-release/checklists/requirements.md": "112e887c83db5f79550d218f00381741da88d7834960bbe68901b283f23b6695"
+  }
+}

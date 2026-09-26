@@ -1,0 +1,1424 @@
+INDEPENDENT REVIEW OF COMPLETED SPECIFICATION CLARIFICATION
+Date: 2026-09-26. Author: OpenAI Codex; exact runtime model/reasoning metadata unavailable. Reviewer: Anthropic claude-opus-5-5, high. You did not implement or author this clarification. Use no tools, perform no writes and do not recursively request reviews. Independently inspect the source, change, owner answers, validation and coverage report below. This is a documentation-only speckit-clarify task, NOT implementation of the future release. Azure identifiers, physical device results, pricing/capacity checks and Apple account facts are gated future execution inputs, not prerequisites to complete this clarification.
+
+Return material actionable findings only, with stable ID/severity/file:line/impact/evidence. Check faithful integration of answers, contradictions, unsupported conclusions, undue expansion, missing material clarification and accurate checklist/coverage status. Ask for missing necessary context rather than inventing it. End with explicit APPROVE or BLOCKED and state whether you agree this clarification is complete enough for speckit-plan. If approved with no important issues, no ceremonial re-review is needed.
+
+Original feature: prepare English App Store metadata/media/build and saved Connect draft for this native 3D iPhone game. Owner already chose iPhone only, free in all eligible territories, owner submits to Apple review and later releases. Highscores: no login, client-reported scores, no deferred upload. Optional public-name moderation added in this release spec. Current request invokes speckit-clarify; at most 5 sequential material questions, save each answer to spec, validate quality checklist, hooks, completion coverage report. No code, deployment, Azure inspection or browser access requested/performed here.
+
+AUTHORITATIVE INTERACTIVE QUESTIONS/ANSWERS (Danish, in order):
+1. Question: Skal en udelukkelse fra highscore-listen fortsat gælde på samme iPhone, efter at spilleren har slettet og geninstalleret appen?
+A: Ja – blokeringen skal fortsætte på samme iPhone efter geninstallation.
+B: Nej – blokér kun den aktuelle installation; geninstallation kan ophæve blokeringen.
+Both options allow continued local gameplay. Owner answered: B.
+2. Question: Hvem skal behandle indberetninger om upassende highscore-navne efter udgivelsen?
+Explanation: Specifikationen kræver en ansvarlig, som reagerer inden for én arbejdsdag og kan fjerne navne og blokere misbrug.
+A: Mig som appejer. B: En anden person eller organisation, som jeg udpeger.
+Owner answered: A.
+3. Question: Hvad er dit maksimale månedlige budget for backend, lager og support-/privatlivssider?
+A: 100 kr./måned. B: 250 kr./måned. C: 500 kr./måned. All including VAT. Apple Developer membership/domain purchases excluded; actual solution/price to be verified in plan.
+Owner answered verbatim: A, Du skal bruge den eksisterende App Service Plan til PROD. Der burde kun køre en app (asp.net) i forvejen.
+Lead commentary explicitly explained the budget will be applied to incremental expense with existing PROD plan reused. Spec records that as an accounting interpretation of the already-paid shared plan, not a verbatim claim or observed bill. Existing baseline is recorded separately. No owner confirmation of actual hosted-app count or availability is invented. The Azure App Service Plan is now an explicit owner-mandated technical constraint; the agent did not choose a stack in clarify.
+
+Scope of completed changes: spec.md only product artifact changed. Clarifications Q/A + affected stories, edge cases, FR012/014, SC004/007, assumptions. Checklist remained byte-identical with 16/16 after re-evaluation; no markers changed. Validation.json is new acceptance evidence and included in candidate manifest. Review records/packets themselves excluded from identity. Historical reviews/manifests untouched. No runtime changes or tests needed. No provisioning, login, account write, app upload or review submission occurred.
+
+Checks actually executed: exactly one prerequisite --json --paths-only at clarification start, selected specs/002-app-store-release via feature pointer (real Git branch main); constitution/instructions loaded; no .specify/extensions.yml so pre/post hooks absent; 3 unique Q/A records, headings only add Clarifications/session; 24 unique FR and 8 unique SC, relative links resolve, no NEEDS CLARIFICATION markers, whitespace clean, existing checklist contents unchanged. Each accepted answer saved atomically and validated. Full validation/coverage report below. Lead classifies remaining exact retention policies, installation credentials, observability/budget mechanisms as plan design to be explicit before implementation; accounts/contact/resource identities as execution discovery. No unasked product choice is being hidden as a passing runtime requirement.
+
+Base Git: a47af91b5f6e9c9514613f7e55b3e593367116ab and captured pre-clarification worktree in base.json. Frozen final candidate manifest SHA256 b28272702773efbec280d5557b58156d51eb13f24f7e9a6acb390cab109b5414. Current changed documents and governing context are supplied in full with line numbers. The earlier feature's spec is background only; moderation is explicitly newly in scope in feature002.
+
+
+### base.json
+{
+  "git_base": "a47af91b5f6e9c9514613f7e55b3e593367116ab",
+  "git_branch": "main",
+  "before": {
+    "specs/002-app-store-release/spec.md": "8e3ce3673f9d1283fb411873d1ebe9319b8bce9acecf7ff71daadbdb76cbca84",
+    "specs/002-app-store-release/checklists/requirements.md": "112e887c83db5f79550d218f00381741da88d7834960bbe68901b283f23b6695"
+  }
+}
+
+
+### manifest.json
+{
+  "specs/002-app-store-release/spec.md": "fa51f192e4831ee6f623df685fc53c4e4ac0855a34d9e8c853db34c6a2f697dd",
+  "specs/002-app-store-release/checklists/requirements.md": "112e887c83db5f79550d218f00381741da88d7834960bbe68901b283f23b6695",
+  "specs/002-app-store-release/reviews/clarification-2026-09-26/validation.json": "f0d2c53514b35b42eb1d34696dea1e1f028957d548cd657ccd35fb360f185f94"
+}
+
+
+### context-manifest.json
+{
+  "AGENTS.md": "24f26a7f9d82431caa9f9de0863d92341c72c9a48c6e94e6f26d12d052fff192",
+  ".specify/memory/constitution.md": "48aad1c55de956264342aa88070cb3d9a21a3f0985f684f19ce77cc095b73129",
+  ".agents/skills/speckit-clarify/SKILL.md": "f6acfbc82c96c0d91b2429fd0b51ce7df7f94b003d1b73acc54470d48bcc455e",
+  "specs/001-global-highscores/spec.md": "33ce9ef12606b7f5a3c520e5b268d13d78faa43dc1b512d89c2efeba6d04ca92",
+  "specs/002-app-store-release/source-notes.md": "d97bcd99582df510ff13ab9966f3522522bcc57d98a840d2a939eb783c88cc7d"
+}
+
+
+### scoped.patch
+--- captured-before/specs/002-app-store-release/spec.md
++++ candidate/specs/002-app-store-release/spec.md
+@@ -9,6 +9,14 @@
+ **Status**: Specification; release preparation has not been performed. This document defines the work to plan and implement next.
+ 
+ **Input**: Prepare Donkey Trump 3D for the Apple App Store, create the required descriptions and images, and enter the information in App Store Connect using the owner's signed-in Chrome session. The owner initially requested only the final release action, then explicitly clarified that the owner will also submit the prepared version to Apple's review.
++
++## Clarifications
++
++### Session 2026-09-26
++
++- Q: Must a highscore publication block survive uninstalling and reinstalling the app on the same iPhone? → A: No. Block only the current app installation; reinstallation may reset the block. Local gameplay remains available.
++- Q: Who is responsible for handling reports of inappropriate highscore names after release? → A: The app owner handles reports, responds within one working day and is responsible for removing offending entries and blocking abusive app installations.
++- Q: What is the monthly operating budget for the backend, storage and support/privacy pages? → A: DKK 100 including VAT, excluding Apple Developer membership and domain purchases. Reuse the existing PROD App Service Plan; the owner expects that it currently hosts one ASP.NET app, which must be verified.
+ 
+ ## User Scenarios & Testing *(mandatory)*
+ 
+@@ -40,7 +48,7 @@
+ 
+ 1. **Given** a clean install and an update where an earlier build exists, **When** the player starts, completes and restarts runs, **Then** gameplay, intro, settings and personal best behave as documented in both landscape orientations; offline or slow highscores never prevent play.
+ 2. **Given** the live service and a qualifying run, **When** the player explicitly publishes a chosen name, **Then** the shared result appears as advertised; failure preserves the personal best without queuing a later upload or falsely confirming a save.
+-3. **Given** a prohibited name or a displayed entry reported as abusive, **When** the relevant safeguard is exercised, **Then** prohibited submissions are prevented, reports reach a responsible operator, offending entries can be removed and abusive participation can be blocked without introducing player accounts.
++3. **Given** a prohibited name or a displayed entry reported as abusive, **When** the relevant safeguard is exercised, **Then** prohibited submissions are prevented, reports reach the app owner for a response within one working day, offending entries can be removed and the offending app installation can be blocked from publishing further scores without introducing player accounts; local gameplay remains available.
+ 4. **Given** the shipped data flows and service operations, **When** a player opens support or privacy information, **Then** public usable pages identify a genuine contact and explain publication, retention and removal/reporting consistently with the store disclosures.
+ 5. **Given** a missing physical-device result, an unreachable service or an unresolved material release defect, **When** readiness is assessed, **Then** the candidate is reported as blocked with concrete evidence instead of being called ready because simulator tests passed.
+ 
+@@ -87,6 +95,7 @@
+ 1. **Given** an interrupted browser or upload session, **When** work resumes, **Then** saved values and processing state are checked first; ambiguous results do not create duplicate apps, builds or drafts.
+ 2. **Given** a candidate change after screenshots or tests, **When** the package is updated, **Then** affected media, disclosures and checks are reassessed and remain tied to the selected build.
+ 3. **Given** a blocked prerequisite, **When** status is recorded, **Then** local preparation, saved Connect data, upload, draft readiness, Apple submission and publication remain distinct, with a concrete next action for outstanding preparation.
++4. **Given** the existing PROD App Service Plan, **When** production preparation is validated, **Then** the actual plan and hosted apps are recorded, reuse fits the verified capacity and DKK 100/month additional-cost budget, and existing apps pass documented before/after availability checks. Any required plan change or budget increase remains a separate owner decision.
+ 
+ ### Edge Cases
+ 
+@@ -96,7 +105,9 @@
+ - Apple changes media/declaration requirements; files pass local checks but fail or reorder during remote processing.
+ - An upload times out but is already processing; a version/build number is already used; the selected build differs from the tested archive.
+ - The public service is unavailable, cold or misconfigured; a save acknowledgement is lost; screenshots promise features absent from the actual release.
++- The existing PROD App Service Plan cannot be uniquely identified, hosts more apps than expected, lacks compatible runtime/capacity, or the projected additional cost exceeds DKK 100/month including VAT. Verify actual shared resources and preserve their workloads; an unresolved constraint blocks provisioning, not independent release preparation.
+ - Public names contain abuse, impersonation or personal information; removal must not overwrite unrelated scores or reintroduce retired submissions.
++- A blocked player reinstalls the app. The block applies only to the previous installation and may reset; preventing this bypass is outside the agreed blocking scope. Ordinary play remains available while an installation is blocked.
+ - A public support/privacy page requires login or describes different data flows from the app, service, diagnostics or abuse-prevention controls.
+ - Export, trader, content-rights or territory answers require owner-only facts or an account-holder agreement. Unknowns block only dependent work while independent preparation continues.
+ - Connect changes its workflow so the next available button submits immediately. The owner's review-submission boundary still applies.
+@@ -117,9 +128,9 @@
+ - **FR-009**: Age ratings, content rights, export/encryption declarations, accessibility claims and applicable territory requirements MUST have a factual basis. Missing facts MUST be obtained before attestation; a desired rating or unchecked assumption is not evidence.
+ - **FR-010**: The release MUST be free, without purchases, advertising or subscriptions, in all territories whose applicable requirements can be fulfilled. Each excluded territory MUST have a recorded reason. Automatic inclusion of future territories MUST not bypass verification; pre-order MUST be disabled.
+ - **FR-011**: Preparation MUST produce, validate, upload and select a signed distribution candidate accepted for processing by Apple. The selected build MUST match the tested candidate, contain the intended icon and production configuration and exclude development-only behavior. Processing completion MUST be verified.
+-- **FR-012**: The advertised global top-100 service MUST be working in its real production environment before draft readiness. Establishing the minimal service and public pages is in scope; genuine resource ownership, region, cost constraints and addresses MUST be established before provisioning rather than invented.
++- **FR-012**: The advertised global top-100 service MUST be working in its real production environment before draft readiness. The backend MUST reuse the owner's existing PROD App Service Plan. Preparation MUST identify the actual subscription, resource group and plan, verify ownership/access, current hosted apps, runtime compatibility and available capacity, and preserve existing workloads. The owner's expectation of one existing ASP.NET app is an input to verify, not an established inventory. The game's additional recurring cost for backend, storage, support/privacy pages and necessary monitoring MUST fit within DKK 100 per month including VAT; the already-committed plan cost MUST be recorded separately. Apple Developer membership and domain purchases are excluded from this budget. Record the traffic/storage assumptions and cost estimate before provisioning. Creating a replacement/additional plan, changing the existing plan's tier or scale, or exceeding this budget requires a separate owner decision. If the existing plan cannot meet the requirements, report that concrete constraint without silently altering the shared plan or its apps.
+ - **FR-013**: Release acceptance MUST demonstrate online reading/publication, multiple-player persistence, honest unconfirmed-save handling and bounded failures while preserving offline play, local bests and no deferred uploads. An empty production address is not completion of the advertised feature.
+-- **FR-014**: Public-name safeguards MUST provide prevention of objectionable submissions, an in-app reporting route, operator removal, blocking of abusive participation and public contact information. A responsible operator, a response target of at most one working day and a demonstrated report-to-disposition flow MUST be established. These minimum safeguards extend the earlier highscore scope; player login, chat and a general social platform remain excluded.
++- **FR-014**: Public-name safeguards MUST provide prevention of objectionable submissions, an in-app reporting route, operator removal, blocking of abusive participation and public contact information. The app owner MUST be the responsible operator after release, handling reports and responding within at most one working day. Preparation MUST establish a genuine contact route to the owner and demonstrate the report-to-disposition flow, including the owner's ability to remove offending entries and block abusive app installations. Blocking MUST prevent further highscore publication by the current app installation, including under a different chosen name, while preserving local gameplay. Reinstallation MAY reset the block; player login and persistent identification across installations MUST NOT be required. These minimum safeguards extend the earlier highscore scope; player login, chat and a general social platform remain excluded.
+ - **FR-015**: Abuse-prevention changes MUST preserve anonymous play, ranking and shared-data integrity. Any added retained information MUST have a defined minimum purpose, retention and access boundary and appear in privacy disclosures. Removal MUST preserve unrelated entries and existing submission/failure guarantees.
+ - **FR-016**: The candidate MUST pass affected automated checks and relevant gameplay/highscore regressions. Physical iPhone 13 evidence MUST cover both-landscape touch, intro and silent-switch audio, in-game mute, haptics, lifecycle, larger text/VoiceOver for applicable controls and sustained play. Unperformed physical checks remain readiness blockers. The selected iPhone candidate MUST also receive an iPad compatibility-mode smoke check covering launch, landscape presentation, reachable touch controls and highscore/report/privacy flows; failures block readiness. A clearly identified simulator check is sufficient for this compatibility gate and MUST NOT be represented as native iPad support or physical-device evidence.
+ - **FR-017**: App Review information MUST include genuine reachable contact details and instructions to inspect the full game and highscore flow. The no-login experience MUST be explained without fabricated credentials or review-only behavior differing from the release.
+@@ -147,10 +158,10 @@
+ - **SC-001**: Every applicable required field and declaration is complete and verified, with zero placeholder identities, broken support/privacy links or unresolved submission-validation errors.
+ - **SC-002**: Every required iPhone screenshot set contains five correctly ordered accepted images; every image and listing claim matches the candidate, with zero debug artifacts, fabricated features or real-player personal information.
+ - **SC-003**: All required release journeys pass on the identified candidate, including physical iPhone checks, real online publication and service-failure play; no simulator result is counted as physical evidence.
+-- **SC-004**: The demonstrated public-name workflow prevents a prohibited submission, delivers a report to its operator, removes an offending entry without altering unrelated results and prevents the blocked participant from publishing again within the documented blocking scope.
++- **SC-004**: The demonstrated public-name workflow prevents a prohibited submission, delivers a report to the app owner and records the owner's response within one working day, removes an offending entry without altering unrelated results and rejects further submissions from the blocked app installation, including a changed public name, while allowing local gameplay. Survival of a block after uninstall/reinstall is not an acceptance requirement.
+ - **SC-005**: Reopening the store-management page shows the intended saved text, images and exact tested build, with no duplicate app or accidental changes to other versions.
+ - **SC-006**: The owner can submit the prepared version for review without supplying further copy, images, declarations or builds. There are zero agent-initiated review submissions or public releases; manual release is selected for later owner control.
+-- **SC-007**: After an interruption, the release record identifies completed work, external processing, remaining blockers and the next action without reconstructing materials or build identity from chat history.
++- **SC-007**: After an interruption, the release record identifies completed work, external processing, remaining blockers and the next action without reconstructing materials or build identity from chat history. It identifies the reused PROD plan and verified existing apps, records the existing cost baseline and an additional-cost estimate of at most DKK 100/month including VAT under stated usage assumptions, and retains before/after availability evidence for the existing apps.
+ - **SC-008**: Cold-launch checks show the complete supplied illustration without distortion or cut-off title/characters, followed by a reachable title menu and playable game, with no added waiting period or network requirement. The retained source matches the bundled cover, and any store composition distinguishes the illustration from actual gameplay.
+ 
+ ## Assumptions
+@@ -160,7 +171,7 @@
+ - English store and in-game copy follow the existing constitution; additional localization is not in scope. The existing game name and original parody identity remain unless a concrete rights or eligibility problem requires an explicit product decision. Games/Arcade is the category direction, subject to current store choices and truthful classification. No child-directed positioning is assumed.
+ - The original invocation created the specification and quality evidence. Apart from the explicitly authorized cover integration above, producing release assets, modifying the candidate, publishing pages/services and writing Connect data belong to the subsequent implementation of this specification.
+ - Highscores remain part of the release with anonymous/no-login play and no deferred uploads. Minimum public-name safeguards are expressly included in this release scope. No chat, player accounts, tracking, purchases or additional language is introduced.
+-- Public support/privacy pages and necessary production service setup are included. Real hosting ownership, cost constraints, contact details, copyright owner, signing access and legal/trader facts must be established before dependent actions. Secrets and private contact evidence must stay outside the repository.
++- Public support/privacy pages and necessary production service setup are included. The owner selected DKK 100/month including VAT and reuse of the existing PROD App Service Plan. Because this plan is already in use, budget accounting treats the DKK 100 as the game's additional recurring spend and records existing committed plan charges separately. This is a planning constraint, not a verified price or an automatic billing cap. The owner expects one existing ASP.NET app; actual inventory, ownership, capacity and resource identifiers remain unverified. Contact details, copyright owner, signing access and legal/trader facts must be established before dependent actions. Secrets and private contact evidence must stay outside the repository.
+ - The owner's signed-in Chrome session is the intended access route. Actual account access, permissions, app existence and saved values are unverified: browser initialization failed before connection in this specification session. No external reading, saving or submission is claimed.
+ - The project currently enables iPad. Account history and Apple's support constraints must be checked before narrowing distribution. If narrowing an existing release is prohibited, resolve that concrete decision rather than silently adding iPad scope or claiming success.
+ - Physical hardware, genuine declarations and owner-only account agreements cannot be fabricated or bypassed. Missing inputs are requested early and together after checking available evidence. The ready-to-submit outcome is achieved only after these prerequisites are fulfilled.
+
+
+### validation.json
+{
+  "date": "2026-09-26",
+  "task": "speckit-clarify / 002-app-store-release",
+  "questions_asked": 3,
+  "questions_answered": 3,
+  "answers": [
+    {
+      "id": "ban_reinstall_scope",
+      "answer": "B",
+      "meaning": "Current app installation only; reinstall may reset the block; local gameplay remains available.",
+      "integrated": true
+    },
+    {
+      "id": "moderation_owner",
+      "answer": "A",
+      "meaning": "App owner handles reports, responds within one working day, removes offending entries and blocks abusive installations.",
+      "integrated": true
+    },
+    {
+      "id": "monthly_operating_budget",
+      "answer": "A plus mandatory existing PROD App Service Plan reuse",
+      "user_text": "A, Du skal bruge den eksisterende App Service Plan til PROD. Der burde kun køre en app (asp.net) i forvejen.",
+      "meaning": "DKK100/month incl VAT; reuse existing PROD plan; expected one ASP.NET app is unverified. Incremental budget accounting is an explicit planning interpretation of reuse, with existing fixed cost separate.",
+      "integrated": true
+    }
+  ],
+  "checks": {
+    "one_QA_per_answer": "PASS",
+    "allowed_new_headings_only": "PASS",
+    "24_unique_FR_and_8_unique_SC": "PASS",
+    "no_clarification_placeholders": "PASS",
+    "local_links": "PASS (5 references)",
+    "whitespace": "PASS",
+    "terminology_and_no_superseded_choices": "PASS (lead review)",
+    "checklist_before": "16/16",
+    "checklist_after": "16/16",
+    "newly_passing": [],
+    "regressions": [],
+    "still_unchecked": [],
+    "checklist_preservation": "byte-identical; no toggles needed",
+    "checklist_assessment": "Owner-mandated existing hosting is a scope constraint, not an agent-selected implementation. Remaining named execution prerequisites/plan mechanisms are not unresolved product choices.",
+    "hooks": "No extensions.yml: pre/post hooks skipped"
+  },
+  "sections_touched": [
+    "Clarifications",
+    "User Story 2 acceptance scenarios",
+    "User Story 5 acceptance scenarios",
+    "Edge Cases",
+    "Functional Requirements (FR-012, FR-014)",
+    "Measurable Outcomes (SC-004, SC-007)",
+    "Assumptions"
+  ],
+  "coverage": {
+    "Functional Scope & Behavior": "Clear",
+    "Domain & Data Model": "Resolved: installation-scoped blocking; exact retention/credential mechanics deferred to plan",
+    "Interaction & UX Flow": "Clear",
+    "Non-Functional Quality Attributes": "Resolved: owner moderation responsibility and one-working-day response; cost boundary; operational mechanisms deferred to plan",
+    "Integration & External Dependencies": "Deferred: existing PROD plan constraint fixed; inventory/capacity/resource discovery and account inputs in plan",
+    "Edge Cases & Failure Handling": "Resolved: reinstallation limitation and shared-plan/cost blockers",
+    "Constraints & Tradeoffs": "Resolved: DKK100 additional monthly spend with existing baseline separately recorded; mandatory plan reuse",
+    "Terminology & Consistency": "Clear",
+    "Completion Signals": "Clear",
+    "Misc / Placeholders": "Clear: no unresolved product-scope placeholders; execution inputs explicitly gated"
+  },
+  "deferred_to_plan": [
+    "Verify existing PROD plan identity, inventory, capacity and compatibility; actual resource data unavailable in specification phase.",
+    "Choose minimal moderation data retention/access lifecycle, installation credential design, monitoring and budget controls; required in plan before implementation by FR-015 and FR-012.",
+    "Collect real contacts, legal/account facts and physical-device evidence before dependent release actions."
+  ],
+  "limitations": [
+    "No Azure account or infrastructure inspection performed; one existing ASP.NET app is the owner's expectation, not verified fact.",
+    "100 DKK is applied to incremental recurring expense because owner mandates reuse of existing paid hosting; existing committed charges separately recorded as an explicit accounting assumption.",
+    "No runtime changes/builds/UI tests were needed or run for this documentation-only clarification.",
+    "No Apple access, upload, review submission, provisioning or production change."
+  ]
+}
+
+
+### FILE AGENTS.md
+1: # Repository agent instructions
+2: 
+3: These instructions apply to the entire repository and to both implementation and
+4: analysis work. Follow the user's authorized scope, the applicable skill, and the
+5: [project constitution](.specify/memory/constitution.md). Read the current feature's
+6: specification, plan, tasks and contracts when relevant. Preserve unrelated changes.
+7: This workflow supplements the constitution; it does not amend or weaken it.
+8: 
+9: ## Required independent cross-vendor review
+10: 
+11: Before declaring an authorized implementation or substantive review/analysis
+12: complete, obtain an independent review from an LLM supplied by a different model
+13: vendor. This includes code reviews and Spec Kit analysis reports, including a
+14: report that finds no problems. The reviewer must not have participated in the
+15: implementation or authored the analysis being reviewed.
+16: 
+17: Perform preparation, required checks, review, discussion, authorized fixes and
+18: focused re-review autonomously within the authorized task. Do not ask the owner to
+19: adjudicate review findings or to repeat authorization already given.
+20: 
+21: Ordinary questions, status reports and standalone instruction edits do not require
+22: this review unless explicitly requested. Creating or changing this instruction
+23: policy is a standalone instruction edit, not a request to run a feature review.
+24: Do not retroactively label previous work as independently reviewed.
+25: 
+26: The lead agent owns this workflow. An agent assigned only as the independent
+27: reviewer returns findings and a verdict to the lead; it must not recursively launch
+28: another reviewer. Same-vendor helpers do not satisfy the cross-vendor requirement.
+29: 
+30: ## When review starts
+31: 
+32: ### Implementation or authorized remediation
+33: 
+34: 1. Finish the authorized implementation and gather all required inputs.
+35: 2. Run the relevant checks and resolve known implementation failures.
+36: 3. Freeze the review scope and obtain independent review of the finished change
+37:    and its actual acceptance evidence.
+38: 4. Discuss important findings, fix confirmed problems within scope, rerun affected
+39:    checks, and obtain focused re-review until both agents explicitly agree.
+40: 
+41: If missing inputs, access, decisions or an unavailable environment prevent finishing
+42: the implementation or running required checks, continue independent work within
+43: scope, then report the concrete blocker. Do not review unfinished drafts,
+44: provisional implementations or blocker records as completed work. Resume review
+45: only after the implementation and check prerequisites are satisfied.
+46: 
+47: ### Code review, Spec Kit analysis and other read-only assessments
+48: 
+49: 1. Load the required artifacts and finish the requested assessment, including
+50:    prerequisite, coverage, dependency, consistency and constitution checks that
+51:    apply. A completed assessment of specified documents does not require the future
+52:    implementation to exist or its future tests to pass.
+53: 2. Give the independent reviewer the original task, governing artifacts and frozen
+54:    source revision. Have it inspect the source independently and then assess the
+55:    proposed report for unsupported findings, missed material issues, incorrect
+56:    severity, coverage errors and recommendations that exceed scope.
+57: 3. Discuss each important finding against exact artifact locations and evidence.
+58:    Correct the report, withdraw disproven findings with a reason, and include
+59:    confirmed omissions. Do not treat an earlier analyst's claim as evidence.
+60: 4. Obtain focused re-review of the final report and explicit agreement on every
+61:    important finding's validity, severity and disposition, including a no-findings
+62:    verdict when applicable.
+63: 
+64: Preserve the invoked skill's read-only boundary. For `speckit-analyze`, do not edit
+65: code, specifications, plans, tasks or repository review records. Keep the review
+66: packet, discussion and evidence in conversation/tool output. Obtain authorization
+67: before artifact remediation unless that remediation is already explicitly in
+68: scope. Consensus on an analysis report does not itself authorize fixes.
+69: 
+70: A completed analysis may contain confirmed HIGH or CRITICAL problems. Report
+71: separately whether the agents agree on the assessment and whether the underlying
+72: implementation may proceed. Agreeing that a problem exists does not resolve it.
+73: Constitution conflicts remain CRITICAL; do not downgrade them to obtain consensus.
+74: Missing assessment inputs block the affected conclusions; do not fabricate them.
+75: 
+76: ## Reviewer selection and verification
+77: 
+78: Select by the underlying model vendor, not the CLI, product or agent display name.
+79: Use the implementer's vendor for implementation and the analyst's vendor for an
+80: assessment. Record the actual author configuration and reviewer independence.
+81: 
+82: | Author vendor | Required reviewer route | Specified fallback |
+83: |---|---|---|
+84: | Anthropic | Codex, model `gpt-6-astra`, reasoning `xhigh` | None |
+85: | Any other vendor | Claude Code, model `claude-opus-5-5` (Opus 5.5), reasoning `high` | GitHub Copilot with `--model claude-opus-5.5 --reasoning-effort high`; account access unverified |
+86: 
+87: Use the full provider-specific identifier. Anthropic's
+88: [canonical Opus 5.5 ID](https://platform.claude.com/docs/en/models/opus-5-5/overview)
+89: is `claude-opus-5-5`; the dotted `claude-opus-5.5` did not work in Claude Code.
+90: Do not transfer an identifier between providers or use the moving `opus` alias.
+91: 
+92: Before a real review, verify authenticated access to the required tool, exact model
+93: and reasoning setting using a harmless probe without repository data. Inspect the
+94: installed tool's supported invocation syntax; do not guess unsupported flags.
+95: Use explicit model and effort settings for both the probe and every review round.
+96: Record the tool/version, requested configuration and available provider/session
+97: metadata establishing the configuration actually used. A model's own assertion of
+98: its identity is not verification. Keep credentials out of commands, logs and chat.
+99: 
+100: Published support, installed CLIs, Auto routing candidates, account login alone and
+101: an accepted command line do not establish exact model/effort access. If the route
+102: cannot be verified or used, try only its specified fallback with the same checks.
+103: If neither required route nor specified fallback works, report review as blocked.
+104: Do not silently substitute another model, Auto, default reasoning or self-review.
+105: Never relabel earlier reviews as evidence for a different configuration.
+106: 
+107: ### Verified Claude Code procedure
+108: 
+109: The [2026-09-26 review record](specs/001-global-highscores/review-remediation.md)
+110: records a successful independent review with Claude Code 2.1.283, model
+111: `claude-opus-5-5`, and explicit `high` effort. This is a reusable invocation,
+112: not a permanent guarantee of account access. Check `claude --version` and
+113: `claude --help` when starting a new workflow or after a tool upgrade.
+114: 
+115: Run from an isolated temporary directory. Use this shell helper to keep the probe
+116: and review configuration identical; it accepts its prompt on stdin:
+117: 
+118: ```sh
+119: dt3d_review() {
+120:   CLAUDE_CODE_EFFORT_LEVEL=high claude \
+121:     --safe-mode --print --model claude-opus-5-5 --effort high \
+122:     --tools '' --strict-mcp-config --mcp-config '{"mcpServers":{}}' \
+123:     --no-session-persistence "$@"
+124: }
+125: ```
+126: 
+127: 1. Send only `Reply exactly REVIEW_ROUTE_OK. Do not use any tools.` with
+128:    `--output-format text`. Require successful execution and inspect both stdout
+129:    and stderr for an effort-limit warning. An inherited effort environment setting
+130:    is overridden explicitly by the helper.
+131: 2. Send the same harmless prompt with `--output-format stream-json --verbose`.
+132:    Require exit 0, a successful final result, and an actual assistant response and
+133:    nonzero provider usage identifying `claude-opus-5-5`. Record the session ID,
+134:    tool version, provider and canonical model. Initialization's requested model
+135:    alone, `<synthetic>` error responses and empty usage do not establish access.
+136: 3. Only after both checks pass, use the same helper for the prepared review packet:
+137: 
+138:    ```sh
+139:    dt3d_review --output-format stream-json --verbose \
+140:      < review-packet.txt > review.stdout.jsonl 2> review.stderr.txt
+141:    ```
+142: 
+143:    Inspect the actual model and completion status again for every review round.
+144:    Preserve the reviewer's final text and sanitized configuration/result metadata;
+145:    raw debug logs, credentials and hidden reasoning do not belong in the record.
+146: 
+147: [Claude Code's model configuration documentation](https://code.claude.com/docs/en/model-config)
+148: explains that effort caps warn in plain-text runs but can apply silently with JSON
+149: output. The provider response does not separately attest to effective effort:
+150: record the explicit settings, successful probes and warning check accurately.
+151: `per_turn_effort_active: true` alone does not prove `high`. If a lower cap or
+152: unresolved configuration prevents verifying the required setting, use the fallback
+153: rules above; do not call that a verified `high` review.
+154: 
+155: Safe mode disables automatic instruction loading, so include current repository
+156: instructions in the packet explicitly. Keep tools and MCP disabled for a complete
+157: text-based review packet. Do not use `--bare` for the subscription-authenticated
+158: route: it skips OAuth/keychain authentication. The installed CLI help documents
+159: both modes; no credential or global account changes are needed for this procedure.
+160: 
+161: ### Access failures and efficient resumption
+162: 
+163: - Reuse successful preflight evidence for focused rounds in the same uninterrupted
+164:   workflow while tool, account, provider, model and effort configuration remain
+165:   unchanged. Still inspect each round's actual result. Revalidate after an access
+166:   error, configuration change or later resumption; old evidence is not current access.
+167: - Distinguish syntax errors, incorrect model IDs, authentication/subscription errors
+168:   and actual model unavailability. Resolve a confirmed spelling or flag error before
+169:   declaring the required route unavailable. Consult official documentation when
+170:   needed; do not guess another model or reinstall a working CLI for an access error.
+171: - The Copilot 1.0.88 probe rejected `claude-opus-5.5` on 2026-09-26. Treat that as
+172:   dated failed evidence, not a working fallback or proof of permanent unavailability.
+173:   Verify its exact Opus 5.5 route if needed; do not install or probe Copilot while
+174:   the primary route works. Preserve previous failures when a later attempt succeeds.
+175: - Allow minutes for substantive review. Yield or poll at intervals of roughly
+176:   30 seconds and keep the user informed; progress without final text is not itself
+177:   a hang. Use a bounded overall timeout and do not launch duplicate review sessions.
+178: 
+179: ## Review inputs and revision identity
+180: 
+181: Give the reviewer only the relevant, authorized material:
+182: 
+183: - The user task, scope, acceptance criteria and review mode: implementation or
+184:   assessment. Identify the lead and reviewer roles explicitly.
+185: - Applicable repository instructions, constitution, contracts and constraints.
+186: - The exact base and candidate revision, scoped diff, relevant surrounding source
+187:   and the list of changed files. For an assessment, also supply the reviewed report
+188:   and identify which source artifacts it evaluates, even when there is no diff.
+189: - Checks actually run, their commands/results, acceptance evidence, limitations
+190:   and unresolved prerequisites. Label planned checks as planned.
+191: 
+192: Do not commit merely to create review identity. For an uncommitted worktree, record
+193: the base commit plus a SHA-256 manifest of the in-scope file contents and the scoped
+194: staged/unstaged diff. Include relevant untracked files explicitly: `git diff` alone
+195: does not include them. Give the reviewer access to those exact contents. For a
+196: conversation-only report, retain its exact text and identify the reviewed version.
+197: 
+198: Capture pre-edit copies of relevant untracked files before remediation, so the
+199: before/after patch is reproducible. Identify that captured base separately from the
+200: Git commit; never imply an untracked file existed in the committed base.
+201: 
+202: Keep the candidate stable during a review round. If in-scope contents change,
+203: refresh the diff/manifest and evidence and obtain focused re-review of that new
+204: revision. Exclude the review record itself from the reviewed payload identity to
+205: avoid record-only changes invalidating their own evidence. Do not exclude changed
+206: source, contracts, instructions or acceptance evidence on that basis.
+207: 
+208: Respect restrictions on secrets, protected data and excluded content when preparing
+209: inputs. Do not send the whole repository by default. State any material access or
+210: redaction limitation; do not claim inspection of unavailable evidence. Keep the
+211: reviewer read-only and let the lead apply authorized changes.
+212: 
+213: Keep the packet complete for the authorized scope and concise: include full changed
+214: artifacts or sufficient surrounding code, governing requirements and directly
+215: relevant dependencies. Avoid duplicating unrelated feature documents or dumping
+216: the repository. Number source lines and provide the actual check output or a
+217: clearly attributed summary. Ask for each original finding's disposition, any new
+218: material findings, an explicit verdict and limitations. The reviewer must report
+219: missing necessary context before reaching a conclusion.
+220: 
+221: ## Code Review Rules
+222: 
+223: The reviewer must inspect the implementation or artifacts and evidence independently.
+224: Focus on material correctness, security, data integrity, regressions and unmet
+225: acceptance criteria. For analyses, also check false positives, material omissions,
+226: traceability and whether the stated conclusion follows from the evidence.
+227: 
+228: Each finding must have a stable ID, severity, affected file/artifact and location,
+229: concrete impact, and a requirement or supporting evidence. Provide a reproduction
+230: or counterexample when useful. Exclude cosmetic nits, speculative concerns and
+231: optional refactoring unless they cause a material problem. Do not expand scope.
+232: 
+233: Distinguish observed defects from uncertainty, future validation from executed
+234: checks, and implementation completeness from release readiness. In this project,
+235: pay particular attention to non-blocking iPhone gameplay, thread ownership,
+236: conditional Blob writes, ambiguous save acknowledgements, no deferred uploads,
+237: public-name consent and accurate physical-device versus simulator evidence.
+238: 
+239: For Spec Kit, trace acceptance scenarios through implementation tasks, dependencies
+240: and validation gates; requirement-ID coverage alone does not prove scenario coverage.
+241: Distinguish an initial slice, internal MVP, complete story and release acceptance.
+242: Check SDK/configuration scope against documented command working directories.
+243: Separate injected fixtures from real integration targets, and identify the enforcing
+244: component and repeatable checks for any test-mode exception or production boundary.
+245: 
+246: ## Findings, fixes and consensus
+247: 
+248: For each important finding, the lead and reviewer must:
+249: 
+250: 1. Agree whether it identifies a material problem, citing code/artifact locations,
+251:    the governing requirement and check evidence. Track disagreement explicitly.
+252: 2. Fix confirmed problems when remediation is authorized, or document the evidence
+253:    supporting dismissal. In a read-only assessment, correct the report and retain
+254:    confirmed source problems as findings; do not change the underlying artifacts.
+255: 3. Rerun checks affected by authorized changes. Recheck corrected analysis claims
+256:    against their sources; unrelated application builds are not analysis evidence.
+257: 4. Have the reviewer assess the final changes/report and each disposition.
+258: 
+259: Continue focused re-review until no important review disagreements remain and both
+260: agents explicitly agree on the final verdict. For implementation, no confirmed
+261: important in-scope problem may remain unfixed. For assessment, consensus concerns
+262: the report's accuracy, completeness within scope and agreed findings, not whether
+263: all defects in the assessed artifacts have already been repaired.
+264: 
+265: If the first review explicitly approves the unchanged candidate with no material
+266: unresolved findings, the lead's explicit agreement completes consensus. Do not
+267: request a ceremonial second review. Record optional suggestions as non-blocking;
+268: they do not require implementation, extra review rounds or owner adjudication.
+269: Assess materiality against requirements and evidence, not severity labels alone.
+270: 
+271: When important findings require changes, rerun affected checks and send a focused
+272: packet containing the prior verdict, finding IDs, lead responses, updated diff,
+273: final content identity and new evidence. Retain the relevant governing context;
+274: do not restart unrelated analysis or rerun unaffected checks without a reason.
+275: The no-session-persistence invocation cannot be resumed: supply the prior discussion
+276: explicitly to a fresh independent reviewer invocation, using the same required
+277: model and effort. Missing context is not agreement.
+278: 
+279: Do not obtain agreement by weakening requirements, suppressing findings, counting
+280: silence as approval or inventing evidence. If a material disagreement cannot be
+281: resolved, preserve both positions and their evidence, report review as blocked,
+282: and do not claim completion or ask the owner to adjudicate the finding. A genuine
+283: missing product decision/input may be reported as a prerequisite, not disguised
+284: as a request for the owner to choose between reviewers.
+285: 
+286: ## Evidence and completion
+287: 
+288: For tasks permitting writes, use the task's existing evidence document or a scoped
+289: repository review record. The [review record template](.agents/templates/review-record.md)
+290: provides a reusable structure; placeholders are never evidence. For read-only
+291: tasks, include equivalent information in the conversation report without file writes.
+292: 
+293: Record:
+294: 
+295: - Lead/reviewer tools, model IDs, vendors, reasoning settings, independence and
+296:   authenticated configuration verification; record unavailable metadata honestly.
+297: - Reviewed base/final revisions, scoped diff and manifests or report version.
+298: - Important findings, evidence, discussion and agreed dispositions.
+299: - Checks actually run and their results; distinguish planned or unavailable checks.
+300: - The reviewer's final verdict, the lead's explicit agreement and limitations.
+301: 
+302: Keep historical review records and manifests tied to the content actually reviewed.
+303: A later standalone policy edit does not rewrite those hashes, retroactively change
+304: the verdict or claim that the new instructions were reviewed. For documentation-only
+305: remediation, validate document consistency, links and applicable examples; preserve
+306: the distinction between passing document checks and unexecuted feature/runtime tests.
+307: 
+308: Declare implementation complete only when the authorized work is finished, required
+309: checks pass and independent review reaches consensus. Declare an assessment
+310: complete only when its required checks and independent review reach consensus;
+311: separately list confirmed source defects and implementation/release blockers.
+312: 
+313: Agent consensus completes this review without an additional owner review handoff.
+314: Existing human approvals for protected merges, releases, production changes or
+315: other controlled actions still apply. Review does not authorize additional scope.
+316: Finish with a concise completion or blocker summary and a reference to the evidence.
+
+### FILE .specify/memory/constitution.md
+1: # Donkey Trump 3D Constitution
+2: 
+3: ## Core Principles
+4: 
+5: ### I. Native iPhone Play Comes First
+6: 
+7: The product MUST remain a native 3D arcade game with iPhone as its primary acceptance target.
+8: Starting, restarting and playing installed game content MUST work without a backend connection.
+9: Optional online features MUST load asynchronously, have finite user-visible deadlines, and leave
+10: navigation usable while loading or failing. A late response MUST NOT interrupt a newer game or
+11: change a different run's result. Network or storage work MUST NOT block the render loop or UI thread.
+12: 
+13: New or changed player-facing screens MUST work in landscape with safe areas, readable text and
+14: reachable actions. Applicable menu/list controls MUST support VoiceOver and larger text. Changes
+15: MUST preserve the existing Reduce Motion, sound and haptics settings unless the feature explicitly
+16: changes their behaviour. These rules keep short play sessions usable on the baseline iPhone.
+17: 
+18: ### II. Simple Components and Explicit Ownership
+19: 
+20: Gameplay rules, scoring, collision logic and run transitions MUST remain testable independently of
+21: SceneKit, SwiftUI and networking. Rendering presents simulation state; UI presents player actions
+22: and results. Cross-thread state transfers MUST use snapshots or an explicit synchronization boundary;
+23: new UI state MUST have a defined main-thread/main-actor owner.
+24: 
+25: The backend default is one small ASP.NET Core service in `src/backend`, using built-in platform
+26: facilities and a separate test project when needed. Additional services, stores, frameworks or
+27: architectural layers MUST have a feature-level justification explaining the requirement they solve
+28: and why the existing structure is insufficient. Package versions and runtime baselines belong in
+29: project files and feature plans, rather than being frozen permanently in this constitution.
+30: 
+31: Each state has a clear owner: the app owns local gameplay and its personal best; the backend owns
+32: validation, ordering and persistence of shared rankings. Accepting a client-reported score MUST NOT
+33: be described as proof of genuine gameplay. Simplicity does not remove these ownership boundaries.
+34: 
+35: ### III. Correct Shared Data and Bounded Failures
+36: 
+37: Shared read-modify-write state MUST use storage-enforced concurrency control that works across
+38: multiple service instances. An in-process lock alone is insufficient. A conflict retry MUST read
+39: current state and recompute the result; unconditional overwrite MUST NOT be a fallback. Duplicate
+40: submissions MUST use a stable result identity, with the supported deduplication scope documented.
+41: 
+42: Remote operations MUST define deadlines, cancellation behaviour, retry conditions and finite retry
+43: limits. A potentially committed write with a lost acknowledgement MUST be reported as unconfirmed;
+44: retry behaviour MUST NOT imply that a failed response proves no save occurred. Missing, corrupt or
+45: unavailable storage MUST NOT silently become an empty replacement. Tests MUST cover these distinctions
+46: when shared persistence is introduced or changed.
+47: 
+48: Local personal-best data MUST survive remote failures. Cached results MUST be identifiable as stale
+49: and MUST NOT establish fresh qualification or confirmed publication. For the agreed highscore v1,
+50: a failed qualification or submission MUST NOT create an automatic, deferred or next-launch upload.
+51: 
+52: ### IV. Original Content and Deliberate Data Use
+53: 
+54: Game models, textures, animation and audio MUST remain original project material or have documented
+55: permission compatible with their use. Copied Nintendo/Donkey Kong assets MUST NOT replace the
+56: project's procedural characters or synthesized soundtrack. References to the original game's feel
+57: are design inspiration, not authorization to copy its assets. Player copy MUST preserve the original
+58: parody/no-affiliation description.
+59: 
+60: Public name/score publication MUST require an explicit player action and explain what is public.
+61: Data collection and logs MUST be limited to the feature's documented purpose; diagnostics MUST NOT
+62: record secrets, full submission bodies or player names. Storage credentials MUST stay out of the
+63: app, repository and logs. Public service traffic MUST use HTTPS; local development exceptions MUST
+64: remain isolated from release configuration. Azure-hosted storage access MUST use managed identity
+65: with permissions scoped to the required data resources.
+66: 
+67: Privacy/help copy MUST match implemented data flows. A new account, analytics, advertising or
+68: tracking capability MUST be an explicit product-scope change, never an incidental dependency.
+69: 
+70: ### V. Evidence Before Completion Claims
+71: 
+72: Changed gameplay rules, persistence, concurrency, retry and cancellation behaviour MUST have
+73: repeatable checks for their observable outcomes and relevant failure cases. Use deterministic
+74: inputs, clocks or service/storage substitutes where timing and randomness would hide defects.
+75: Cross-component contracts MUST be checked at their boundaries; a test that only mirrors an
+76: implementation detail is not sufficient evidence for the player's requirement.
+77: 
+78: Verification MUST be proportional to the change. Run the affected build/tests and relevant existing
+79: regression checks; documentation-only edits need document validation, not an unrelated full build.
+80: Device-dependent claims, including physical silent-switch behaviour, touch usability and sustained
+81: performance, MUST be backed by checks on the relevant physical device before release acceptance.
+82: A simulator pass MUST NOT be presented as physical-device evidence.
+83: 
+84: Reports and documentation MUST distinguish planned, implemented, tested and deployed behaviour,
+85: identify what was actually checked, and record material limitations. Test instructions or a scaffold
+86: MUST NOT be reported as a passing feature. Historical results MUST retain their date/context rather
+87: than silently becoming evidence for a newer build.
+88: 
+89: ## Product and Technology Boundaries
+90: 
+91: - The current app baseline is Swift, SceneKit and SwiftUI, iOS 26+, landscape, with iPhone 13 as the
+92:   reference device for acceptance. iPad is enabled in the project but needs its own evidence before
+93:   iPad release-readiness claims. A platform or rendering-engine change requires an explicit design
+94:   decision and appropriate regression coverage.
+95: - Game content remains bundled for offline play. The imported 2D/browser project is a reference,
+96:   not the deployment architecture. Player-facing copy and repository product documentation remain
+97:   in English unless localization is explicitly scoped.
+98: - In-game Sound controls game audio. With Sound enabled and audible output volume, physical silent
+99:   mode MUST NOT suppress it; the in-game mute setting MUST silence active game audio. Intro skip or
+100:   exit MUST stop intro audio without playing queued effects afterward.
+101: - The agreed online extension is a global all-time top 100 of completed runs, without login or
+102:   server-verified replays. Failed publication leaves the local personal best; no offline submission
+103:   queue is in scope. Exact tie, name, scrolling, timeout and endpoint rules belong in its feature spec
+104:   and contracts, not as duplicated constants here.
+105: - The initial backend design uses ASP.NET Core Minimal APIs and private Azure Blob Storage with
+106:   conditional writes. Hosting and storage choices MUST document expected traffic, contention and
+107:   running-cost tradeoffs. Use supported stable platform releases and serviced production runtimes;
+108:   adding infrastructure requires a concrete feature or measured operational need.
+109: - Accounts, online multiplayer, cloud-saved runs, purchases, advertising and extra languages are not
+110:   implicitly authorized by this baseline. They require their own explicit feature scope. Release
+111:   channel, cloud resource identifiers and organizational ownership MUST use real supplied values.
+112: 
+113: ## Development Workflow and Quality Gates
+114: 
+115: For features managed through Spec Kit, the specification MUST state player outcomes, failure cases,
+116: measurable acceptance criteria and explicit scope decisions. Clarification MUST address meaningful
+117: unknowns without asking the user to reconfirm decisions already made. The plan MUST record a
+118: Constitution Check against the current version before detailed design and recheck it after design.
+119: 
+120: The task list MUST map buildable requirements to concrete implementation and validation work with
+121: correct dependency order. Cross-artifact analysis requires a complete task list; missing artifacts
+122: MUST be reported rather than invented. A principle conflict MUST be resolved before implementation
+123: through compliant design or an explicit constitution amendment, not by silently weakening the rule.
+124: 
+125: Implementation completion MUST include the required checks for the changed scope and documentation
+126: updates describing actual behaviour. Release readiness additionally requires the selected simulator
+127: and physical-device evidence, valid configuration/credentials outside source control, and a recorded
+128: release/recovery procedure for the real target. A local build, commit or push does not itself establish
+129: that an app or service was published.
+130: 
+131: The existing [product specification](../../docs/prd_spec.md),
+132: [architecture](../../docs/architecture_options.md), [backlog](../../docs/backlog.md) and
+133: [release runbook](../../docs/production-smoke-and-rollback.md) provide the baseline. Feature-specific
+134: requirements and contracts extend it explicitly. Existing work and unrelated user changes MUST be
+135: preserved when applying a scoped change.
+136: 
+137: ## Governance
+138: 
+139: This is the first adopted project constitution, version 1.0.0, established on 2026-09-26 at the user's
+140: request. It governs cross-cutting project decisions; feature specifications define product detail,
+141: plans define design, and tasks define execution. Explicit user instructions remain authoritative.
+142: Routine work already authorized within an agreed scope does not require repeated permission.
+143: 
+144: An amendment MUST state the intended rule change, its rationale, affected artifacts and any migration
+145: or validation work. Update this file, its version and Last Amended date, and include a temporary Sync
+146: Impact Report for review. Remove that scratch report before committing the amended constitution.
+147: Preserve the original Ratified date. A governance conflict requires a deliberate amendment; changing
+148: an unrelated plan or interpreting a placeholder example as policy is not an amendment.
+149: 
+150: Version changes use semantic versioning: MAJOR for incompatible principle removal or redefinition,
+151: MINOR for new principles or materially expanded guidance, PATCH for wording corrections that do not
+152: change obligations. First adoption starts at 1.0.0. Every feature plan and pre-implementation review
+153: MUST use the current version; existing plans with obsolete governance claims MUST be reconciled when
+154: that feature's artifacts are next updated, before relying on their old gate result.
+155: 
+156: MUST and MUST NOT are requirements. A compliance review MUST cite applicable principles and the
+157: relevant design or verification evidence; it MUST report unmet requirements and cannot waive them by
+158: marking a checklist complete. Adoption of these rules does not assert that all existing code or
+159: unreleased features have already passed their future implementation and release gates.
+160: 
+161: **Version**: 1.0.0 | **Ratified**: 2026-09-26 | **Last Amended**: 2026-09-26
+
+### FILE .agents/skills/speckit-clarify/SKILL.md
+1: ---
+2: name: "speckit-clarify"
+3: description: "Identify underspecified areas in the current feature spec by asking up to 5 highly targeted clarification questions and encoding answers back into the spec."
+4: compatibility: "Requires spec-kit project structure with .specify/ directory"
+5: metadata:
+6:   author: "github-spec-kit"
+7:   source: "templates/commands/clarify.md"
+8: ---
+9: 
+10: 
+11: ## User Input
+12: 
+13: ```text
+14: $ARGUMENTS
+15: ```
+16: 
+17: You **MUST** consider the user input before proceeding (if not empty).
+18: 
+19: ## Pre-Execution Checks
+20: 
+21: **Check for extension hooks (before clarification)**:
+22: - Check if `.specify/extensions.yml` exists in the project root.
+23: - If it exists, read it and look for entries under the `hooks.before_clarify` key
+24: - If the YAML cannot be parsed or is invalid, do not skip silently: tell the user that `.specify/extensions.yml` could not be read (include the parser error) and that no hooks were checked, including any mandatory (`optional: false`) hooks registered there, then continue normally
+25: - Filter out hooks where `enabled` is explicitly `false`. Treat hooks without an `enabled` field as enabled by default.
+26: - For each remaining hook, do **not** attempt to interpret or evaluate hook `condition` expressions:
+27:   - If the hook has no `condition` field, or it is null/empty, treat the hook as executable
+28:   - If the hook defines a non-empty `condition`, skip the hook and leave condition evaluation to the HookExecutor implementation
+29: - When constructing command invocations from hook command names, replace dots (`.`) with hyphens (`-`). For example, `speckit.git.commit` → `$speckit-git-commit`.
+30: - For each executable hook, output the following based on its `optional` flag:
+31:   - **Optional hook** (`optional: true`):
+32:     ```
+33:     ## Extension Hooks
+34: 
+35:     **Optional Pre-Hook**: {extension}
+36:     Command: `/{command}`
+37:     Description: {description}
+38: 
+39:     Prompt: {prompt}
+40:     To execute: `/{command}`
+41:     ```
+42:   - **Mandatory hook** (`optional: false`):
+43:     ```
+44:     ## Extension Hooks
+45: 
+46:     **Automatic Pre-Hook**: {extension}
+47:     Executing: `/{command}`
+48:     EXECUTE_COMMAND: {command}
+49: 
+50:     Wait for the result of the hook command before proceeding to the Outline.
+51:     ```
+52:     After emitting the block above you MUST actually invoke the hook and wait for it to finish before continuing. Run it the same way you would run the command yourself in this agent/session (the invocation may differ from the literal `{command}` id shown above, e.g. a skills-mode agent runs it as `/skill:speckit-...` or `$speckit-...`). Emitting the block alone does not run the hook.
+53: - If no hooks are registered or `.specify/extensions.yml` does not exist, skip silently
+54: 
+55: ## Outline
+56: 
+57: Goal: Detect and reduce ambiguity or missing decision points in the active feature specification and record the clarifications directly in the spec file.
+58: 
+59: Note: This clarification workflow is expected to run (and be completed) BEFORE invoking `$speckit-plan`. If the user explicitly states they are skipping clarification (e.g., exploratory spike), you may proceed, but must warn that downstream rework risk increases.
+60: 
+61: Execution steps:
+62: 
+63: 1. Run `.specify/scripts/bash/check-prerequisites.sh --json --paths-only` from repo root **once** (combined `--json --paths-only` mode / `-Json -PathsOnly`). Parse minimal JSON payload fields:
+64:    - `FEATURE_DIR`
+65:    - `FEATURE_SPEC`
+66:    - (Optionally capture `IMPL_PLAN`, `TASKS` for future chained flows.)
+67:    - If JSON parsing fails, abort and instruct user to re-run `$speckit-specify` or verify feature branch environment.
+68:    - For single quotes in args like "I'm Groot", use escape syntax: e.g 'I'\''m Groot' (or double-quote if possible: "I'm Groot").
+69: 
+70: 2. **IF EXISTS**: Load `.specify/memory/constitution.md` for project principles and governance constraints.
+71: 
+72: 3. Load the current spec file. Perform a structured ambiguity & coverage scan using this taxonomy. For each category, mark status: Clear / Partial / Missing. Produce an internal coverage map used for prioritization (do not output raw map unless no questions will be asked).
+73: 
+74:    Functional Scope & Behavior:
+75:    - Core user goals & success criteria
+76:    - Explicit out-of-scope declarations
+77:    - User roles / personas differentiation
+78: 
+79:    Domain & Data Model:
+80:    - Entities, attributes, relationships
+81:    - Identity & uniqueness rules
+82:    - Lifecycle/state transitions
+83:    - Data volume / scale assumptions
+84: 
+85:    Interaction & UX Flow:
+86:    - Critical user journeys / sequences
+87:    - Error/empty/loading states
+88:    - Accessibility or localization notes
+89: 
+90:    Non-Functional Quality Attributes:
+91:    - Performance (latency, throughput targets)
+92:    - Scalability (horizontal/vertical, limits)
+93:    - Reliability & availability (uptime, recovery expectations)
+94:    - Observability (logging, metrics, tracing signals)
+95:    - Security & privacy (authN/Z, data protection, threat assumptions)
+96:    - Compliance / regulatory constraints (if any)
+97: 
+98:    Integration & External Dependencies:
+99:    - External services/APIs and failure modes
+100:    - Data import/export formats
+101:    - Protocol/versioning assumptions
+102: 
+103:    Edge Cases & Failure Handling:
+104:    - Negative scenarios
+105:    - Rate limiting / throttling
+106:    - Conflict resolution (e.g., concurrent edits)
+107: 
+108:    Constraints & Tradeoffs:
+109:    - Technical constraints (language, storage, hosting)
+110:    - Explicit tradeoffs or rejected alternatives
+111: 
+112:    Terminology & Consistency:
+113:    - Canonical glossary terms
+114:    - Avoided synonyms / deprecated terms
+115: 
+116:    Completion Signals:
+117:    - Acceptance criteria testability
+118:    - Measurable Definition of Done style indicators
+119: 
+120:    Misc / Placeholders:
+121:    - TODO markers / unresolved decisions
+122:    - Ambiguous adjectives ("robust", "intuitive") lacking quantification
+123: 
+124:    For each category with Partial or Missing status, add a candidate question opportunity unless:
+125:    - Clarification would not materially change implementation or validation strategy
+126:    - The item is specifically about implementation method, tech-stack comparison, or task breakdown (note internally)
+127: 
+128: 4. Generate (internally) a prioritized queue of candidate clarification questions (maximum 5). Do NOT output them all at once. Apply these constraints:
+129:     - Maximum of 5 total questions across the whole session.
+130:     - Each question must be answerable with EITHER:
+131:        - A short multiple‑choice selection (2–5 distinct, mutually exclusive options), OR
+132:        - A one-word / short‑phrase answer (explicitly constrain: "Answer in <=5 words").
+133:     - Only include questions whose answers materially impact architecture, data modeling, task decomposition, test design, UX behavior, operational readiness, or compliance validation.
+134:     - Ensure category coverage balance: attempt to cover the highest impact unresolved categories first; avoid asking two low-impact questions when a single high-impact area (e.g., security posture) is unresolved.
+135:     - Exclude questions already answered, trivial stylistic preferences, or plan-level execution details (unless blocking correctness).
+136:     - Favor clarifications that reduce downstream rework risk or prevent misaligned acceptance tests.
+137:     - If more than 5 categories remain unresolved, select the top 5 by (Impact * Uncertainty) heuristic.
+138: 
+139: 5. Sequential questioning loop (interactive):
+140:     - Present EXACTLY ONE question at a time.
+141:     - **Question writing quality (applies to every question, MC or short-answer):**
+142:        - Lead with `**Question:**` followed by a full interrogative that ends with `?`. The question text before the `?` must make sense on its own.
+143:        - NEVER use a topic label, section heading, or requirement id as the question itself. For example, `Acceptance device/runtime matrix (FR-023)` is INVALID — it is a label, not a question.
+144:        - After the `?`, the only permitted suffix is an optional parenthesized requirement/question id. Exact format: `**Question:** <interrogative>?` or `**Question:** <interrogative>? (FR-023)`. Never put the id before the `?`, and never use the id (alone or with a topic label) as the whole prompt.
+145:        - Immediately after the question line, add one plain-language "Why it matters" sentence (the stake for acceptance or shipping) before the recommendation/options.
+146:        - Use everyday wording; introduce jargon only if defined in the same sentence. Self-check: a reader who does not know Spec Kit must be able to answer from the Question line alone. Terse is fine; cryptic labels are not.
+147:     - For multiple‑choice questions:
+148:        - **Analyze all options** and determine the **most suitable option** based on:
+149:           - Best practices for the project type
+150:           - Common patterns in similar implementations
+151:           - Risk reduction (security, performance, maintainability)
+152:           - Alignment with any explicit project goals or constraints visible in the spec
+153:        - Present your **recommended option prominently** at the top with clear reasoning (1-2 sentences explaining why this is the best choice).
+154:        - Format as: `**Recommended:** Option [X] - <reasoning>`
+155:        - Then render all options as a Markdown table:
+156: 
+157:        | Option | Description |
+158:        |--------|-------------|
+159:        | A | <Option A description> |
+160:        | B | <Option B description> |
+161:        | C | <Option C description> (add D/E as needed up to 5) |
+162:        | Short | Provide a different short answer (<=5 words) (Include only if free-form alternative is appropriate) |
+163: 
+164:        - After the table, add: `You can reply with the option letter (e.g., "A"), accept the recommendation by saying "yes" or "recommended", or provide your own short answer.`
+165:     - For short‑answer style (no meaningful discrete options):
+166:        - Provide your **suggested answer** based on best practices and context.
+167:        - Format as: `**Suggested:** <your proposed answer> - <brief reasoning>`
+168:        - Then output: `Format: Short answer (<=5 words). You can accept the suggestion by saying "yes" or "suggested", or provide your own answer.`
+169:     - After the user answers:
+170:        - If the user replies with "yes", "recommended", or "suggested", use your previously stated recommendation/suggestion as the answer.
+171:        - Otherwise, validate the answer maps to one option or fits the <=5 word constraint.
+172:        - If ambiguous, ask for a quick disambiguation (count still belongs to same question; do not advance).
+173:        - Once satisfactory, record it in working memory (do not yet write to disk) and move to the next queued question.
+174:     - Stop asking further questions when:
+175:        - All critical ambiguities resolved early (remaining queued items become unnecessary), OR
+176:        - User signals completion ("done", "good", "no more"), OR
+177:        - You reach 5 asked questions.
+178:     - Never reveal future queued questions in advance.
+179:     - If no valid questions exist at start, immediately report no critical ambiguities.
+180: 
+181: 6. Integration after EACH accepted answer (incremental update approach):
+182:     - Maintain in-memory representation of the spec (loaded once at start) plus the raw file contents.
+183:     - For the first integrated answer in this session:
+184:        - Ensure a `## Clarifications` section exists (create it just after the highest-level contextual/overview section per the spec template if missing).
+185:        - Under it, create (if not present) a `### Session YYYY-MM-DD` subheading for today.
+186:     - Append a bullet line immediately after acceptance: `- Q: <question> → A: <final answer>`.
+187:     - Then immediately apply the clarification to the most appropriate section(s):
+188:        - Functional ambiguity → Update or add a bullet in Functional Requirements.
+189:        - User interaction / actor distinction → Update User Stories or Actors subsection (if present) with clarified role, constraint, or scenario.
+190:        - Data shape / entities → Update Data Model (add fields, types, relationships) preserving ordering; note added constraints succinctly.
+191:        - Non-functional constraint → Add/modify measurable criteria in Success Criteria > Measurable Outcomes (convert vague adjective to metric or explicit target).
+192:        - Edge case / negative flow → Add a new bullet under Edge Cases / Error Handling (or create such subsection if template provides placeholder for it).
+193:        - Terminology conflict → Normalize term across spec; retain original only if necessary by adding `(formerly referred to as "X")` once.
+194:     - If the clarification invalidates an earlier ambiguous statement, replace that statement instead of duplicating; leave no obsolete contradictory text.
+195:     - Save the spec file AFTER each integration to minimize risk of context loss (atomic overwrite).
+196:     - Preserve formatting: do not reorder unrelated sections; keep heading hierarchy intact.
+197:     - Keep each inserted clarification minimal and testable (avoid narrative drift).
+198: 
+199: 7. Validation (performed after EACH write plus final pass):
+200:    - Clarifications session contains exactly one bullet per accepted answer (no duplicates).
+201:    - Total asked (accepted) questions ≤ 5.
+202:    - Updated sections contain no lingering vague placeholders the new answer was meant to resolve.
+203:    - No contradictory earlier statement remains (scan for now-invalid alternative choices removed).
+204:    - Markdown structure valid; only allowed new headings: `## Clarifications`, `### Session YYYY-MM-DD`.
+205:    - Terminology consistency: same canonical term used across all updated sections.
+206: 
+207: 8. Write the updated spec back to `FEATURE_SPEC`.
+208: 
+209: 9. **Re-validate Spec Quality Checklist** (if it exists):
+210:    - Check if `FEATURE_DIR/checklists/requirements.md` exists.
+211:    - If it does NOT exist, skip this step silently.
+212:    - If it exists:
+213:      1. Read the checklist file.
+214:      2. Identify all GitHub task-list checkbox lines — lines matching `- [ ]`, `- [x]`, or `- [X]` (case-insensitive, tolerant of leading whitespace for nested items) outside of code fences. Ignore all other content (headings, notes, non-checkbox bullets, metadata).
+215:      3. For each checkbox line, record its current marker state (checked or unchecked) and item text into a before-snapshot list.
+216:      4. Re-evaluate each checkbox item against the **updated** spec (the version just saved in step 7).
+217:      5. For each checkbox item, update only if the checked/unchecked state actually changes:
+218:         - If the item now passes and was unchecked: change `[ ]` to `[x]`.
+219:         - If the item now fails and was checked: change `[x]`/`[X]` to `[ ]`.
+220:         - If the state is unchanged: leave the marker as-is (preserve existing case to avoid cosmetic diffs).
+221:      6. Save the updated checklist file. **Only toggle the `[ ]`/`[x]` marker portion of checkbox lines whose state changed.** All other file content — headings, metadata, notes, line ordering, whitespace — must remain unchanged to avoid noisy diffs.
+222:      7. Compare the before-snapshot with the current state to compute three lists for the Completion Report:
+223:         - **Newly passing**: items that changed from unchecked to checked.
+224:         - **Regressions**: items that changed from checked to unchecked.
+225:         - **Still unchecked**: items that remain unchecked.
+226:      8. Record the before/after pass counts as checked/total checkbox items (e.g., "12/16 → 15/16 items passing").
+227: 
+228: Behavior rules:
+229: 
+230: - If no meaningful ambiguities found (or all potential questions would be low-impact), respond: "No critical ambiguities detected worth formal clarification." and suggest proceeding.
+231: - If spec file missing, instruct user to run `$speckit-specify` first (do not create a new spec here).
+232: - Never exceed 5 total asked questions (clarification retries for a single question do not count as new questions).
+233: - Avoid speculative tech stack questions unless the absence blocks functional clarity.
+234: - Respect user early termination signals ("stop", "done", "proceed").
+235: - If no questions asked due to full coverage, output a compact coverage summary (all categories Clear) then suggest advancing.
+236: - If quota reached with unresolved high-impact categories remaining, explicitly flag them under Deferred with rationale.
+237: 
+238: Context for prioritization: $ARGUMENTS
+239: 
+240: ## Mandatory Post-Execution Hooks
+241: 
+242: **You MUST complete this section before reporting completion to the user.**
+243: 
+244: Check if `.specify/extensions.yml` exists in the project root.
+245: - If it does not exist, or no hooks are registered under `hooks.after_clarify`, skip to the Completion Report.
+246: - If it exists, read it and look for entries under the `hooks.after_clarify` key.
+247: - If the YAML cannot be parsed or is invalid, do not skip silently: tell the user that `.specify/extensions.yml` could not be read (include the parser error) and that no hooks were checked, including any mandatory (`optional: false`) hooks registered there, then continue to the Completion Report.
+248: - Filter out hooks where `enabled` is explicitly `false`. Treat hooks without an `enabled` field as enabled by default.
+249: - For each remaining hook, do **not** attempt to interpret or evaluate hook `condition` expressions:
+250:   - If the hook has no `condition` field, or it is null/empty, treat the hook as executable
+251:   - If the hook defines a non-empty `condition`, skip the hook and leave condition evaluation to the HookExecutor implementation
+252: - When constructing command invocations from hook command names, replace dots (`.`) with hyphens (`-`). For example, `speckit.git.commit` → `$speckit-git-commit`.
+253: - For each executable hook, output the following based on its `optional` flag:
+254:   - **Mandatory hook** (`optional: false`) — **You MUST emit `EXECUTE_COMMAND:` for each mandatory hook**:
+255:     ```
+256:     ## Extension Hooks
+257: 
+258:     **Automatic Hook**: {extension}
+259:     Executing: `/{command}`
+260:     EXECUTE_COMMAND: {command}
+261:     ```
+262:     After emitting the block above you MUST actually invoke the hook and wait for it to finish before continuing. Run it the same way you would run the command yourself in this agent/session (the invocation may differ from the literal `{command}` id shown above, e.g. a skills-mode agent runs it as `/skill:speckit-...` or `$speckit-...`). Emitting the block alone does not run the hook.
+263:   - **Optional hook** (`optional: true`):
+264:     ```
+265:     ## Extension Hooks
+266: 
+267:     **Optional Hook**: {extension}
+268:     Command: `/{command}`
+269:     Description: {description}
+270: 
+271:     Prompt: {prompt}
+272:     To execute: `/{command}`
+273:     ```
+274: 
+275: ## Completion Report
+276: 
+277: Report completion (after questioning loop ends or early termination):
+278: - Number of questions asked & answered.
+279: - Path to updated spec.
+280: - Sections touched (list names).
+281: - Spec quality checklist status (if `FEATURE_DIR/checklists/requirements.md` was re-validated): show before/after pass counts (e.g., "Spec Quality Checklist: 12/16 → 15/16 items passing") and list any items that changed state — both newly checked (unchecked → checked) and any regressions (checked → unchecked). If any items remain unchecked, list them as areas needing attention.
+282: - Coverage summary table listing each taxonomy category with Status: Resolved (was Partial/Missing and addressed), Deferred (exceeds question quota, or remaining item is specifically implementation method, tech-stack comparison, or task breakdown), Clear (already sufficient), Outstanding (still Partial/Missing but low impact).
+283: - If any Outstanding or Deferred remain, recommend whether to proceed to `$speckit-plan` or run `$speckit-clarify` again later post-plan.
+284: - Suggested next command.
+285: 
+286: ## Done When
+287: 
+288: - [ ] Spec ambiguities identified and clarifications integrated into spec file
+289: - [ ] Spec quality checklist re-validated against updated spec (if `FEATURE_DIR/checklists/requirements.md` exists)
+290: - [ ] Extension hooks dispatched or skipped according to the rules in Mandatory Post-Execution Hooks above
+291: - [ ] Completion reported to user with questions answered, sections touched, checklist status, and coverage summary
+
+### FILE specs/002-app-store-release/spec.md
+1: # Feature Specification: App Store Release Preparation
+2: 
+3: **Feature Branch**: `main` (existing branch; no feature branch created)
+4: 
+5: **Feature Directory**: `specs/002-app-store-release`
+6: 
+7: **Created**: 2026-09-26
+8: 
+9: **Status**: Specification; release preparation has not been performed. This document defines the work to plan and implement next.
+10: 
+11: **Input**: Prepare Donkey Trump 3D for the Apple App Store, create the required descriptions and images, and enter the information in App Store Connect using the owner's signed-in Chrome session. The owner initially requested only the final release action, then explicitly clarified that the owner will also submit the prepared version to Apple's review.
+12: 
+13: ## Clarifications
+14: 
+15: ### Session 2026-09-26
+16: 
+17: - Q: Must a highscore publication block survive uninstalling and reinstalling the app on the same iPhone? → A: No. Block only the current app installation; reinstallation may reset the block. Local gameplay remains available.
+18: - Q: Who is responsible for handling reports of inappropriate highscore names after release? → A: The app owner handles reports, responds within one working day and is responsible for removing offending entries and blocking abusive app installations.
+19: - Q: What is the monthly operating budget for the backend, storage and support/privacy pages? → A: DKK 100 including VAT, excluding Apple Developer membership and domain purchases. Reuse the existing PROD App Service Plan; the owner expects that it currently hosts one ASP.NET app, which must be verified.
+20: 
+21: ## User Scenarios & Testing *(mandatory)*
+22: 
+23: ### User Story 1 - Understand the game from its store page (Priority: P1)
+24: 
+25: As a prospective player, I can understand the native 3D arcade game, its controls, its satire and its optional online highscores from accurate English descriptions and attractive pictures of the actual game.
+26: 
+27: **Why this priority**: The owner explicitly requested ready-to-use descriptions and images, and players should receive the experience advertised.
+28: 
+29: **Independent Test**: Compare the complete local listing and image set with the release candidate. Verify every advertised capability, read each caption at its intended display size, and confirm that all required iPhone image slots have suitable assets.
+30: 
+31: **Acceptance Scenarios**:
+32: 
+33: 1. **Given** the verified game and selected release scope, **When** the listing is prepared, **Then** its title, subtitle, description, keywords, categories and supporting copy accurately describe the 3D game and distinguish offline gameplay from online highscores.
+34: 2. **Given** the candidate's normal player experience, **When** screenshots are prepared, **Then** five ordered landscape screenshots show representative gameplay and features, without invented scenes, debug controls, real players' personal information or claims absent from the candidate.
+35: 3. **Given** iPhone-only distribution, **When** media is validated, **Then** the icon and required screenshot sets meet Apple's current accepted format, size and content requirements; larger-display requirements are not assumed satisfied by iPhone 13 captures alone.
+36: 4. **Given** original satirical content, **When** copy and images are reviewed, **Then** the page preserves the no-affiliation statement, avoids copied third-party assets and makes no unsupported endorsement or licensing claim.
+37: 5. **Given** a cold app launch, **When** startup is in progress, **Then** the owner's Donkey Trump cover appears proportionally with its full title and characters visible and yields to the usable game without an artificial delay or network dependency. Possible store use is supporting key art around actual game captures, never a substitute for the in-use screenshot set.
+38: 
+39: ### User Story 2 - Receive a working and supportable release (Priority: P1)
+40: 
+41: As a player, I receive the tested game, can use the advertised highscore list and can find genuine privacy and support information. Other players cannot use public names as an unchecked channel for offensive content.
+42: 
+43: **Why this priority**: A finished product page cannot compensate for a broken release, unavailable advertised services or missing public-name safeguards.
+44: 
+45: **Independent Test**: Install the exact distribution candidate on a physical iPhone 13 and complete the release journeys, including offline play, actual online highscore publication, a failed submission, support/privacy access and the public-name abuse workflow. Match the evidence to the uploaded candidate.
+46: 
+47: **Acceptance Scenarios**:
+48: 
+49: 1. **Given** a clean install and an update where an earlier build exists, **When** the player starts, completes and restarts runs, **Then** gameplay, intro, settings and personal best behave as documented in both landscape orientations; offline or slow highscores never prevent play.
+50: 2. **Given** the live service and a qualifying run, **When** the player explicitly publishes a chosen name, **Then** the shared result appears as advertised; failure preserves the personal best without queuing a later upload or falsely confirming a save.
+51: 3. **Given** a prohibited name or a displayed entry reported as abusive, **When** the relevant safeguard is exercised, **Then** prohibited submissions are prevented, reports reach the app owner for a response within one working day, offending entries can be removed and the offending app installation can be blocked from publishing further scores without introducing player accounts; local gameplay remains available.
+52: 4. **Given** the shipped data flows and service operations, **When** a player opens support or privacy information, **Then** public usable pages identify a genuine contact and explain publication, retention and removal/reporting consistently with the store disclosures.
+53: 5. **Given** a missing physical-device result, an unreachable service or an unresolved material release defect, **When** readiness is assessed, **Then** the candidate is reported as blocked with concrete evidence instead of being called ready because simulator tests passed.
+54: 
+55: ### User Story 3 - Have a complete and correct Connect version (Priority: P1)
+56: 
+57: As the app owner, I want the correct app record filled out and its build uploaded, so I do not have to copy descriptions, resize images, complete technical declarations or repair submission errors myself.
+58: 
+59: **Why this priority**: Entering and verifying the information in App Store Connect is an explicit part of the requested end result.
+60: 
+61: **Independent Test**: Reopen the target version in the owner's Chrome session, compare saved fields, processed images and the selected build with the release package, and confirm that preparation for submission has no unresolved validation errors.
+62: 
+63: **Acceptance Scenarios**:
+64: 
+65: 1. **Given** authenticated access to the intended organization, **When** the app is located, **Then** an existing matching record is reused; a new record is created only after confirming none exists. Other apps and versions remain unchanged.
+66: 2. **Given** completed copy, images and a valid distribution candidate, **When** the release package is entered and uploaded, **Then** Connect shows the intended saved text, image order, processed build, support/privacy links, categories, free price and eligible territories after a fresh read.
+67: 3. **Given** the actual candidate and verified ownership information, **When** privacy, age, content-rights, encryption and applicable territory declarations are completed, **Then** every answer has an evidence basis; no-login is not treated as proof that no data is collected.
+68: 4. **Given** a required fact unavailable from the project or authorized account, **When** it blocks a declaration, **Then** it is requested in a consolidated owner-input request. No identity, contact detail, rights claim, trader status or legal acceptance is invented.
+69: 
+70: ### User Story 4 - Retain control of review submission and release (Priority: P1)
+71: 
+72: As the owner, I receive a fully prepared version and draft submission, ready for me to submit to Apple's review. After approval, I also retain the final public release decision.
+73: 
+74: **Why this priority**: The owner explicitly chose to submit to Apple personally. Completing preparation must not trigger review or automatic publication.
+75: 
+76: **Independent Test**: Inspect the correct app/version and its draft in Connect. Confirm the intended build and listing are complete, submission validation is clear and the owner's Submit for Review action is available. Verify that manual release is selected and nothing has been sent to Apple for review or publicly released by the agent.
+77: 
+78: **Acceptance Scenarios**:
+79: 
+80: 1. **Given** all candidate, content and account prerequisites pass, **When** the submission draft is assembled, **Then** the version can be added for review without sending it; the workflow stops before Submit for Review or any equivalent sending action.
+81: 2. **Given** the prepared draft, **When** completion is reported, **Then** the owner receives its direct Connect link, version/build and concise remaining actions: submit for review, handle subsequent Apple feedback, and manually release after approval. No copy, screenshots or build selection remain for the owner to prepare.
+82: 3. **Given** release settings are inspected, **When** readiness is recorded, **Then** manual release is selected and automatic release, scheduled publication and pre-order are disabled.
+83: 4. **Given** Connect requires an unexpected action that would immediately submit or publish, **When** preparation reaches that boundary, **Then** the agent stops before that action, records the precise state and does not label an unvalidated version ready.
+84: 
+85: ### User Story 5 - Resume safely and inspect the result (Priority: P2)
+86: 
+87: As the owner, I can inspect and resume preparation without duplicate uploads, lost metadata or confusion over which tested build and screenshots belong together.
+88: 
+89: **Why this priority**: Uploads and processing can span work sessions; continuity avoids making the owner reconstruct completed work.
+90: 
+91: **Independent Test**: Interrupt preparation after saving metadata or uploading a build, then resume using the release record. Verify remote state before continuing and detect differences rather than blindly repeating actions.
+92: 
+93: **Acceptance Scenarios**:
+94: 
+95: 1. **Given** an interrupted browser or upload session, **When** work resumes, **Then** saved values and processing state are checked first; ambiguous results do not create duplicate apps, builds or drafts.
+96: 2. **Given** a candidate change after screenshots or tests, **When** the package is updated, **Then** affected media, disclosures and checks are reassessed and remain tied to the selected build.
+97: 3. **Given** a blocked prerequisite, **When** status is recorded, **Then** local preparation, saved Connect data, upload, draft readiness, Apple submission and publication remain distinct, with a concrete next action for outstanding preparation.
+98: 4. **Given** the existing PROD App Service Plan, **When** production preparation is validated, **Then** the actual plan and hosted apps are recorded, reuse fits the verified capacity and DKK 100/month additional-cost budget, and existing apps pass documented before/after availability checks. Any required plan change or budget increase remains a separate owner decision.
+99: 
+100: ### Edge Cases
+101: 
+102: - Chrome cannot be connected, the session expires, two-factor authentication is required, the wrong organization is selected or the account lacks a required role.
+103: - A matching app already exists, its name is unavailable, its version is locked for review, or earlier distribution prevents narrowing device support to iPhone.
+104: - The iPhone candidate can run in iPad compatibility mode but fails to launch or leaves landscape controls, reporting or privacy information unreachable; this remains a readiness defect even though native iPad support is excluded.
+105: - Apple changes media/declaration requirements; files pass local checks but fail or reorder during remote processing.
+106: - An upload times out but is already processing; a version/build number is already used; the selected build differs from the tested archive.
+107: - The public service is unavailable, cold or misconfigured; a save acknowledgement is lost; screenshots promise features absent from the actual release.
+108: - The existing PROD App Service Plan cannot be uniquely identified, hosts more apps than expected, lacks compatible runtime/capacity, or the projected additional cost exceeds DKK 100/month including VAT. Verify actual shared resources and preserve their workloads; an unresolved constraint blocks provisioning, not independent release preparation.
+109: - Public names contain abuse, impersonation or personal information; removal must not overwrite unrelated scores or reintroduce retired submissions.
+110: - A blocked player reinstalls the app. The block applies only to the previous installation and may reset; preventing this bypass is outside the agreed blocking scope. Ordinary play remains available while an installation is blocked.
+111: - A public support/privacy page requires login or describes different data flows from the app, service, diagnostics or abuse-prevention controls.
+112: - Export, trader, content-rights or territory answers require owner-only facts or an account-holder agreement. Unknowns block only dependent work while independent preparation continues.
+113: - Connect changes its workflow so the next available button submits immediately. The owner's review-submission boundary still applies.
+114: - A material rename, new monetization or player account system appears necessary for eligibility. That is an explicit product decision, not a silent change to obtain a green status.
+115: 
+116: ## Requirements *(mandatory)*
+117: 
+118: ### Functional Requirements
+119: 
+120: - **FR-001**: Preparation MUST establish and record the intended owner organization, app identity, existing store record, version and build before external changes, reusing matching records and preserving unrelated apps, versions and user work.
+121: - **FR-002**: The release MUST target iPhone, landscape, with the existing minimum supported system version. Native iPad support and iPad-specific assets/claims are excluded; any compatibility behavior imposed by Apple MUST be documented rather than presented as validated native iPad support. Optional Mac or other-platform availability MUST be disabled where offered. Existing distribution history MUST be checked before narrowing support; an incompatible prior release is a concrete blocker requiring a resolved product decision.
+122: - **FR-003**: The English listing MUST contain the complete name, subtitle, description, keywords, categories and real copyright attribution. Promotional copy is included; update notes are supplied when an existing version makes them applicable. All text MUST fit current field limits and match the candidate, preserving original parody/no-affiliation copy.
+123: - **FR-004**: The package MUST contain five ordered screenshots per required iPhone display set and an accepted app icon. Screenshots MUST come from the release-equivalent game, show supported functionality and pass format, dimensions, orientation, opacity and legibility checks. Captions/design framing are allowed without fabricated gameplay. Optional preview video is outside scope.
+124: - **FR-005**: Every visual asset and description MUST be traceable to the candidate, language, display set, order and uploaded version. Source captures and editable copy MUST be retained; real-player information and development-only UI MUST not appear in store media.
+125: - **FR-006**: Rights, originality and content suitability MUST be assessed for the full shipped experience: app/character names, in-game text, real public figures' names/depictions, icon, models, audio, marketing and the overall gameplay/presentation resemblance to its reference game. The assessment MUST use project provenance and current store rules and support FR-009's declarations. Copied assets, unsupported rights claims and implied endorsement MUST be removed or treated as concrete blockers. Parody wording alone is not proof of permission or approval; an unresolved material naming/content issue requires an explicit product decision, not a silent rename or an unsupported legal conclusion.
+126: - **FR-007**: Public support and privacy pages MUST be created or updated, published at genuine owner-controlled addresses and reachable without login before readiness. They MUST identify the app and a working contact route and explain actual public submissions, supporting data, retention, reporting/removal and third-party processing. The shipped app MUST make its privacy policy easily accessible.
+127: - **FR-008**: Store privacy answers MUST reflect the shipped app, third-party components and live service/diagnostics, including optional public submissions and abuse-prevention data. Local-only settings MUST be distinguished from transmitted data; accounts, tracking and advertising MUST not be added incidentally.
+128: - **FR-009**: Age ratings, content rights, export/encryption declarations, accessibility claims and applicable territory requirements MUST have a factual basis. Missing facts MUST be obtained before attestation; a desired rating or unchecked assumption is not evidence.
+129: - **FR-010**: The release MUST be free, without purchases, advertising or subscriptions, in all territories whose applicable requirements can be fulfilled. Each excluded territory MUST have a recorded reason. Automatic inclusion of future territories MUST not bypass verification; pre-order MUST be disabled.
+130: - **FR-011**: Preparation MUST produce, validate, upload and select a signed distribution candidate accepted for processing by Apple. The selected build MUST match the tested candidate, contain the intended icon and production configuration and exclude development-only behavior. Processing completion MUST be verified.
+131: - **FR-012**: The advertised global top-100 service MUST be working in its real production environment before draft readiness. The backend MUST reuse the owner's existing PROD App Service Plan. Preparation MUST identify the actual subscription, resource group and plan, verify ownership/access, current hosted apps, runtime compatibility and available capacity, and preserve existing workloads. The owner's expectation of one existing ASP.NET app is an input to verify, not an established inventory. The game's additional recurring cost for backend, storage, support/privacy pages and necessary monitoring MUST fit within DKK 100 per month including VAT; the already-committed plan cost MUST be recorded separately. Apple Developer membership and domain purchases are excluded from this budget. Record the traffic/storage assumptions and cost estimate before provisioning. Creating a replacement/additional plan, changing the existing plan's tier or scale, or exceeding this budget requires a separate owner decision. If the existing plan cannot meet the requirements, report that concrete constraint without silently altering the shared plan or its apps.
+132: - **FR-013**: Release acceptance MUST demonstrate online reading/publication, multiple-player persistence, honest unconfirmed-save handling and bounded failures while preserving offline play, local bests and no deferred uploads. An empty production address is not completion of the advertised feature.
+133: - **FR-014**: Public-name safeguards MUST provide prevention of objectionable submissions, an in-app reporting route, operator removal, blocking of abusive participation and public contact information. The app owner MUST be the responsible operator after release, handling reports and responding within at most one working day. Preparation MUST establish a genuine contact route to the owner and demonstrate the report-to-disposition flow, including the owner's ability to remove offending entries and block abusive app installations. Blocking MUST prevent further highscore publication by the current app installation, including under a different chosen name, while preserving local gameplay. Reinstallation MAY reset the block; player login and persistent identification across installations MUST NOT be required. These minimum safeguards extend the earlier highscore scope; player login, chat and a general social platform remain excluded.
+134: - **FR-015**: Abuse-prevention changes MUST preserve anonymous play, ranking and shared-data integrity. Any added retained information MUST have a defined minimum purpose, retention and access boundary and appear in privacy disclosures. Removal MUST preserve unrelated entries and existing submission/failure guarantees.
+135: - **FR-016**: The candidate MUST pass affected automated checks and relevant gameplay/highscore regressions. Physical iPhone 13 evidence MUST cover both-landscape touch, intro and silent-switch audio, in-game mute, haptics, lifecycle, larger text/VoiceOver for applicable controls and sustained play. Unperformed physical checks remain readiness blockers. The selected iPhone candidate MUST also receive an iPad compatibility-mode smoke check covering launch, landscape presentation, reachable touch controls and highscore/report/privacy flows; failures block readiness. A clearly identified simulator check is sufficient for this compatibility gate and MUST NOT be represented as native iPad support or physical-device evidence.
+136: - **FR-017**: App Review information MUST include genuine reachable contact details and instructions to inspect the full game and highscore flow. The no-login experience MUST be explained without fabricated credentials or review-only behavior differing from the release.
+137: - **FR-018**: All applicable required Connect fields, declarations, images and the selected build MUST be saved and verified by a fresh read of the intended app/version. Local files, successful typing or upload-start events alone do not prove saved/processed content.
+138: - **FR-019**: Browser work MUST use the owner's authorized Chrome session without extracting passwords, cookies or session secrets. Missing access or an owner-only account action MUST be reported concretely while independent preparation continues.
+139: - **FR-020**: Once readiness gates pass, preparation MUST assemble and validate the submission draft with the correct version/build and manual release selected. Adding a version for review is allowed only while it remains unsent. The agent MUST NOT invoke Submit for Review, an equivalent sending action, automatic/scheduled publication or final public release.
+140: - **FR-021**: Completion MUST leave a validated, unsent version ready for the owner's review submission, with no remaining copy, media, declaration or build-selection work. The actual version/draft state and direct Connect link MUST be recorded. Apple review, response to later review feedback and final release belong to the owner and are outside this preparation scope.
+141: - **FR-022**: A durable release record MUST identify artifact and candidate identities, version/build, saved Connect values, media verification, checks, declaration evidence, processing/draft status and blockers. It MUST support safe resumption without duplicate records or blind retries and give the owner concise submission and later manual-release instructions.
+142: - **FR-023**: Preparation MUST preserve the constitution and independent cross-vendor review process. Specification, implementation, candidate readiness, upload, review submission, Apple approval and publication MUST be reported separately. Agent consensus does not authorize sending the owner's submission or publishing the app.
+143: - **FR-024**: The app MUST use the owner-supplied [DonkeyTrumpCover.png](../../docs/design/images/DonkeyTrumpCover.png) during startup, preserving its proportions and the full motif across supported landscape layouts. Startup MUST remain local and automatically yield to the game without a minimum display timer or extra action. The original image and supplied prompt MUST be retained as provenance. Store use is optional supporting artwork subject to FR-004–FR-006; it MUST NOT imply that the illustration is actual 3D gameplay or replace the required in-use screenshots.
+144: 
+145: ### Key Entities
+146: 
+147: - **Release candidate**: The game version/build, supported devices, source identity, distribution artifact and corresponding test evidence.
+148: - **Store listing**: Language-specific copy, categories, public addresses, price, territories and the app/version they describe.
+149: - **Media asset**: Icon or screenshot, its source capture, display set, language, order, candidate provenance and upload validation.
+150: - **Release declaration**: A privacy, age, rights, export, accessibility or territory answer with supporting facts and any required owner input.
+151: - **Public-name report**: Offending entry reference, report status and minimum information needed for removal or abuse prevention, without becoming a player account or tracking profile.
+152: - **Submission draft and release record**: The prepared but unsent candidate/listing, observed Connect status, validation evidence and owner-controlled next steps.
+153: 
+154: ## Success Criteria *(mandatory)*
+155: 
+156: ### Measurable Outcomes
+157: 
+158: - **SC-001**: Every applicable required field and declaration is complete and verified, with zero placeholder identities, broken support/privacy links or unresolved submission-validation errors.
+159: - **SC-002**: Every required iPhone screenshot set contains five correctly ordered accepted images; every image and listing claim matches the candidate, with zero debug artifacts, fabricated features or real-player personal information.
+160: - **SC-003**: All required release journeys pass on the identified candidate, including physical iPhone checks, real online publication and service-failure play; no simulator result is counted as physical evidence.
+161: - **SC-004**: The demonstrated public-name workflow prevents a prohibited submission, delivers a report to the app owner and records the owner's response within one working day, removes an offending entry without altering unrelated results and rejects further submissions from the blocked app installation, including a changed public name, while allowing local gameplay. Survival of a block after uninstall/reinstall is not an acceptance requirement.
+162: - **SC-005**: Reopening the store-management page shows the intended saved text, images and exact tested build, with no duplicate app or accidental changes to other versions.
+163: - **SC-006**: The owner can submit the prepared version for review without supplying further copy, images, declarations or builds. There are zero agent-initiated review submissions or public releases; manual release is selected for later owner control.
+164: - **SC-007**: After an interruption, the release record identifies completed work, external processing, remaining blockers and the next action without reconstructing materials or build identity from chat history. It identifies the reused PROD plan and verified existing apps, records the existing cost baseline and an additional-cost estimate of at most DKK 100/month including VAT under stated usage assumptions, and retains before/after availability evidence for the existing apps.
+165: - **SC-008**: Cold-launch checks show the complete supplied illustration without distortion or cut-off title/characters, followed by a reachable title menu and playable game, with no added waiting period or network requirement. The retained source matches the bundled cover, and any store composition distinguishes the illustration from actual gameplay.
+166: 
+167: ## Assumptions
+168: 
+169: - **Confirmed by the owner on 2026-09-26:** iPhone only; free in all countries where applicable requirements can be met; the owner personally submits to Apple's review. The original request's final-release wording is narrowed by that later explicit answer. Review submission and final public release are not agent actions.
+170: - **Owner follow-up on 2026-09-26:** use the supplied cover as the loading screen and consider it for App Store artwork. This authorizes the focused launch-screen integration before the broader release plan; [cover-art.md](../../docs/design/cover-art.md) retains the image provenance and store-use boundaries.
+171: - English store and in-game copy follow the existing constitution; additional localization is not in scope. The existing game name and original parody identity remain unless a concrete rights or eligibility problem requires an explicit product decision. Games/Arcade is the category direction, subject to current store choices and truthful classification. No child-directed positioning is assumed.
+172: - The original invocation created the specification and quality evidence. Apart from the explicitly authorized cover integration above, producing release assets, modifying the candidate, publishing pages/services and writing Connect data belong to the subsequent implementation of this specification.
+173: - Highscores remain part of the release with anonymous/no-login play and no deferred uploads. Minimum public-name safeguards are expressly included in this release scope. No chat, player accounts, tracking, purchases or additional language is introduced.
+174: - Public support/privacy pages and necessary production service setup are included. The owner selected DKK 100/month including VAT and reuse of the existing PROD App Service Plan. Because this plan is already in use, budget accounting treats the DKK 100 as the game's additional recurring spend and records existing committed plan charges separately. This is a planning constraint, not a verified price or an automatic billing cap. The owner expects one existing ASP.NET app; actual inventory, ownership, capacity and resource identifiers remain unverified. Contact details, copyright owner, signing access and legal/trader facts must be established before dependent actions. Secrets and private contact evidence must stay outside the repository.
+175: - The owner's signed-in Chrome session is the intended access route. Actual account access, permissions, app existence and saved values are unverified: browser initialization failed before connection in this specification session. No external reading, saving or submission is claimed.
+176: - The project currently enables iPad. Account history and Apple's support constraints must be checked before narrowing distribution. If narrowing an existing release is prohibited, resolve that concrete decision rather than silently adding iPad scope or claiming success.
+177: - Physical hardware, genuine declarations and owner-only account agreements cannot be fabricated or bypassed. Missing inputs are requested early and together after checking available evidence. The ready-to-submit outcome is achieved only after these prerequisites are fulfilled.
+178: - [Constitution v1.0.0](../../.specify/memory/constitution.md) governs the work. [Source notes](source-notes.md) distinguish local facts, current official references and unverified external state. Five screenshots per required set and the moderation response target are project acceptance choices, not claims that Apple specifies those exact numbers.
+
+### FILE specs/002-app-store-release/checklists/requirements.md
+1: # Specification Quality Checklist: App Store Release Preparation
+2: 
+3: **Purpose**: Validate specification completeness and quality before planning
+4: **Created**: 2026-09-26
+5: **Feature**: [spec.md](../spec.md)
+6: 
+7: ## Content Quality
+8: 
+9: - [x] No implementation details (languages, frameworks, APIs)
+10: - [x] Focused on user value and business needs
+11: - [x] Written for non-technical stakeholders
+12: - [x] All mandatory sections completed
+13: 
+14: ## Requirement Completeness
+15: 
+16: - [x] No [NEEDS CLARIFICATION] markers remain
+17: - [x] Requirements are testable and unambiguous
+18: - [x] Success criteria are measurable
+19: - [x] Success criteria are technology-agnostic (no implementation details)
+20: - [x] All acceptance scenarios are defined
+21: - [x] Edge cases are identified
+22: - [x] Scope is clearly bounded
+23: - [x] Dependencies and assumptions identified
+24: 
+25: ## Feature Readiness
+26: 
+27: - [x] All functional requirements have clear acceptance criteria
+28: - [x] User scenarios cover primary flows
+29: - [x] Feature meets measurable outcomes defined in Success Criteria
+30: - [x] No implementation details leak into specification
+31: 
+32: ## Notes
+33: 
+34: - All 16 criteria pass the lead's document validation. These markers mean requirements quality, not completed release work or Apple approval.
+35: - Store/browser names and the handoff boundary are user-requested constraints, not a chosen implementation architecture. Technical configuration and pixel examples are in supporting source notes.
+36: - Traceability: US1 covers FR-003–FR-006 / SC-002; US2 covers FR-007–FR-008 and FR-011–FR-016 / SC-003–SC-004; US3 covers FR-001–FR-002, FR-009–FR-010 and FR-017–FR-019 / SC-001, SC-005; US4 covers FR-020–FR-021, FR-023 / SC-006; US5 covers FR-022 and candidate/evidence continuity / SC-007.
+37: - The owner confirmed iPhone-only, free eligible territories and personally submitting to Apple's review. English follows the constitution. Owner-specific facts and account access are execution dependencies with testable gates, not invented values or unresolved scope questions.
+38: - Validation includes required sections, unique FR/SC identifiers, acceptance scenarios, relative links and the feature pointer. Earlier feature artifacts are preserved. Independent review is recorded separately once the specification passes its checks.
+39: - Cover follow-up (2026-09-26): US1 scenario 5, FR-024 and SC-008 add proportional local startup art, preserved source/prompt and optional truthful store reuse. All 16 requirements-quality criteria still apply; the earlier review record remains tied to its original pre-cover content.
+
+### FILE specs/002-app-store-release/source-notes.md
+1: # Release specification inputs — 2026-09-26
+2: 
+3: Supporting discovery for the specification, not executed release evidence. Refresh these inputs against the actual candidate and App Store Connect before implementation claims are made.
+4: 
+5: ## Confirmed owner decisions
+6: 
+7: The owner answered the three questions during this specification session:
+8: 
+9: - First release: **iPhone only**.
+10: - Price/availability: **free in all countries where the requirements can be fulfilled**.
+11: - Handoff: **everything prepared, but the owner submits to Apple's review**. This overrides the earlier inferred endpoint of Apple approval followed only by manual release. Sending the review submission, handling later Apple review and the final public release are outside the preparation scope. Manual release is still selected for the owner's later control.
+12: 
+13: ## Verified repository context
+14: 
+15: - [Project configuration](../../src/DonkeyTrump3D.xcodeproj/project.pbxproj) declares `com.hyldenbrandt.donkeytrump3d`, version `1.0`, build `1`, team `QHL89A7A8J`, iOS 26.0 and device families `1,2` (iPhone/iPad). These local values do not prove membership, signing availability, rights or an existing Connect record.
+16: - Both configurations have an empty `HIGHSCORE_API_BASE_URL`. The [root guide](../../README.md) explicitly requires a real HTTPS service address. The release cannot advertise working global rankings while leaving this unset.
+17: - [Player copy](../../src/DonkeyTrump3D/UI/Copy.swift) is English, describes original satire/no affiliation and optional public names/scores, and states no accounts/tracking or deferred uploads. No genuine support/privacy website address was established by this discovery.
+18: - [Highscore validation](../001-global-highscores/validation.md) records local evidence and unperformed physical-device, Docker and live Azure checks. Its simulator results do not certify a future release archive.
+19: - The [release runbook](../../docs/production-smoke-and-rollback.md) includes a physical-device matrix and distribution/recovery concerns. Some introductory test-count/deployment statements predate highscores; reconcile them to the actual release rather than copying them into store claims.
+20: - Public names exist; the inspected UI/store files establish no existing reporting, removal or abusive-participant blocking workflow. The spec explicitly adds minimum public-name protection. Its design and privacy impact need planning; no claim is made that a word filter alone satisfies Apple's review.
+21: - `specify preset resolve spec-template` selected `.specify/templates/spec-template.md`, core layer. Sequential numbering selects `002-app-store-release`. No extension hook configuration exists, so no branch hook ran; the Git branch remains `main`.
+22: 
+23: ## Official Apple requirements consulted
+24: 
+25: These pages were opened on 2026-09-26. Recheck changing requirements and actual Connect validation while preparing the submission. The numeric asset/text examples below belong to planning inputs, not a permanently frozen platform contract.
+26: 
+27: | Source | Consequence for this specification |
+28: |---|---|
+29: | [Required, localizable and editable properties](https://developer.apple.com/help/app-store-connect/reference/app-information/required-localizable-and-editable-properties/) | Inventory app, version, pricing, privacy and applicable territory fields. Distinguish first-release fields from update-only fields. Text extraction loses some table checkmarks; actual required-field status must be verified in Connect. |
+30: | [Platform version information](https://developer.apple.com/help/app-store-connect/reference/app-information/platform-version-information/) | Prepare copy within current limits. At discovery, description is limited to 4,000 characters and promotional text to 170. Screenshots are required. |
+31: | [Screenshot specifications](https://developer.apple.com/help/app-store-connect/reference/app-information/screenshot-specifications/) | Apple accepts 1–10 JPEG/PNG screenshots without transparency. This feature chooses five. iPhone 6.9-inch sets accept landscape 2868×1320, 2796×1290 or 2736×1260; the 6.5-inch set is required if a 6.9-inch set is absent. A 13-inch iPad set is required when shipping iPad support. iPhone 13's 2532×1170 captures alone are not assumed to cover a required larger-display slot. |
+32: | [Manage app privacy](https://developer.apple.com/help/app-store-connect/manage-app-information/manage-app-privacy/) | A public privacy-policy URL and accurate data-handling disclosures are required. Include relevant third-party practices and optional remote submissions; no-account operation does not establish no data collection. |
+33: | [App Review Guidelines](https://developer.apple.com/app-store/review/guidelines/) | Check completeness, truthful media, original/licensed content and public names. Guideline 1.2 calls for filtering, reporting, blocking abusive users and contact details; 5.2 concerns intellectual property. Applying these to publicly submitted names is this spec's conservative product assessment, not a prior Apple ruling on this app. A parody disclaimer is not a guaranteed exemption. |
+34: | [Submit an app](https://developer.apple.com/help/app-store-connect/manage-submissions-to-app-review/submit-an-app/) | Required metadata and the correct build precede submission. Adding a version for review creates a draft-ready state; the separate Submit for Review action actually sends it. Preparation stops before that sending action. Account Holder, Admin or App Manager permissions are required. |
+35: | [Select an App Store version release option](https://developer.apple.com/help/app-store-connect/manage-your-apps-availability/select-an-app-store-version-release-option/) | Select manual release. Apple approval can later lead to `Pending Developer Release`, where the owner releases the version. That future state is not this feature's completion gate: the owner now explicitly retains review submission too. |
+36: | [EU Digital Services Act trader requirements](https://developer.apple.com/help/app-store-connect/manage-compliance-information/manage-european-union-digital-services-act-trader-requirements/) | Establish the owner's applicable trader declaration and verified contacts. Do not infer non-trader status from a free app or invent legal facts. Regional availability depends on satisfying its requirements. |
+37: 
+38: Independent review prompted an additional live check of the same App Review Guidelines: 2.4.1 encourages iPhone apps to run on iPad where possible; 4.1 addresses copycat presentation; 1.1.1 addresses harmful targeted content and includes a qualified exception for professional political satire. Accordingly, FR-016 adds a labeled compatibility smoke check and FR-006 covers all shipped text, public figures and overall resemblance. These are readiness assessments, not claims of native iPad support, infringement or automatic satire exemption. The reviewer's speculation about a particular registered “Jumpman” trademark was not independently established and is not used as a factual basis for this spec.
+39: 
+40: ## Access and inputs not yet verified
+41: 
+42: The user reports being signed in to Chrome on this Mac. The Chrome skill was read and its prescribed initialization attempted. Initialization returned `Importing module "node:process" is not allowed in node_repl`, before browser selection or account navigation. No alternate browser, cookie/session extraction, app creation, field entry or submission was attempted. This is a tool-initialization failure, not evidence that the user's login or extension is missing.
+43: 
+44: Implementation must verify the organization/app, account role, prior distribution/device-support constraints, signing/upload access, required account-holder agreements, contact/copyright/trader facts and intended cloud/public-site resources. Request missing facts together after inspecting available account/project evidence. Unknown legal terms or attestations must not be accepted by guessing.
+45: 
+46: The owner-confirmed scope is complete enough for planning despite those execution dependencies. Browser access, production setup, physical evidence, media creation and Connect entry have not been performed or reported as successful in this specification phase.
+47: 
+48: ## Follow-up: owner-supplied cover
+49: 
+50: On 2026-09-26 the owner supplied [DonkeyTrumpCover.png](../../docs/design/images/DonkeyTrumpCover.png) and its generation prompt, requesting loading-screen use and possible App Store reuse. The image is a 1672 × 941 opaque landscape illustration; the [provenance/use record](../../docs/design/cover-art.md) preserves the prompt and separates this focused startup change from the remaining release work. FR-024/SC-008 cover this new request. Apple's [Guideline 2.3.3](https://developer.apple.com/app-store/review/guidelines/#accurate-metadata), checked for this follow-up, calls for in-use screenshots rather than only title/splash art; supporting overlays can accompany truthful gameplay captures.
+
+### FILE specs/001-global-highscores/spec.md
+1: # Feature Specification: Global Top 100 Highscores
+2: 
+3: **Feature Branch**: `main` (existing branch; no feature branch created)
+4: 
+5: **Feature Directory**: `specs/001-global-highscores`
+6: 
+7: **Created**: 2026-09-26
+8: 
+9: **Status**: Implemented and locally validated; see [validation.md](validation.md). Physical-device, container and live Azure release checks remain pending. No deployment or release claim.
+10: 
+11: **Input**: The iPhone game needs a shared top-100 highscore list. After Game Over, qualifying players enter a name and see their score centred in the list. Non-qualifying players see the bottom. The list is also available from the title screen and must never delay starting a game. Scores must survive service restarts and simultaneous submissions. Keep the solution simple and inexpensive.
+12: 
+13: ## User Scenarios & Testing *(mandatory)*
+14: 
+15: ### User Story 1 - Publish a qualifying result (Priority: P1)
+16: 
+17: After losing my last life, I want to enter a name for a qualifying score and see my position among other players, so my achievement feels recognised.
+18: 
+19: **Why this priority**: A persistent shared ranking is the main value of the feature.
+20: 
+21: **Independent Test**: Complete a run against a prepared list with a known cutoff. Submit a qualifying result, verify its highlighted position, and reopen the list from another installation to confirm it was saved.
+22: 
+23: **Acceptance Scenarios**:
+24: 
+25: 1. **Given** fewer than 100 saved results, **When** a run ends with a valid score, **Then** the player is invited to enter a name, including when the score is zero.
+26: 2. **Given** a full list, **When** a completed run scores more than rank 100, **Then** the player is invited to enter a name and sees that the name and score will be public.
+27: 3. **Given** a qualifying run and a valid name, **When** submission succeeds, **Then** the player sees the saved list with their entry highlighted and vertically centred. Near either end, use the nearest available position keeping the whole row visible.
+28: 4. **Given** a name prompt, **When** the player cancels, **Then** nothing is submitted and Play Again and Return to Title remain available.
+29: 5. **Given** an empty, whitespace-only, multiline, control-character or over-20-character name, **When** submission is attempted, **Then** an inline explanation appears and nothing is published until the name is valid.
+30: 6. **Given** the list changes while a name is entered, **When** the score no longer qualifies at save time, **Then** no success is claimed and the updated bottom of the list is shown with an explanation.
+31: 7. **Given** a submitted entry remains ranked, **When** the identical submission is repeated, **Then** it has one entry and retains its original tie position; changing its name or score under the same run identity is rejected.
+32: 
+33: ### User Story 2 - See the next target after missing the list (Priority: P1)
+34: 
+35: After a run that does not reach the top 100, I want to see the lowest listed scores and my own result, so I know what to aim for next.
+36: 
+37: **Why this priority**: This completes the end-of-run experience for most players and encourages another attempt.
+38: 
+39: **Independent Test**: Complete runs below and exactly at the cutoff in a prepared full list; confirm there is no name prompt and rank 100 is visible.
+40: 
+41: **Acceptance Scenarios**:
+42: 
+43: 1. **Given** 100 results and a score below rank 100, **When** qualification is checked after Game Over, **Then** the bottom opens with rank 100 visible, the final score remains visible, and no name is requested.
+44: 2. **Given** a full list and a score equal to the cutoff, **When** qualification is checked, **Then** the previously saved equal score keeps its place and the new run does not qualify.
+45: 3. **Given** the result list, **When** Play Again or Return to Title is selected, **Then** that action proceeds without waiting for another highscore operation.
+46: 
+47: ### User Story 3 - Browse from the title without delaying play (Priority: P1)
+48: 
+49: I want to open Highscores from the title screen while always being able to start playing, even when the shared service is slow or unavailable.
+50: 
+51: **Why this priority**: The online feature must preserve the game's immediate, offline-capable start.
+52: 
+53: **Independent Test**: Launch with a service that responds normally, responds late, and never responds. Start a game during each condition and inspect list loading/error states independently.
+54: 
+55: **Acceptance Scenarios**:
+56: 
+57: 1. **Given** the title screen, **When** Highscores is selected, **Then** the list opens from the top with rank, name and score and clear loading, empty and unavailable states.
+58: 2. **Given** a background list load is pending or failed, **When** Start Game is selected, **Then** the normal intro/game flow begins immediately, with no network gate or disabled Start button.
+59: 3. **Given** a list view is loading, **When** the player closes it and starts a run, **Then** a late response cannot reopen the list, show a name prompt or interrupt the run.
+60: 4. **Given** an unavailable service, **When** Highscores is opened, **Then** loading ends within eight seconds with a readable error and a list-refresh action; the list can always be closed.
+61: 5. **Given** a list loaded earlier in this app session, **When** refresh fails, **Then** those entries may remain visible only with a clear indication that they may be out of date. They cannot establish current qualification.
+62: 6. **Given** larger text or VoiceOver on an iPhone in landscape, **When** the list is opened, **Then** rank, name and score can be read, navigation remains reachable, and the highlighted row is not hidden by the keyboard or screen edges.
+63: 
+64: ### User Story 4 - Preserve the ranking during simultaneous submissions (Priority: P1)
+65: 
+66: As a player, I want simultaneous results evaluated together so another player's submission cannot accidentally erase mine.
+67: 
+68: **Why this priority**: A shared highscore list needs consistent ranking across devices.
+69: 
+70: **Independent Test**: Submit many distinct prepared results concurrently, then compare the saved ranking with the expected best 100, including stable ties and repeated submissions.
+71: 
+72: **Acceptance Scenarios**:
+73: 
+74: 1. **Given** a populated list, **When** two different qualifying results are saved simultaneously, **Then** both are considered against the latest saved scores, with only scores below the resulting cutoff removed.
+75: 2. **Given** simultaneous equal scores, **When** saved, **Then** the first successfully saved result ranks ahead of later equal results, consistently on every device.
+76: 3. **Given** a successful save, **When** the service restarts, **Then** the result remains unless legitimately displaced by higher-ranked results.
+77: 4. **Given** excessive contention or unavailable storage, **When** a result cannot be confirmed within the deadline, **Then** an error replaces any success claim and the player can immediately play again.
+78: 5. **Given** malformed scores or excessive submission traffic, **When** requests arrive, **Then** invalid results do not change the ranking and excessive submissions receive a clear temporary rejection.
+79: 
+80: ### User Story 5 - Keep playing when publication fails (Priority: P1)
+81: 
+82: If the service cannot be reached after Game Over, I want an error and my local personal best retained, without a pending score being submitted later.
+83: 
+84: **Why this priority**: The user explicitly chose no deferred score submission and no account requirement.
+85: 
+86: **Independent Test**: Finish offline, restore connectivity, then restart the app. Verify the personal best remains and the failed run is never submitted later.
+87: 
+88: **Acceptance Scenarios**:
+89: 
+90: 1. **Given** Game Over without connectivity, **When** qualification cannot be checked, **Then** no name is requested, the local best is preserved, and an error replaces any claim that the score did or did not qualify.
+91: 2. **Given** a valid name and a failed submission, **When** the error appears, **Then** the local best remains and no automatic or deferred publication is queued.
+92: 3. **Given** a failed run submission, **When** connectivity returns, a list is refreshed, or the app relaunches, **Then** that run is not submitted again.
+93: 4. **Given** a save may have completed but its response was lost, **When** an error appears, **Then** it says publication could not be confirmed, rather than asserting the score was not saved.
+94: 
+95: ### Edge Cases
+96: 
+97: - Empty and partially filled lists contain only real entries, without invented rows.
+98: - Game Over means loss of the last life. A rescue, single lost life, pause-menu restart, abandoned run or return to title does not publish a result.
+99: - Use the run's final score, never the previously saved personal best or the next run's score.
+100: - Equal scores have consecutive ranks ordered by successful save order. A full list never replaces an earlier equal cutoff score.
+101: - Names need not be unique, and one person may hold multiple places; a name does not identify a run or person.
+102: - A result can be displaced after successful submission. The initial view shows the saved snapshot; a later refresh explains displacement and shows the bottom instead of highlighting another same-name entry.
+103: - Negative, excessively large or malformed scores are rejected. Valid-looking scores do not prove genuine gameplay.
+104: - Cancelling a view during submission stops further UI transitions but cannot undo an already completed save.
+105: 
+106: ## Requirements *(mandatory)*
+107: 
+108: ### Functional Requirements
+109: 
+110: - **FR-001**: Maintain one shared, all-time list of the best 100 completed-run scores, retaining fewer entries until 100 qualifying results exist.
+111: - **FR-002**: Rank by descending score, then first successful save for ties; show consecutive ranks starting at 1.
+112: - **FR-003**: Persist the list independently of any individual device and service process lifetime.
+113: - **FR-004**: Evaluate only the final score of a run reaching Game Over through loss of all lives, independently of the local personal best.
+114: - **FR-005**: Check current qualification after Game Over without blocking Play Again or Return to Title. Fewer than 100 entries accepts any valid non-negative score; a full list requires beating its current cutoff.
+115: - **FR-006**: Request a name only after a successful qualification check; allow cancellation without publication.
+116: - **FR-007**: Accept a single-line name of 1–20 visible characters after trimming surrounding spaces; reject control characters and explain validation failures. Display names as plain text.
+117: - **FR-008**: Explain before submission that the name and score are public and require an explicit submit action. No account, email or real name is required.
+118: - **FR-009**: Re-evaluate qualification when saving. Concurrent submissions must not cause lost updates, duplicate run entries or more than 100 ranked entries.
+119: - **FR-010**: Following a confirmed save, highlight that exact run and centre it vertically where content permits. Keep the whole highlighted row visible at list boundaries.
+120: - **FR-011**: Following confirmed non-qualification, show the bottom with the lowest rank visible, retain the player's final score, and offer another game. Do not request a name.
+121: - **FR-012**: Provide a title-screen Highscores action that opens the beginning of the list and can be closed at any time.
+122: - **FR-013**: Load and refresh independently of gameplay startup. Starting, restarting and playing must remain possible without a working network connection.
+123: - **FR-014**: Provide loading, empty, available and error states; end visible loading/submission waits within eight seconds. Reading the list can be retried explicitly.
+124: - **FR-015**: Suppress obsolete results from earlier screens or runs so a late operation cannot navigate away from an active game or attach a score to the wrong run.
+125: - **FR-016**: Reject invalid result data and limit excessive submissions. Identical repeated submissions for a currently ranked run retain one entry; changed data for that run is rejected.
+126: - **FR-017**: On a failed qualification check or submission, show an error, preserve the local best, and perform no automatic, later or next-launch submission of that run. Describe a failed save with an unknown outcome as unconfirmed.
+127: - **FR-018**: Distinguish previously loaded content from confirmed current results. Stale content must not cause a name prompt, non-qualification claim or publication-success claim.
+128: - **FR-019**: Keep list content and navigation usable in landscape on the supported iPhone baseline, including VoiceOver and larger text. Use the existing English UI language.
+129: - **FR-020**: Update privacy/help copy to describe the optional public list separately from the local best; after implementation it must no longer claim all game data stays exclusively on-device.
+130: 
+131: ### Key Entities *(include if feature involves data)*
+132: 
+133: - **Completed run**: A finished game's unique identity, immutable final score and level reached. It belongs to the current result flow, not a deferred-submission record.
+134: - **Highscore entry**: A qualifying run's identity, public name, score and successful-save order. Rank is derived from its place in the list.
+135: - **Highscore list snapshot**: Up to 100 ordered entries and information distinguishing the observed version and freshness. Successful submission returns the snapshot in which the result was evaluated.
+136: - **Local personal best**: The existing device-local maximum score, independent of participation in the shared list and preserved during failures.
+137: 
+138: ## Success Criteria *(mandatory)*
+139: 
+140: ### Measurable Outcomes
+141: 
+142: - **SC-001**: Across 100 startup/restart attempts covering normal, delayed and unavailable services, every attempt can start without waiting for highscores; added start latency stays below 100 ms against the same-device baseline.
+143: - **SC-002**: For controlled acceptance runs at ranks 1, 50 and 100, the exact submitted entry is highlighted and fully visible, centred for interior ranks. Every non-qualifying run shows the lowest rank without a name prompt.
+144: - **SC-003**: After 100 concurrent valid submissions, the saved ranking exactly matches the best 100 successfully considered results, including earlier entries, with no duplicates or lost higher scores. Transient failures are reported, and equal scores preserve successful-save order.
+145: - **SC-004**: In normal conditions, 95% of list loads and confirmed submissions become visible within two seconds over 100 attempts with a warm service and at most 100 ms network round-trip latency. All stalled attempts leave loading within eight seconds.
+146: - **SC-005**: Across connection interruptions before qualification, before save and after save but before acknowledgement, every run preserves its local best and none is queued or resubmitted after reconnection or relaunch.
+147: - **SC-006**: A successfully saved ranking remains identical after a service restart when no new results arrive; two installations observe the same ranking version.
+148: 
+149: ## Assumptions
+150: 
+151: - The user confirmed on 2026-09-26: **no login**, with scores reported by the app. Validation and submission limits reduce malformed traffic but do not verify gameplay or prevent determined cheating.
+152: - The user confirmed on 2026-09-26: connection failure means an error and the local personal best only. There is **no offline queue or later submission**.
+153: - The list ranks runs, not unique people. It is global and all-time, without seasons, country filters, prizes or cross-device personal profiles.
+154: - First successfully saved wins equal-score ties. Names are non-unique and not editable after submission in this version.
+155: - Existing scoring, three-life rules, looping levels, audio, intro and local best behaviour remain the game's basis.
+156: - Network access is required only for fresh highscores, qualification and publication. Gameplay remains independent of the shared service.
+157: - Moderation tools, verified replays, score archives and regional rankings require separate scope decisions.
+158: - Hosting access and a deployed service address are dependencies for end-to-end release validation. User-specified backend constraints and storage recommendations appear separately in [technical-proposal.md](technical-proposal.md).
+159: - [Constitution v1.0.0](../../.specify/memory/constitution.md), ratified 2026-09-26, governs this feature; the plan's current review and implementation tasks apply its principles. The implemented highscore feature supersedes the earlier product document's exclusion of public leaderboards and preserves the existing gameplay rules.
