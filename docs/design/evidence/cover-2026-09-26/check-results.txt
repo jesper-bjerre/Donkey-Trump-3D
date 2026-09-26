@@ -1,0 +1,24 @@
+Debug build:
+** BUILD SUCCEEDED **
+Release build:
+** BUILD SUCCEEDED **
+Signed Release build:
+** BUILD SUCCEEDED **
+Browsing regression tests:
+Test Case '-[DonkeyTrump3DUITests.HighscoreBrowsingUITests testStaleErrorAndLargeLandscapeNavigation]' passed (19.993 seconds).
+Test Case '-[DonkeyTrump3DUITests.HighscoreBrowsingUITests testStartDuringHungFetchAndNoLateReopening]' passed (9.591 seconds).
+Test Case '-[DonkeyTrump3DUITests.HighscoreBrowsingUITests testTitleListAndEmptyReadOnlyRefresh]' passed (23.417 seconds).
+	 Executed 3 tests, with 0 failures (0 unexpected) in 53.002 (53.008) seconds
+	 Executed 3 tests, with 0 failures (0 unexpected) in 53.002 (53.010) seconds
+	 Executed 3 tests, with 0 failures (0 unexpected) in 53.002 (53.012) seconds
+** TEST SUCCEEDED **
+Signed Debug focused regression:
+Test Case '-[DonkeyTrump3DUITests.HighscoreBrowsingUITests testStartDuringHungFetchAndNoLateReopening]' passed (7.966 seconds).
+	 Executed 1 test, with 0 failures (0 unexpected) in 7.966 (7.974) seconds
+	 Executed 1 test, with 0 failures (0 unexpected) in 7.966 (7.977) seconds
+	 Executed 1 test, with 0 failures (0 unexpected) in 7.966 (7.979) seconds
+** TEST SUCCEEDED **
+Debug: UILaunchStoryboardName=LaunchScreen; UILaunchScreen absent; compiled storyboard present
+Release: UILaunchStoryboardName=LaunchScreen; UILaunchScreen absent; compiled storyboard present
+Original/bundled SHA-256: 89a8112846e8cfa154feaf486f990d024af9d218b5b773b790eea84099e7674d
+Document check: XML/JSON/plist valid; local Markdown links resolve; 24 unique FR and 8 unique SC IDs; 16 quality marks; project diff limited to both launch storyboard settings.

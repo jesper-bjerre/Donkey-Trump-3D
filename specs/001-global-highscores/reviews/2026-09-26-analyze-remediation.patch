@@ -1,0 +1,263 @@
+--- before/specs/001-global-highscores/tasks.md
++++ after/specs/001-global-highscores/tasks.md
+@@ -8,7 +8,7 @@
+ 
+ **Tests**: Included because the specification explicitly defines each story's Independent Test, acceptance scenarios and SC-001–SC-006. Constitution principles III/V additionally require persistence/failure evidence. Use deterministic clocks/faults and outcome assertions; no blanket coverage target. Write the listed story tests before their implementation, observe the relevant failing assertions, and run them again at the story checkpoint.
+ 
+-**Organization**: Eight phases, with one phase per user story in specification order. All five stories are P1. US1 is the first demonstrable slice; all P1 stories and applicable checks are required for feature completion.
++**Organization**: Eight phases, with one phase per user story in specification order. All five stories are P1. T026 validates the initial publication slice, not complete US1 acceptance. The internal MVP also requires T031 for US1's cutoff-race scenario and US2. Full US1 acceptance additionally requires the two-installation check in T054; all P1 stories and applicable checks are required for feature completion.
+ 
+ ## Format and paths
+ 
+@@ -25,8 +25,8 @@
+ 
+ **Purpose**: Extend the existing projects and provide shared test inputs; do not scaffold a second API or replace the native app.
+ 
+-- [ ] T001 Pin the researched Azure.Storage.Blobs/Azure.Identity packages in `src/backend/DonkeyTrump.Highscores.Api.csproj`; verify the current supported .NET 10 servicing baseline against official Microsoft/package sources, record the selected SDK in `src/backend/global.json`, and reconcile versions in `specs/001-global-highscores/plan.md` and `specs/001-global-highscores/research.md`. Keep one Minimal API project and built-in framework facilities.
+-- [ ] T002 [P] Create the sibling xUnit/WebApplicationFactory project `src/backend.tests/DonkeyTrump.Highscores.Api.Tests.csproj`, reference the existing API, pin compatible test packages, and expose the entry point from `src/backend/Program.cs` for integration tests; exclude test sources from the web project by directory placement. (Depends on T001.)
++- [ ] T001 Pin the researched Azure.Storage.Blobs/Azure.Identity packages in `src/backend/DonkeyTrump.Highscores.Api.csproj`; verify the current supported .NET 10 servicing baseline against official Microsoft/package sources, record the selected SDK and roll-forward policy in repository-root `global.json`, and reconcile versions in `specs/001-global-highscores/plan.md` and `specs/001-global-highscores/research.md`. Verify `dotnet --version` selects the intended SDK from the repository root and `src/backend`; T002 verifies the sibling test directory after creating it. Keep one Minimal API project and built-in framework facilities.
++- [ ] T002 [P] Create the sibling xUnit/WebApplicationFactory project `src/backend.tests/DonkeyTrump.Highscores.Api.Tests.csproj`, reference the existing API, pin compatible test packages, and expose the entry point from `src/backend/Program.cs` for integration tests; exclude test sources from the web project by directory placement. Verify `dotnet --version` from `src/backend.tests` follows the same repository-root SDK policy as the API and the documented root-level commands. (Depends on T001.)
+ - [ ] T003 [P] Register `src/DonkeyTrump3DUITests/HighscoreUITestSupport.swift` and its XCUITest target in `src/DonkeyTrump3D.xcodeproj/project.pbxproj` and `src/DonkeyTrump3D.xcodeproj/xcshareddata/xcschemes/DonkeyTrump3D.xcscheme`; configure `HighscoreAPIBaseURL` through build/Info.plist settings with HTTPS for Release and a Debug-only localhost exception. Preserve synchronized source groups, iOS 26 minimum, landscape and existing tests; leave an unspecified production URL unavailable rather than inventing one. (FR-013, FR-019.)
+ - [ ] T004 [P] Create reusable JSON examples in `src/tests/fixtures/highscores.json` for Swift/.NET consumption: NFC/decomposed Danish names, Løkke, emoji grapheme sequences, 20/21 graphemes, 256/257 UTF-8 bytes, Cc/Zl/Zp, invisible-only names, integer/UUID boundaries and valid/invalid snapshots. Include 0/99/100 rows, stable equal scores and duplicate names with distinct IDs; provide expected canonical values/errors. (FR-001, FR-002, FR-007, FR-016.)
+ 
+@@ -45,15 +45,17 @@
+ - [ ] T009 [P] Bind and validate `Highscores:*` configuration in `src/backend/Highscores/HighscoreOptions.cs` and wire it in `src/backend/Program.cs`: private container/blob names, production HTTPS BlobServiceUri and reused ManagedIdentityCredential/Blob client, optional managed identity client ID, Development/Test-only Azurite, six-second operation and two-second network budgets, SDK MaxRetries=0, five CAS writes, and configurable GET 40/20-per-second and POST 10/2-per-second token buckets with zero queue. Reject invalid startup configuration; do not create production containers or require Blob connectivity for `/health/live`. (FR-003, FR-013, FR-014, FR-016.)
+ - [ ] T010 Define the immutable Equatable/Sendable shared run value in `src/DonkeyTrump3D/Core/CompletedRun.swift`: id "Fresh non-zero random ID for every new game and restart"; score "Final run score, not personal best"; levelReached "One-based final level". Define presentation states and an injectable deadline clock in `src/DonkeyTrump3D/Highscores/HighscoreState.swift`. State rules: closed "No presentation; start/restart/title always allowed"; loading "Source `title` or `completedRun(id)`, generation, deadline; controls remain active"; browsing "Snapshot plus top/bottom/highlight anchor, optional stale marker and final score"; enteringName "Immutable run and a fresh qualification observation; submit or cancel"; submitting "One canonical payload in memory, generation/deadline; repeated taps disabled"; failed "Readable error; optional stale browse-only snapshot; completed run's submission opportunity retired". Define the terminal run outcomes "published, notQualified, cancelled or failed"; only a confirmed editable-name validation rejection is non-terminal. Keep all payload/draft/cache state in memory. (Depends on T008; FR-005, FR-006, FR-014, FR-015, FR-017, FR-018.)
+ - [ ] T011 Create `src/backend.tests/Support/HighscoreApiFactory.cs`, `src/backend.tests/Support/BlobFaultTransport.cs` and `src/backend.tests/Support/AzuriteFixture.cs` with injectable time/jitter, deterministic read/write barriers, commit-then-lose-ack faults and per-scope emulator containers. Use Azurite 3.37.0 without a Docker requirement; opt into StorageIntegration via HighscoresTests__UseAzurite=true, fail when explicitly requested but unavailable, share one container across two API instances for concurrency, and clean only containers owned by that fixture. (Depends on T002, T007, T009; FR-009, FR-017, SC-003, SC-006.)
+-- [ ] T012 [P] Create injectable clock/service/URLProtocol spies in `src/DonkeyTrump3DTests/HighscoreTestSupport.swift` and Debug-only app fixtures in `src/DonkeyTrump3D/Highscores/HighscoreFixtures.swift`. Implement rank-1, rank-50, rank-100, below-cutoff, equal-cutoff, empty, duplicate-names, cutoff-race, validation-error, unavailable, hang, slow-stream, late-response and save-ack-lost; include request counts and completed-run launch inputs for UI tests, with app/engine injection wired in T025. Gate all launch overrides/fixtures out of Release and prevent autopilot/demo/test modes from publishing to the production service. (Depends on T003, T008, T010; FR-010, FR-013, FR-015, FR-017, SC-002, SC-005.)
++- [ ] T012 [P] Create injectable clock/service/URLProtocol spies in `src/DonkeyTrump3DTests/HighscoreTestSupport.swift` and Debug-only app fixtures in `src/DonkeyTrump3D/Highscores/HighscoreFixtures.swift`. Implement rank-1, rank-50, rank-100, below-cutoff, equal-cutoff, empty, duplicate-names, cutoff-race, validation-error, unavailable, hang, slow-stream, late-response and save-ack-lost; include request counts and completed-run launch inputs for UI tests, with app/engine injection wired in T025. Ordinary deterministic fixtures use injected services. Add a separate explicit Debug integration mode for T050/T054 using a test-run-owned loopback API backed by isolated Azurite storage; reject other origins and redirects leaving the selected origin, with no production-URL fallback. Gate all launch overrides/fixtures out of Release and prevent autopilot/demo/test modes from publishing to production. (Depends on T003, T008, T010; FR-010, FR-013, FR-015, FR-017, SC-002, SC-005.)
+ 
+ **Checkpoint**: The common types and fixtures compile independently of SceneKit/network availability; configuration errors are explicit and fixture modes cannot reach production.
+ 
+-## Phase 3: User Story 1 — Publish a qualifying result (Priority: P1) — MVP
++## Phase 3: User Story 1 — Publish a qualifying result (Priority: P1) — Initial slice
+ 
+ **Goal**: Capture a genuine final-life result, qualify with a fresh read, explicitly publish a public name, and show the returned exact entry centred.
+ 
+ **Independent Test**: With a prepared 0/99/100-row list, complete a run, submit and confirm the same entry through a second independent API client. Test ranks 1/50/100, cancellation, name correction, canonical same-ID replay and changed-payload rejection. Storage CAS and finite failure handling are included in this first slice, not deferred to US4.
++
++**Acceptance boundary**: The test above covers the initial slice. US1 scenario 6 (qualification lost during name entry) is implemented and verified by T027–T031. The specification's second-app-installation acceptance is verified by T054. Neither is waived or represented as passing at T026.
+ 
+ **Entry gate**: T005–T012 complete.
+ 
+@@ -74,10 +76,10 @@
+ - [ ] T022 [US1] Implement the main-actor qualification/publish flow in `src/DonkeyTrump3D/Highscores/HighscoreCoordinator.swift`: fresh GET after one completion, immutable run/source/generation guards, finite independent eight-second clock that updates UI without awaiting cancellation, public-name submit/cancel and disabled repeated taps. Retire cancelled/failed/published/notQualified runs, permit explicit correction only for confirmed name-only validation errors, reject score/run errors terminally, and never use stale cache or persist a draft/queue. Provide synchronous invalidation for start/restart/title/background and observed engine transitions; expose notQualified for US2 presentation. (Depends on T017, T021; FR-005, FR-006, FR-009, FR-014, FR-015, FR-017, FR-018.)
+ - [ ] T023 [P] [US1] Add `src/DonkeyTrump3D/UI/HighscoreNameEntryView.swift` and update `src/DonkeyTrump3D/UI/Copy.swift` with an English single-line name form, literal text, inline validation, Submit/Cancel, and explicit notice that the chosen name and score will be public without requiring a real name. Update in-app privacy/help copy to distinguish optional public scores from device-local best/settings, preserve parody/no-affiliation wording, and dismiss the keyboard before result presentation. (Depends on T022, T016; FR-006, FR-007, FR-008, FR-020.)
+ - [ ] T024 [P] [US1] Add `src/DonkeyTrump3D/UI/HighscoreListView.swift` for public rank/name/score rows keyed by entry UUID; use the successful POST snapshot without a replacing GET, highlight only its exact entry, and scroll after layout/keyboard dismissal to centre with boundary clamping and the full row visible. Support top/bottom anchors for subsequent stories; do not interpret player names as markup. (Depends on T022, T016; FR-001, FR-010, SC-002.)
+-- [ ] T025 [US1] Integrate the injected main-actor coordinator with `src/DonkeyTrump3D/App/DonkeyTrump3DApp.swift` and Game Over in `src/DonkeyTrump3D/UI/RootView.swift`. Route normal buttons through synchronous invalidation before engine commands; observe HUD run/phase changes for controller-driven restart/title paths. Preserve thread-safe snapshot handoff, keep Play Again/Return to Title reachable throughout loading/form/list states, and block real-endpoint publication by demo/autopilot/test fixtures. (Depends on T023, T024; FR-004, FR-005, FR-008, FR-010, FR-013, FR-015.)
+-- [ ] T026 [US1] Run US1 backend contract/ranking tests, an Azurite save/read/replay with a second independent client, Swift core/coordinator/transport tests and rank/name XCUITests on iPhone 13. Record commands, versions, outcomes and gaps in `specs/001-global-highscores/validation.md`; confirm zero-score partial-list publication, ranks 1/50/100, consent, no duplicate save and no gameplay gate before marking this slice complete. (Depends on T020, T025; FR-001, FR-004, FR-006, FR-007, FR-008, FR-009, FR-010, SC-002.)
+-
+-**Checkpoint**: The story's independent test passes; record any remaining release-environment gap without claiming it was tested.
++- [ ] T025 [US1] Integrate the injected main-actor coordinator with `src/DonkeyTrump3D/App/DonkeyTrump3DApp.swift` and Game Over in `src/DonkeyTrump3D/UI/RootView.swift`. Route normal buttons through synchronous invalidation before engine commands; observe HUD run/phase changes for controller-driven restart/title paths. Preserve thread-safe snapshot handoff, keep Play Again/Return to Title reachable throughout loading/form/list states, and block production publication by demo/autopilot/test fixtures. Only T012's explicit Debug integration mode may send automated requests to its test-run-owned loopback API/Azurite fixture. Verify origin restrictions, redirect rejection, no production fallback and Release exclusion; ordinary fixtures continue to use injected services. (Depends on T023, T024; FR-004, FR-005, FR-008, FR-010, FR-013, FR-015.)
++- [ ] T026 [US1] Run the initial publication slice's backend contract/ranking tests, an Azurite save/read/replay with a second independent client, Swift core/coordinator/transport tests and rank/name XCUITests on iPhone 13. Record commands, versions, outcomes and gaps in `specs/001-global-highscores/validation.md`; confirm zero-score partial-list publication, ranks 1/50/100, consent, no duplicate save and no gameplay gate before marking only this initial slice complete. US1's cutoff-race acceptance remains pending until T031 and its second-app-installation acceptance until T054. (Depends on T020, T025; FR-001, FR-004, FR-006, FR-007, FR-008, FR-009, FR-010, SC-002.)
++
++**Checkpoint**: The initial publication slice passes. This is neither complete US1 acceptance nor the internal MVP; T031 and T054 retain the outstanding acceptance checks above.
+ 
+ ## Phase 4: User Story 2 — See the next target after missing the list (Priority: P1)
+ 
+@@ -85,7 +87,7 @@
+ 
+ **Independent Test**: Run below/equal-cutoff and cutoff-race fixtures against a full list. No name prompt appears for fresh non-qualification; rank 100 and final score remain visible and Play Again/Return to Title work immediately.
+ 
+-**Entry gate**: US1 checkpoint T026 complete. Default UI integration dependencies additionally preserve earlier changes to shared coordinator/views; US4 can proceed alongside the later iOS work.
++**Entry gate**: Initial publication slice T026 complete (not full US1 acceptance). Default UI integration dependencies additionally preserve earlier changes to shared coordinator/views; US4 can proceed alongside the later iOS work.
+ 
+ ### Tests
+ 
+@@ -96,7 +98,7 @@
+ 
+ - [ ] T029 [US2] Complete notQualified/displaced-entry transitions in `src/DonkeyTrump3D/Highscores/HighscoreCoordinator.swift`: select the actual last row, retain the immutable run score, retire publication and distinguish server cutoff changes from success. Define the explicit-refresh displacement transition now for the US3 read action; stale or invalid reads cannot establish non-qualification. (Depends on T027; FR-009, FR-011, FR-018.)
+ - [ ] T030 [US2] Wire bottom positioning, final-score context, changed-cutoff explanation and reachable replay/title actions in `src/DonkeyTrump3D/UI/HighscoreListView.swift`, `src/DonkeyTrump3D/UI/RootView.swift` and `src/DonkeyTrump3D/UI/Copy.swift`. Clamp to the last real rank without inventing empty rows; do not hide navigation inside the scrolling list. (Depends on T028, T029; FR-011, FR-013, FR-019.)
+-- [ ] T031 [US2] Run the US2 coordinator/UI fixtures and capture cutoff, final-score and immediate-navigation evidence in `specs/001-global-highscores/validation.md`; verify both equality and server-side displacement without requiring title browsing or live Azure. (Depends on T030; FR-011, SC-002.)
++- [ ] T031 [US2] Run the US2 coordinator/UI fixtures and US1 scenario 6 and capture cutoff, final-score and immediate-navigation evidence in `specs/001-global-highscores/validation.md`; verify both equality and a qualifying GET followed by a non-qualifying POST that shows the updated bottom with an explanation and no success claim. This completes the internal MVP with T026, without requiring title browsing or live Azure; full US1 acceptance still needs T054's second-app-installation check. (Depends on T030; FR-009, FR-011, SC-002.)
+ 
+ **Checkpoint**: The story's independent test passes; record any remaining release-environment gap without claiming it was tested.
+ 
+@@ -106,7 +108,7 @@
+ 
+ **Independent Test**: Open from title with normal/empty/slow/hung services, start during loading, and deliver an old response during a new run. Verify top positioning, error by eight seconds, explicit read-only retry, visibly stale cache and landscape accessibility.
+ 
+-**Entry gate**: US1 checkpoint T026 complete. Default UI integration dependencies additionally preserve earlier changes to shared coordinator/views; US4 can proceed alongside the later iOS work.
++**Entry gate**: Initial publication slice T026 complete (not full US1 acceptance). Default UI integration dependencies additionally preserve earlier changes to shared coordinator/views; US4 can proceed alongside the later iOS work.
+ 
+ ### Tests
+ 
+@@ -129,7 +131,7 @@
+ 
+ **Independent Test**: Run deterministic two-writer/first-create races and 100 concurrent submissions against one Azurite container, including equal scores, duplicates and fault injection; restart the API and compare two independent clients' identical stored snapshot/version.
+ 
+-**Entry gate**: US1 checkpoint T026 complete. Default UI integration dependencies additionally preserve earlier changes to shared coordinator/views; US4 can proceed alongside the later iOS work.
++**Entry gate**: Initial publication slice T026 complete (not full US1 acceptance). Default UI integration dependencies additionally preserve earlier changes to shared coordinator/views; US4 can proceed alongside the later iOS work.
+ 
+ ### Tests
+ 
+@@ -140,7 +142,7 @@
+ ### Implementation and validation
+ 
+ - [ ] T042 [US4] Add scoped route/outcome/duration/CAS-attempt/error-class diagnostics in `src/backend/Highscores/HighscoreDiagnostics.cs` and integrate them through `src/backend/Highscores/BlobHighscoreStore.cs` and `src/backend/Program.cs`. Use no raw body/name/score-payload/IP/credential logging; preserve the bounded CAS and ambiguous-write behavior proven by T039 and the endpoint limits proven by T041. Document that throttling is per replica, not globally coordinated abuse prevention. (Depends on T039, T041; FR-009, FR-014, FR-016, FR-017.)
+-- [ ] T043 [P] [US4] Package the API in `src/backend/Dockerfile` and `src/backend/.dockerignore` using the selected serviced .NET 10 SDK/runtime, a non-root runtime user, explicit port and minimal publish output; exclude local settings, credentials and emulator/test data. Keep `/health/live` storage-independent and prepare container verification for T044 on a Docker-capable runner without making Docker a prerequisite for Azurite development. (Depends on T026; FR-003.)
++- [ ] T043 [P] [US4] Package the API in `src/backend/Dockerfile` and `src/backend/.dockerignore` using the selected serviced .NET 10 SDK/runtime, with the build image's SDK verified against repository-root `global.json`, a non-root runtime user, explicit port and minimal publish output; exclude local settings, credentials and emulator/test data. Keep `/health/live` storage-independent and prepare container verification for T044 on a Docker-capable runner without making Docker a prerequisite for Azurite development. (Depends on T026; FR-003.)
+ - [ ] T044 [US4] Execute storage fault, two-instance concurrency/restart and boundary suites; confirm real progress, exact final ranking, stable ties and persistence after process restart with no intervening writes. Record versions, acknowledged/unconfirmed/rejected outcome counts, final revision comparison and container build/run evidence or an explicit unavailable-tool limitation in `specs/001-global-highscores/validation.md`; do not claim managed-identity/Azure validation from emulator results. (Depends on T040, T042, T043; FR-001, FR-002, FR-003, FR-009, FR-016, SC-003, SC-006.)
+ 
+ **Checkpoint**: The story's independent test passes; record any remaining release-environment gap without claiming it was tested.
+@@ -151,7 +153,7 @@
+ 
+ **Independent Test**: Interrupt before qualification, before write and after write/before acknowledgement. Reconnect, explicitly refresh and relaunch; local best remains, no failed run gets a new prompt/POST, and an ambiguous save is described as unconfirmed.
+ 
+-**Entry gate**: US1 checkpoint T026 complete. Default UI integration dependencies additionally preserve earlier changes to shared coordinator/views; US4 can proceed alongside the later iOS work.
++**Entry gate**: Initial publication slice T026 complete (not full US1 acceptance). Default UI integration dependencies additionally preserve earlier changes to shared coordinator/views; US4 can proceed alongside the later iOS work.
+ 
+ ### Tests
+ 
+@@ -170,13 +172,13 @@
+ 
+ **Purpose**: Measure acceptance targets, update actual-behavior documentation and leave explicit release prerequisites.
+ 
+-**Entry gate**: Story checkpoints T026, T031, T038, T044 and T049 complete.
+-
+-- [ ] T050 Add and run `src/DonkeyTrump3DUITests/HighscorePerformanceTests.swift`: measure 100 starts/restarts across normal/delayed/unavailable services against a same-device baseline with every added latency <100 ms; measure 100 warm-service list/confirmed-submit visibility samples at <=100 ms RTT with p95 <=2 seconds. Include hung/slow-stream attempts leaving loading within eight seconds and correlate readiness with actual visible UI, not just HTTP completion; record raw timing/baseline/device configuration in `specs/001-global-highscores/validation.md`. (Depends on T031, T038, T044, T049; SC-001, SC-004.)
++**Entry gate**: Increment checkpoints T026, T031, T038, T044 and T049 complete; final cross-installation acceptance remains in T054.
++
++- [ ] T050 Add and run `src/DonkeyTrump3DUITests/HighscorePerformanceTests.swift`: measure 100 starts/restarts across normal/delayed/unavailable services against a same-device baseline with every added latency <100 ms; use T012/T025's explicit Debug integration mode against a warmed test-run-owned loopback API with isolated Azurite to measure 100 list/confirmed-submit visibility samples at <=100 ms RTT with p95 <=2 seconds. Include hung/slow-stream attempts leaving loading within eight seconds and correlate readiness with actual visible UI, not just HTTP completion; record the integration target/isolation settings and raw timing/baseline/device configuration in `specs/001-global-highscores/validation.md`. (Depends on T031, T038, T044, T049; SC-001, SC-004.)
+ - [ ] T051 [P] Add a reproducible k6 load driver in `src/backend.tests/Performance/highscores-load.js` for a warm 10 GET/s + 1 POST/s five-minute run and a separate ten-submission burst, with valid distinct run IDs, <=100 ms test RTT, latency percentiles and explicit 429/error counts. Keep the 100-writer correctness test separate and test-only elevated limits out of production; document invocation, tooling version and safe local/emulator target in `src/backend/README.md`. (Depends on T044; SC-003, SC-004.)
+ - [ ] T052 Update actual implementation/configuration/privacy behavior in `README.md`, `src/backend/README.md`, `docs/prd_spec.md`, `docs/architecture_options.md` and `docs/backlog.md`: native 3D iPhone top-100 entry points, optional public names, client-reported scores, scoped deduplication, concurrency/failure rules, async gameplay independence and no deferred upload. Reconcile design contracts in `specs/001-global-highscores/contracts/highscores.openapi.yaml` and `specs/001-global-highscores/contracts/ios-flow.md` only to validated behavior; unresolved requirement differences need an explicit decision rather than silently weakening the spec. (Depends on T050, T051; FR-001, FR-002, FR-012, FR-013, FR-016, FR-017, FR-020.)
+ - [ ] T053 Reconcile runnable commands in `specs/001-global-highscores/quickstart.md` and release/recovery steps in `docs/production-smoke-and-rollback.md`: pinned Azurite/local test setup, same-region private Hot/LRS Blob and Container Apps Consumption 0–2 replicas, HTTPS ingress, container-scoped managed-identity RBAC, credential handling, modest log retention/cost alert and warm-versus-cold behavior. Record required real subscription/region/hostname and physical iPhone 13 VoiceOver/Dynamic Type/keyboard/audio checks as release inputs/checks, with no invented values, resource provisioning, destructive score reset or release-readiness claim. (Depends on T052; FR-003, FR-013, FR-017, FR-019, FR-020.)
+-- [ ] T054 Run the documented backend build/unit/contract/Azurite/concurrency/load and iPhone 13 Swift/UI/performance checks, validate Release URL/ATS/fixture exclusion and OpenAPI examples, compare the same ranking/revision from two isolated app installations against the shared local API after a service restart, and inspect changed diagnostics/configuration for data leakage. Finalize dated requirement-to-evidence results in `specs/001-global-highscores/validation.md` with commands, simulator/device/runtime versions and pass/fail/pending status; recheck constitution v1.0.0. Physical-device, container and live Azure managed-identity checks require their actual environments and remain pending when unavailable; this task does not provision/deploy Azure or publish the app. (Depends on T053; FR-001, FR-002, FR-003, FR-004, FR-005, FR-006, FR-007, FR-008, FR-009, FR-010, FR-011, FR-012, FR-013, FR-014, FR-015, FR-016, FR-017, FR-018, FR-019, FR-020, SC-001, SC-002, SC-003, SC-004, SC-005, SC-006.)
++- [ ] T054 Run the documented backend build/unit/contract/Azurite/concurrency/load and iPhone 13 Swift/UI/performance checks, validate Release URL/ATS/fixture exclusion and OpenAPI examples, compare the same ranking/revision from two isolated app installations using T012/T025's explicit Debug integration mode against the same test-run-owned loopback API/Azurite after a service restart, and inspect changed diagnostics/configuration for data leakage. Complete US1's second-installation acceptance as well as SC-006 before finalizing dated requirement-to-evidence results in `specs/001-global-highscores/validation.md` with commands, simulator/device/runtime versions and pass/fail/pending status; recheck constitution v1.0.0. Physical-device, container and live Azure managed-identity checks require their actual environments and remain pending when unavailable; this task does not provision/deploy Azure or publish the app. (Depends on T053; FR-001, FR-002, FR-003, FR-004, FR-005, FR-006, FR-007, FR-008, FR-009, FR-010, FR-011, FR-012, FR-013, FR-014, FR-015, FR-016, FR-017, FR-018, FR-019, FR-020, SC-001, SC-002, SC-003, SC-004, SC-005, SC-006.)
+ 
+ **Checkpoint**: Local implementation evidence covers FR-001–FR-020 and SC-001–SC-006; unperformed physical-device, container or Azure checks remain explicitly pending, without a deployment claim.
+ 
+@@ -187,8 +189,8 @@
+ ```mermaid
+ flowchart TD
+     S["Setup T001–T004"] --> F["Foundation T005–T012"]
+-    F --> U1["US1: Publish T013–T026"]
+-    U1 --> U2["US2: Bottom of list T027–T031"]
++    F --> U1["Initial publication T013–T026"]
++    U1 --> U2["US2 + US1 cutoff race T027–T031"]
+     U1 --> U3["US3: Title browsing T032–T038"]
+     U1 --> U4["US4: Concurrency T039–T044"]
+     U1 --> U5["US5: Failure lifecycle T045–T049"]
+@@ -202,10 +204,10 @@
+ 
+ - **Setup**: T001 selects backend versions before T002 references them. T003 and T004 touch different files and can proceed independently.
+ - **Foundation**: T005 → T006 → T007 creates canonical/private/public backend boundaries; T008 → T010 creates the client/run/state types; T009 configures the service; T011/T012 provide separate test harnesses. All finish before US1.
+-- **US1**: T013–T016 are independent test files. Backend T018 → T019 → T020 and client T017/T021 → T022 can proceed separately. T023/T024 produce separate views; T025 joins app/UI ownership. T026 validates the complete slice.
++- **US1**: T013–T016 are independent test files. Backend T018 → T019 → T020 and client T017/T021 → T022 can proceed separately. T023/T024 produce separate views; T025 joins app/UI ownership. T026 validates only the initial publication slice; T031 covers US1 scenario 6 and T054 covers its two-installation acceptance.
+ - **US2, US3, US5**: Fixtures make each story independently testable without completing real gameplay or relying on another screen. They reuse US1. The default integration order is US2 → US3 → US5 because they edit the same coordinator/views; their independent test files can be authored in parallel after T026.
+-- **US4**: Depends on the complete US1 storage/API slice, not on later UI stories. It can run alongside US2/US3/US5. The concurrency algorithm and no-ambiguous-retry behavior already exist in T019; US4 adds exhaustive proof, observability and packaging.
+-- **Polish**: After all story checkpoints, run T050/T051 independently, then T052 → T053 → T054. T050 touches validation evidence; T051 touches the load driver/backend guide.
++- **US4**: Depends on the initial publication storage/API slice, not on later UI stories. It can run alongside US2/US3/US5. The concurrency algorithm and no-ambiguous-retry behavior already exist in T019; US4 adds exhaustive proof, observability and packaging.
++- **Polish**: After the increment checkpoints, run T050/T051 independently, then T052 → T053 → T054. T050 touches validation evidence; T051 touches the load driver/backend guide.
+ - Do not overlap edits to `Program.cs`, `HighscoreCoordinator.swift`, `RootView.swift`, `HighscoreListView.swift`, `Copy.swift` or the validation record. No actor/thread, storage or failure guarantee may be postponed merely to make a demonstration pass.
+ 
+ ### Parallel execution examples
+@@ -269,13 +271,13 @@
+ ### MVP first
+ 
+ 1. Complete Setup and Foundation (T001–T012).
+-2. Complete US1 (T013–T026) with real conditional storage, immutable run identity, bounded waits, explicit public-name consent and no deferred upload.
+-3. Demonstrate a qualifying result with the returned UUID centred/highlighted; verify storage through a second independent client. This is the **suggested internal MVP**, not release approval.
+-4. Complete US2–US5 and the cross-cutting acceptance checks before claiming the requested feature complete. All stories are P1; US4 correctness and US5 failure guarantees are not optional release work.
++2. Complete the initial publication slice (T013–T026) with real conditional storage, immutable run identity, bounded waits, explicit public-name consent and no deferred upload. This alone does not complete US1 or the MVP.
++3. Complete T027–T031, including US1 scenario 6 and the below-cutoff flow. Demonstrate both a centred published result and qualification lost during name entry with the updated bottom and no success claim. **T001–T031 is the suggested internal MVP**, not release approval or complete US1 acceptance.
++4. Complete US3–US5 and all cross-cutting checks, including T054's second-app-installation acceptance for US1/SC-006, before claiming the requested feature complete. All stories are P1; US4 correctness and US5 failure guarantees are not optional release work.
+ 
+ ### Incremental delivery and verification
+ 
+-Use the story checkpoints to validate each change without needing all later screens. Run the listed focused tests as implementation changes, then the full relevant checks in T054; broaden/repeat only for changed behavior or unresolved failures. Preserve existing audio/intro/gameplay and local best regressions. The five story checkpoints are independently reproducible using prepared storage or injected services.
++Use the increment checkpoints to validate each change without needing all later screens. Run the listed focused tests as implementation changes, then the full relevant checks in T054; broaden/repeat only for changed behavior or unresolved failures. Preserve existing audio/intro/gameplay and local best regressions. The increment checks are independently reproducible using prepared storage or injected services; full US1 acceptance explicitly joins T026, T031 and T054.
+ 
+ No login, historical receipt archive, moderation system, offline queue, backend provisioning or App Store distribution is introduced by this task list. Real Azure managed identity/permissions, container runtime, physical accessibility/audio and selected release configuration must be verified in their actual environments before release. Record unperformed checks as pending with the concrete missing input; emulator/simulator success is not a substitute.
+ 
+--- before/specs/001-global-highscores/plan.md
++++ after/specs/001-global-highscores/plan.md
+@@ -17,6 +17,8 @@
+ ## Technical Context
+ 
+ **Language/Version**: C# 14 / .NET 10 (`net10.0`); Swift 5 language mode using Xcode 27. Local SDK 10.0.302/runtime 10.0.10 verified; use a current serviced .NET 10 SDK/runtime for implementation/release validation.
++
++**SDK selection**: T001 will create repository-root `global.json` so root-level commands, `src/backend` and sibling `src/backend.tests` share one selected SDK/roll-forward policy. T001/T002 verify resolution from all three working directories; container build SDK verification is included in T043. This is planned configuration, not an existing SDK pin.
+ 
+ **Primary Dependencies**: ASP.NET Core Minimal APIs, built-in DI/options/Problem Details/rate limiting; Azure.Storage.Blobs 12.29.2 and Azure.Identity 1.21.0. Existing SwiftUI, SceneKit and Foundation/URLSession; no new iOS package dependency.
+ 
+@@ -44,7 +46,7 @@
+ | II. Simple Components and Explicit Ownership | Pass at design level: framework-independent run snapshot, main-actor coordinator, one Minimal API and sibling tests; server owns ranking | T002, T005–T010, T017–T025 |
+ | III. Correct Shared Data and Bounded Failures | Pass at design level: conditional Blob writes, reread/recompute, bounded conflict retries, unknown-write outcome, preserved local best and no deferred submission | T019, T022, T039–T041, T044–T049 |
+ | IV. Original Content and Deliberate Data Use | Pass at design level: original assets retained, explicit public-name consent, minimal data/logging, HTTPS and container-scoped managed identity | T009, T023, T041–T042, T052–T054 |
+-| V. Evidence Before Completion Claims | Pass at design level: measurable story tests, deterministic fault fixtures, separate simulator/emulator and real-device/Azure evidence | Story checkpoints T026/T031/T038/T044/T049 and final acceptance T050–T054 |
++| V. Evidence Before Completion Claims | Pass at design level: measurable story tests, deterministic fault fixtures, separate simulator/emulator and real-device/Azure evidence | Increment checkpoints T026/T031/T038/T044/T049 and final acceptance T050–T054 |
+ 
+ **Result:** No design-level constitutional exception is required. Implementation and release evidence remain pending; this gate does not certify code, accessibility, deployment or performance. The task list carries the corresponding verification work forward.
+ 
+@@ -67,7 +69,7 @@
+ └── tasks.md                    # Dependency-ordered implementation and validation work
+ ```
+ 
+-`tasks.md` contains 54 unchecked tasks across setup, foundation, the five P1 user stories and final acceptance. It is ready for cross-artifact analysis; generating it does not implement the feature.
++`tasks.md` contains 54 unchecked tasks across setup, foundation, the five P1 user stories and final acceptance. T026 validates only the initial publication slice. The internal MVP requires T031 as well, including US1's cutoff-race scenario; full US1 acceptance also requires T054's two-installation check. Generating the task list does not implement the feature.
+ 
+ ### Source Code (repository root)
+ 
+@@ -125,6 +127,7 @@
+ - Name entry is cancellable and explicitly publishes; validation failures permit name correction while still in that flow. Transport/timeout/throttling/server failures retire submission for the run. Read-only refresh never reopens eligibility. Keyboard dismissal precedes scrolling.
+ - An eight-second independent timer makes loading terminal and cancels the foreground ephemeral session task. No reconnect observer, disk queue, background upload or automatic client resend is added.
+ - Configure `HighscoreAPIBaseURL` in build/Info.plist settings, require HTTPS for Release, and expose Debug-only service/URL fixtures. Missing URL is an unavailable optional feature. Keep production ATS intact; localhost development access must be Debug-only and verified on the chosen simulator.
++- Keep normal deterministic UI fixtures on injected services. A separate explicit Debug integration mode may issue automated GET/POST requests only to a test-run-owned loopback API using isolated Azurite; reject other origins and redirects leaving the selected origin, and never fall back to a production URL. T050/T054 use this mode for warm-service visibility and two-installation checks. Production publication by autopilot/demo/test modes stays disabled, and the integration override is absent from Release.
+ - Extend English UI/privacy copy and use adaptive landscape layout and semantic text. Keep Play Again/Return to Title reachable outside loading/list content.
+ 
+ The complete UI state and cancellation contract is [contracts/ios-flow.md](contracts/ios-flow.md).
+--- before/specs/001-global-highscores/quickstart.md
++++ after/specs/001-global-highscores/quickstart.md
+@@ -25,6 +25,18 @@
+ ```
+ 
+ Expected: HTTP 200 and `Healthy`. Before implementation, `/api/v1/highscores` returns 404; that is not a working ranking service.
++
++## SDK resolution after T001/T002
++
++T001 will place `global.json` at the repository root. After T002 creates the sibling test project, verify the selected SDK from all documented working directories using the same pinned version/roll-forward policy:
++
++```sh
++dotnet --version
++(cd src/backend && dotnet --version)
++(cd src/backend.tests && dotnet --version)
++```
++
++Record the resolved version before build/test validation. A pin nested only under `src/backend` would not cover the sibling test directory and root CLI invocation consistently. This check is for the future implementation; these planning fixes do not create the SDK pin or test project.
+ 
+ ## 2. Start isolated local storage
+ 
+@@ -127,7 +139,7 @@
+   -destination 'platform=iOS Simulator,name=iPhone 13,OS=27.0' test
+ ```
+ 
+-Use the selected machine's available OS if 27.0 is absent. The implementation adds `DonkeyTrump3DUITests` to this shared scheme and provides Debug-only injected service/completed-run fixtures listed in [ios-flow.md](contracts/ios-flow.md). Automated UI fixtures must not contact a real highscore service.
++Use the selected machine's available OS if 27.0 is absent. The implementation adds `DonkeyTrump3DUITests` to this shared scheme and provides Debug-only injected service/completed-run fixtures listed in [ios-flow.md](contracts/ios-flow.md). Ordinary deterministic fixtures use injected services and make no real service calls. T012/T025 additionally provide an explicit Debug integration mode for T050/T054: automated requests may reach only a test-run-owned loopback API backed by isolated Azurite. Reject other origins and redirects leaving the selected origin; never fall back to the production URL. This mode and its launch overrides must be absent from Release. Record the selected local origin, fixture isolation and request counts for each integration run.
+ 
+ For manual local integration, configure the Debug `HighscoreAPIBaseURL` as `http://localhost:5281` with a Debug-only localhost transport allowance. Confirm Release still requires HTTPS and keeps ATS enabled. A physical iPhone cannot reach the Mac through its own localhost; use a development HTTPS deployment for the physical-device check.
+ 
+@@ -146,7 +158,7 @@
+ 
+ ## 6. Performance and deployment checks
+ 
+-Run 100 startup/restart attempts against normal and hung fixtures; compare with the same-device baseline and require <100 ms added start latency, with no request completing as a prerequisite. On a warm development backend, measure 10 reads/second plus one submission/second for five minutes and a burst of ten submissions; require p95 visible completion <=2 seconds with <=100 ms RTT. Run a separate cold-start probe and record failures/latency without misreporting them as warm-service passes.
++Run 100 startup/restart attempts against normal and hung fixtures; compare with the same-device baseline and require <100 ms added start latency, with no request completing as a prerequisite. For T050, use the explicit Debug integration mode above against the warmed local API/Azurite to measure 100 list/confirmed-submit samples with p95 visible completion <=2 seconds at <=100 ms RTT. T051 separately drives 10 reads/second plus one submission/second for five minutes and a burst of ten submissions against that isolated service; HTTP timings alone do not prove UI visibility. Use the same local integration mode for T054's two-installation check. Record real Azure warm-service measurements separately when the release environment is available. Run a separate cold-start probe and record failures/latency without misreporting them as warm-service passes.
+ 
+ Before release, package the service using a supported .NET 10 container runtime, HTTPS ingress and Container Apps Consumption 0–2 replicas. Provision the private Hot/LRS container outside the application and grant the app's managed identity container-scoped Blob data access. Set resource names, region, hostname, log retention and cost alerts from actual deployment inputs; no values are invented in this plan.
+ 
+--- before/specs/001-global-highscores/contracts/ios-flow.md
++++ after/specs/001-global-highscores/contracts/ios-flow.md
+@@ -47,8 +47,10 @@
+ 
+ Read an HTTPS `HighscoreAPIBaseURL` from build configuration for Release. Missing/invalid configuration means highscores are unavailable while gameplay works. Debug-only fixtures or URL overrides support local testing. Allow localhost development transport only in Debug, without disabling Release App Transport Security or accepting arbitrary TLS certificates. Production publication is disabled for autopilot/automation and demo modes.
+ 
++For automated integration and performance acceptance, provide a separate explicit Debug integration mode using a test-run-owned loopback API backed by isolated Azurite. Allow only the selected local origin, reject redirects leaving it, and never fall back to the production URL. The harness supplies synthetic completed runs and records requests. This exception is limited to that isolated local service; it does not permit automation to publish to production or arbitrary development endpoints. Remove the integration mode and its launch overrides from Release.
++
+ ## Required deterministic fixtures
+ 
+ Implement Debug/test fixtures `rank-1`, `rank-50`, `rank-100`, `below-cutoff`, `equal-cutoff`, `empty`, `duplicate-names`, `cutoff-race`, `validation-error`, `unavailable`, `hang`, `slow-stream`, `late-response` and `save-ack-lost`. A fixture service is injected; these names are a planned test interface, not commands supported by the current app.
+ 
+-Provide a Debug-only completed-run fixture so UI tests reach Game Over without automated gameplay publishing to a real endpoint. Validate ranks at standard/large text sizes, 100 start/restart attempts against hung and normal fixtures, and old-run responses arriving during a new run. Foreground/background and relaunch scenarios must assert no second POST, including after a lost acknowledgement. Physical VoiceOver and keyboard checks complement the automated suite.
++Provide a Debug-only completed-run fixture so UI tests reach Game Over without automated gameplay publishing to production. Ordinary deterministic fixtures use injected services; only the explicit local integration mode above contacts the isolated real API. Validate ranks at standard/large text sizes, 100 start/restart attempts against hung and normal fixtures, and old-run responses arriving during a new run. Foreground/background and relaunch scenarios must assert no second POST, including after a lost acknowledgement. Physical VoiceOver and keyboard checks complement the automated suite.
+

@@ -1,0 +1,8 @@
+{
+  "AGENTS.md": "24f26a7f9d82431caa9f9de0863d92341c72c9a48c6e94e6f26d12d052fff192",
+  ".specify/memory/constitution.md": "48aad1c55de956264342aa88070cb3d9a21a3f0985f684f19ce77cc095b73129",
+  "src/DonkeyTrump3D/App/DonkeyTrump3DApp.swift": "2e26cf3c78932f889091815849c62af0093853a267ffcf148268c18107870775",
+  "src/DonkeyTrump3D/UI/RootView.swift": "ea56d29ba79cc4a58c42a28be92878015bc490d01d2922c8503aff4ea0b64d2a",
+  "src/DonkeyTrump3DUITests/HighscoreBrowsingUITests.swift": "b64e812b8e7ede6bae6ada2c44e1f7ad51da1d867d8488038c5d784a02cb5490",
+  "src/DonkeyTrump3D/UI/Copy.swift": "8e3047ab5666709023dece4eb704e0c8480cbe93e35a180c107370236d6f7206"
+}

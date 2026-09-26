@@ -1,0 +1,382 @@
+openapi: 3.1.0
+info:
+  title: Donkey Trump Global Highscores
+  version: 1.0.0
+  description: |
+    Implemented HTTP contract; executed evidence is recorded in ../validation.md.
+    Anonymous all-time top 100 completed runs. No account or client secret.
+    All snapshots are complete, ordered and uncached. Equal scores retain
+    successful-save order. A GET never reserves a place; POST rechecks.
+    A timed-out POST may have committed. The iPhone client must not replay
+    failed/unconfirmed submissions or queue them for later publication.
+servers:
+  - url: http://localhost:5281
+    description: Local development only. Production uses the configured HTTPS origin.
+security: []
+tags:
+  - name: Highscores
+  - name: Health
+paths:
+  /api/v1/highscores:
+    get:
+      tags: [Highscores]
+      operationId: getHighscores
+      summary: Read the current complete top 100
+      description: |
+        BlobNotFound in an existing container returns an empty snapshot.
+        Missing container, corrupt data and storage failures return errors.
+        No query parameters, pagination or conditional-GET/304 path in v1.
+      responses:
+        '200':
+          description: Current observed ranking, possibly empty
+          headers:
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Snapshot'
+              examples:
+                empty:
+                  value:
+                    entries: []
+                    revision: empty
+                    fetchedAtUtc: '2026-09-26T12:00:00.000Z'
+                populated:
+                  value:
+                    entries:
+                      - entryId: 'f445cfd8-34cb-4cd4-af43-048a9f80e013'
+                        rank: 1
+                        displayName: Løkke
+                        score: 1200
+                    revision: '"0x8DE001"'
+                    fetchedAtUtc: '2026-09-26T12:00:00.000Z'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+        '500':
+          $ref: '#/components/responses/InternalError'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+    post:
+      tags: [Highscores]
+      operationId: submitHighscore
+      summary: Submit one explicitly confirmed completed run
+      description: |
+        Re-evaluate current qualification and conditionally persist the top 100.
+        Limit the entire body to 4096 bytes; reject unknown fields and numeric strings.
+        Identical canonical data for a currently ranked submissionId returns its
+        current entry without a write. Changed data for that ID returns 409.
+        There is no indefinite historical receipt guarantee after eviction.
+        At most five conditional-write attempts fit in one six-second deadline.
+        Retry only confirmed ranking conflicts, never an ambiguous write failure.
+        Client cancellation may prevent any response and cannot roll back a write.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Submission'
+            example:
+              submissionId: 'f445cfd8-34cb-4cd4-af43-048a9f80e013'
+              displayName: Løkke
+              score: 1200
+              levelReached: 2
+      responses:
+        '200':
+          description: Ranked snapshot or normal non-qualification; no separate 201 status
+          headers:
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/RankedResult'
+                  - $ref: '#/components/schemas/NotQualifiedResult'
+                discriminator:
+                  propertyName: outcome
+                  mapping:
+                    ranked: '#/components/schemas/RankedResult'
+                    notQualified: '#/components/schemas/NotQualifiedResult'
+              examples:
+                ranked:
+                  value:
+                    outcome: ranked
+                    entryId: 'f445cfd8-34cb-4cd4-af43-048a9f80e013'
+                    rank: 1
+                    entries:
+                      - entryId: 'f445cfd8-34cb-4cd4-af43-048a9f80e013'
+                        rank: 1
+                        displayName: Løkke
+                        score: 1200
+                    revision: '"0x8DE001"'
+                    fetchedAtUtc: '2026-09-26T12:00:00.000Z'
+        '400':
+          description: Invalid or malformed request; errors uses request field names when applicable
+          headers:
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+              example:
+                type: about:blank
+                title: Invalid highscore submission
+                status: 400
+                code: validation_failed
+                errors:
+                  displayName: [Enter a name containing 1–20 characters.]
+          x-error-codes: [validation_failed, malformed_request]
+        '409':
+          description: Same currently ranked run ID with different canonical data
+          headers:
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+          x-error-codes: [submission_conflict]
+        '413':
+          description: Body exceeds 4096 bytes
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+          x-error-codes: [payload_too_large]
+        '415':
+          description: Content type is not application/json
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+          x-error-codes: [unsupported_media_type]
+        '429':
+          $ref: '#/components/responses/RateLimited'
+        '500':
+          $ref: '#/components/responses/InternalError'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+  /health/live:
+    get:
+      tags: [Health]
+      operationId: getLiveness
+      summary: Check process liveness without storage access
+      responses:
+        '200':
+          description: Process can answer requests; not a storage-readiness assertion
+          content:
+            text/plain:
+              schema:
+                type: string
+                const: Healthy
+              example: Healthy
+components:
+  headers:
+    NoStore:
+      description: Prevent intermediary or HTTP-session response caching
+      schema:
+        type: string
+        const: no-store
+    RetryAfter:
+      description: |
+        Whole seconds before another service request. The game may retry an
+        explicit list read but must not schedule a score replay from this header.
+      schema:
+        type: integer
+        minimum: 1
+      example: 1
+  responses:
+    RateLimited:
+      description: Process-wide endpoint token bucket exhausted; no queued requests
+      headers:
+        Retry-After:
+          $ref: '#/components/headers/RetryAfter'
+        Cache-Control:
+          $ref: '#/components/headers/NoStore'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+      x-error-codes: [rate_limited]
+    Unavailable:
+      description: |
+        Storage unavailable/invalid, operation deadline, or exhausted conditional
+        conflicts. submission_unconfirmed means a write may already have committed.
+        Do not claim that a POST definitely failed to save based only on this status.
+      headers:
+        Cache-Control:
+          $ref: '#/components/headers/NoStore'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+          example:
+            type: about:blank
+            title: Score publication could not be confirmed
+            status: 503
+            code: submission_unconfirmed
+      x-error-codes: [service_unavailable, storage_invalid, contention_exhausted, operation_timed_out, submission_unconfirmed]
+    InternalError:
+      description: Unexpected failure, with no stack traces or storage details
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+      x-error-codes: [internal_error]
+  schemas:
+    RunId:
+      type: string
+      format: uuid
+      not:
+        const: '00000000-0000-0000-0000-000000000000'
+      description: Non-zero UUID; canonical lowercase hyphenated form in responses
+    Score:
+      type: integer
+      format: int32
+      minimum: 0
+      maximum: 2147483600
+      multipleOf: 100
+    Name:
+      type: string
+      minLength: 1
+      description: |
+        NFC-normalized and trimmed, 1–20 extended grapheme clusters and <=256
+        UTF-8 bytes after normalization. Reject Cc controls, Zl/Zp separators
+        and whitespace/formatting-only names. No uniqueness or case folding.
+        These grapheme/byte semantics require application validation; JSON
+        Schema maxLength counts code points and cannot express them exactly.
+      x-max-grapheme-clusters: 20
+      x-max-utf8-bytes: 256
+    Submission:
+      type: object
+      additionalProperties: false
+      required: [submissionId, displayName, score, levelReached]
+      properties:
+        submissionId:
+          $ref: '#/components/schemas/RunId'
+        displayName:
+          $ref: '#/components/schemas/Name'
+        score:
+          $ref: '#/components/schemas/Score'
+        levelReached:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 2147483647
+    Entry:
+      type: object
+      additionalProperties: false
+      required: [entryId, rank, displayName, score]
+      properties:
+        entryId:
+          $ref: '#/components/schemas/RunId'
+        rank:
+          type: integer
+          minimum: 1
+          maximum: 100
+        displayName:
+          $ref: '#/components/schemas/Name'
+        score:
+          $ref: '#/components/schemas/Score'
+    Entries:
+      type: array
+      maxItems: 100
+      uniqueItems: true
+      items:
+        $ref: '#/components/schemas/Entry'
+      description: |
+        IDs must be unique; ranks must be contiguous from 1; scores descend.
+        Equal scores follow persisted successful-save order. These cross-row
+        invariants require application validation beyond uniqueItems.
+    Revision:
+      type: string
+      minLength: 1
+      maxLength: 256
+      description: Opaque storage ETag, including its quoting, or the literal string 'empty' before first creation
+    ObservedAt:
+      type: string
+      format: date-time
+      description: UTC RFC 3339 timestamp serialized with milliseconds and Z suffix
+    Snapshot:
+      type: object
+      additionalProperties: false
+      required: [entries, revision, fetchedAtUtc]
+      properties:
+        entries:
+          $ref: '#/components/schemas/Entries'
+        revision:
+          $ref: '#/components/schemas/Revision'
+        fetchedAtUtc:
+          $ref: '#/components/schemas/ObservedAt'
+    RankedResult:
+      type: object
+      additionalProperties: false
+      required: [outcome, entryId, rank, entries, revision, fetchedAtUtc]
+      properties:
+        outcome:
+          type: string
+          const: ranked
+        entryId:
+          $ref: '#/components/schemas/RunId'
+        rank:
+          type: integer
+          minimum: 1
+          maximum: 100
+        entries:
+          allOf:
+            - $ref: '#/components/schemas/Entries'
+          minItems: 1
+        revision:
+          $ref: '#/components/schemas/Revision'
+        fetchedAtUtc:
+          $ref: '#/components/schemas/ObservedAt'
+      description: Root entryId/rank must match one row in this exact snapshot
+    NotQualifiedResult:
+      type: object
+      additionalProperties: false
+      required: [outcome, entries, revision, fetchedAtUtc]
+      properties:
+        outcome:
+          type: string
+          const: notQualified
+        entries:
+          allOf:
+            - $ref: '#/components/schemas/Entries'
+          minItems: 100
+        revision:
+          $ref: '#/components/schemas/Revision'
+        fetchedAtUtc:
+          $ref: '#/components/schemas/ObservedAt'
+      description: Valid non-qualification requires a full list; no root entryId or rank
+    Problem:
+      type: object
+      required: [type, title, status, code]
+      properties:
+        type:
+          type: string
+          format: uri-reference
+        title:
+          type: string
+        status:
+          type: integer
+          minimum: 400
+          maximum: 599
+        code:
+          type: string
+          enum: [validation_failed, malformed_request, submission_conflict, payload_too_large, unsupported_media_type, rate_limited, service_unavailable, storage_invalid, contention_exhausted, operation_timed_out, submission_unconfirmed, internal_error]
+        detail:
+          type: string
+          description: Safe human-readable explanation without private data
+        instance:
+          type: string
+        traceId:
+          type: string
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            minItems: 1
+            items:
+              type: string

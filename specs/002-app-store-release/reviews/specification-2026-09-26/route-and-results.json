@@ -1,0 +1,71 @@
+{
+  "date": "2026-09-26",
+  "lead": {
+    "tool": "Codex",
+    "vendor": "OpenAI",
+    "modelID": "not exposed in session metadata",
+    "reasoning": "not exposed in session metadata"
+  },
+  "reviewer": {
+    "tool": "Claude Code",
+    "version": "2.1.283 (Claude Code)",
+    "vendor": "Anthropic",
+    "model": "claude-opus-5-5",
+    "effortFlag": "high",
+    "effortEnvironment": "CLAUDE_CODE_EFFORT_LEVEL=high",
+    "effortLimitWarning": "None in the successful plain-text probe; stderr empty",
+    "effortAttestationLimit": "Provider result confirms canonical model/usage, not a separate effective-effort value",
+    "mode": "isolated temporary cwd; safe mode; tools disabled; strict empty MCP; no session persistence"
+  },
+  "sessions": [
+    {
+      "artifact": "probe-json.stdout",
+      "sessionID": "fcf133a0-648b-4aa8-b432-bd2e5c401563",
+      "isError": false,
+      "result": "success",
+      "exitCode": 0,
+      "canonicalModel": "claude-opus-5-5",
+      "provider": "firstParty",
+      "inputTokens": 2,
+      "outputTokens": 16,
+      "cacheReadInputTokens": 1886,
+      "cacheCreationInputTokens": 0
+    },
+    {
+      "artifact": "review.jsonl",
+      "sessionID": "af1b4458-397a-4653-97a7-518ddf8e75e2",
+      "isError": false,
+      "result": "success",
+      "exitCode": 0,
+      "canonicalModel": "claude-opus-5-5",
+      "provider": "firstParty",
+      "inputTokens": 2,
+      "outputTokens": 12034,
+      "cacheReadInputTokens": 1459,
+      "cacheCreationInputTokens": 45689
+    },
+    {
+      "artifact": "focused.jsonl",
+      "sessionID": "1501017a-3ceb-4810-8f7b-21b1ccb034e6",
+      "isError": false,
+      "result": "success",
+      "exitCode": 0,
+      "canonicalModel": "claude-opus-5-5",
+      "provider": "firstParty",
+      "inputTokens": 2,
+      "outputTokens": 4164,
+      "cacheReadInputTokens": 1459,
+      "cacheCreationInputTokens": 31091
+    }
+  ],
+  "packets": {
+    "review-packet.txt": {
+      "sha256": "c002108f9014bf5a00995da454a6a3c75397a02157bcf065300216ae2e8a2cb1",
+      "bytes": 135194
+    },
+    "focused-packet.txt": {
+      "sha256": "669edb96c9129487aee705a9984c96bb054b7f315ee6176319a27cd281b3025a",
+      "bytes": 91235
+    }
+  }
+}

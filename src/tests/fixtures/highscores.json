@@ -1,0 +1,1465 @@
+{
+  "names": [
+    {
+      "id": "danish",
+      "input": "  Løkke  ",
+      "canonical": "Løkke",
+      "valid": true
+    },
+    {
+      "id": "decomposed",
+      "input": "Åse",
+      "canonical": "Åse",
+      "valid": true
+    },
+    {
+      "id": "emoji",
+      "input": "👩🏽‍🚀",
+      "canonical": "👩🏽‍🚀",
+      "valid": true
+    },
+    {
+      "id": "20-graphemes",
+      "input": "aaaaaaaaaaaaaaaaaaaa",
+      "canonical": "aaaaaaaaaaaaaaaaaaaa",
+      "valid": true
+    },
+    {
+      "id": "256-bytes",
+      "input": "A͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜B",
+      "canonical": "A͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜B",
+      "valid": true
+    },
+    {
+      "id": "punctuation",
+      "input": "<Løkke & Co>",
+      "canonical": "<Løkke & Co>",
+      "valid": true
+    },
+    {
+      "id": "empty",
+      "input": "",
+      "valid": false,
+      "error": "displayName"
+    },
+    {
+      "id": "spaces",
+      "input": "   ",
+      "valid": false,
+      "error": "displayName"
+    },
+    {
+      "id": "21-graphemes",
+      "input": "aaaaaaaaaaaaaaaaaaaaa",
+      "valid": false,
+      "error": "displayName"
+    },
+    {
+      "id": "257-bytes",
+      "input": "A͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜͜",
+      "valid": false,
+      "error": "displayName"
+    },
+    {
+      "id": "newline",
+      "input": "Løkke\n",
+      "valid": false,
+      "error": "displayName"
+    },
+    {
+      "id": "control",
+      "input": "A\u0000B",
+      "valid": false,
+      "error": "displayName"
+    },
+    {
+      "id": "line-separator",
+      "input": "A B",
+      "valid": false,
+      "error": "displayName"
+    },
+    {
+      "id": "paragraph-separator",
+      "input": "A B",
+      "valid": false,
+      "error": "displayName"
+    },
+    {
+      "id": "format-only",
+      "input": "​‍",
+      "valid": false,
+      "error": "displayName"
+    }
+  ],
+  "scores": [
+    {
+      "value": -1,
+      "valid": false
+    },
+    {
+      "value": 0,
+      "valid": true
+    },
+    {
+      "value": 100,
+      "valid": true
+    },
+    {
+      "value": 101,
+      "valid": false
+    },
+    {
+      "value": 2147483600,
+      "valid": true
+    },
+    {
+      "value": 2147483647,
+      "valid": false
+    }
+  ],
+  "levels": [
+    {
+      "value": 0,
+      "valid": false
+    },
+    {
+      "value": 1,
+      "valid": true
+    },
+    {
+      "value": 2147483647,
+      "valid": true
+    },
+    {
+      "value": 2147483648,
+      "valid": false
+    }
+  ],
+  "ids": [
+    {
+      "value": "00000000-0000-0000-0000-000000000000",
+      "valid": false
+    },
+    {
+      "value": "f445cfd8-34cb-4cd4-af43-048a9f80e013",
+      "valid": true
+    },
+    {
+      "value": "invalid",
+      "valid": false
+    }
+  ],
+  "snapshots": [
+    {
+      "id": "rows-0",
+      "valid": true,
+      "snapshot": {
+        "entries": [],
+        "revision": "empty",
+        "fetchedAtUtc": "2026-09-26T12:00:00.000Z"
+      }
+    },
+    {
+      "id": "rows-99",
+      "valid": true,
+      "snapshot": {
+        "entries": [
+          {
+            "entryId": "00000000-0000-0000-0000-000000000001",
+            "rank": 1,
+            "displayName": "Duplicate",
+            "score": 10000
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000002",
+            "rank": 2,
+            "displayName": "Duplicate",
+            "score": 10000
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000003",
+            "rank": 3,
+            "displayName": "Player 3",
+            "score": 9800
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000004",
+            "rank": 4,
+            "displayName": "Player 4",
+            "score": 9700
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000005",
+            "rank": 5,
+            "displayName": "Player 5",
+            "score": 9600
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000006",
+            "rank": 6,
+            "displayName": "Player 6",
+            "score": 9500
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000007",
+            "rank": 7,
+            "displayName": "Player 7",
+            "score": 9400
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000008",
+            "rank": 8,
+            "displayName": "Player 8",
+            "score": 9300
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000009",
+            "rank": 9,
+            "displayName": "Player 9",
+            "score": 9200
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000010",
+            "rank": 10,
+            "displayName": "Player 10",
+            "score": 9100
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000011",
+            "rank": 11,
+            "displayName": "Player 11",
+            "score": 9000
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000012",
+            "rank": 12,
+            "displayName": "Player 12",
+            "score": 8900
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000013",
+            "rank": 13,
+            "displayName": "Player 13",
+            "score": 8800
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000014",
+            "rank": 14,
+            "displayName": "Player 14",
+            "score": 8700
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000015",
+            "rank": 15,
+            "displayName": "Player 15",
+            "score": 8600
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000016",
+            "rank": 16,
+            "displayName": "Player 16",
+            "score": 8500
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000017",
+            "rank": 17,
+            "displayName": "Player 17",
+            "score": 8400
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000018",
+            "rank": 18,
+            "displayName": "Player 18",
+            "score": 8300
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000019",
+            "rank": 19,
+            "displayName": "Player 19",
+            "score": 8200
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000020",
+            "rank": 20,
+            "displayName": "Player 20",
+            "score": 8100
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000021",
+            "rank": 21,
+            "displayName": "Player 21",
+            "score": 8000
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000022",
+            "rank": 22,
+            "displayName": "Player 22",
+            "score": 7900
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000023",
+            "rank": 23,
+            "displayName": "Player 23",
+            "score": 7800
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000024",
+            "rank": 24,
+            "displayName": "Player 24",
+            "score": 7700
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000025",
+            "rank": 25,
+            "displayName": "Player 25",
+            "score": 7600
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000026",
+            "rank": 26,
+            "displayName": "Player 26",
+            "score": 7500
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000027",
+            "rank": 27,
+            "displayName": "Player 27",
+            "score": 7400
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000028",
+            "rank": 28,
+            "displayName": "Player 28",
+            "score": 7300
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000029",
+            "rank": 29,
+            "displayName": "Player 29",
+            "score": 7200
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000030",
+            "rank": 30,
+            "displayName": "Player 30",
+            "score": 7100
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000031",
+            "rank": 31,
+            "displayName": "Player 31",
+            "score": 7000
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000032",
+            "rank": 32,
+            "displayName": "Player 32",
+            "score": 6900
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000033",
+            "rank": 33,
+            "displayName": "Player 33",
+            "score": 6800
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000034",
+            "rank": 34,
+            "displayName": "Player 34",
+            "score": 6700
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000035",
+            "rank": 35,
+            "displayName": "Player 35",
+            "score": 6600
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000036",
+            "rank": 36,
+            "displayName": "Player 36",
+            "score": 6500
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000037",
+            "rank": 37,
+            "displayName": "Player 37",
+            "score": 6400
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000038",
+            "rank": 38,
+            "displayName": "Player 38",
+            "score": 6300
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000039",
+            "rank": 39,
+            "displayName": "Player 39",
+            "score": 6200
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000040",
+            "rank": 40,
+            "displayName": "Player 40",
+            "score": 6100
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000041",
+            "rank": 41,
+            "displayName": "Player 41",
+            "score": 6000
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000042",
+            "rank": 42,
+            "displayName": "Player 42",
+            "score": 5900
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000043",
+            "rank": 43,
+            "displayName": "Player 43",
+            "score": 5800
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000044",
+            "rank": 44,
+            "displayName": "Player 44",
+            "score": 5700
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000045",
+            "rank": 45,
+            "displayName": "Player 45",
+            "score": 5600
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000046",
+            "rank": 46,
+            "displayName": "Player 46",
+            "score": 5500
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000047",
+            "rank": 47,
+            "displayName": "Player 47",
+            "score": 5400
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000048",
+            "rank": 48,
+            "displayName": "Player 48",
+            "score": 5300
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000049",
+            "rank": 49,
+            "displayName": "Player 49",
+            "score": 5200
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000050",
+            "rank": 50,
+            "displayName": "Player 50",
+            "score": 5100
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000051",
+            "rank": 51,
+            "displayName": "Player 51",
+            "score": 5000
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000052",
+            "rank": 52,
+            "displayName": "Player 52",
+            "score": 4900
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000053",
+            "rank": 53,
+            "displayName": "Player 53",
+            "score": 4800
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000054",
+            "rank": 54,
+            "displayName": "Player 54",
+            "score": 4700
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000055",
+            "rank": 55,
+            "displayName": "Player 55",
+            "score": 4600
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000056",
+            "rank": 56,
+            "displayName": "Player 56",
+            "score": 4500
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000057",
+            "rank": 57,
+            "displayName": "Player 57",
+            "score": 4400
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000058",
+            "rank": 58,
+            "displayName": "Player 58",
+            "score": 4300
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000059",
+            "rank": 59,
+            "displayName": "Player 59",
+            "score": 4200
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000060",
+            "rank": 60,
+            "displayName": "Player 60",
+            "score": 4100
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000061",
+            "rank": 61,
+            "displayName": "Player 61",
+            "score": 4000
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000062",
+            "rank": 62,
+            "displayName": "Player 62",
+            "score": 3900
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000063",
+            "rank": 63,
+            "displayName": "Player 63",
+            "score": 3800
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000064",
+            "rank": 64,
+            "displayName": "Player 64",
+            "score": 3700
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000065",
+            "rank": 65,
+            "displayName": "Player 65",
+            "score": 3600
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000066",
+            "rank": 66,
+            "displayName": "Player 66",
+            "score": 3500
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000067",
+            "rank": 67,
+            "displayName": "Player 67",
+            "score": 3400
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000068",
+            "rank": 68,
+            "displayName": "Player 68",
+            "score": 3300
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000069",
+            "rank": 69,
+            "displayName": "Player 69",
+            "score": 3200
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000070",
+            "rank": 70,
+            "displayName": "Player 70",
+            "score": 3100
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000071",
+            "rank": 71,
+            "displayName": "Player 71",
+            "score": 3000
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000072",
+            "rank": 72,
+            "displayName": "Player 72",
+            "score": 2900
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000073",
+            "rank": 73,
+            "displayName": "Player 73",
+            "score": 2800
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000074",
+            "rank": 74,
+            "displayName": "Player 74",
+            "score": 2700
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000075",
+            "rank": 75,
+            "displayName": "Player 75",
+            "score": 2600
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000076",
+            "rank": 76,
+            "displayName": "Player 76",
+            "score": 2500
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000077",
+            "rank": 77,
+            "displayName": "Player 77",
+            "score": 2400
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000078",
+            "rank": 78,
+            "displayName": "Player 78",
+            "score": 2300
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000079",
+            "rank": 79,
+            "displayName": "Player 79",
+            "score": 2200
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000080",
+            "rank": 80,
+            "displayName": "Player 80",
+            "score": 2100
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000081",
+            "rank": 81,
+            "displayName": "Player 81",
+            "score": 2000
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000082",
+            "rank": 82,
+            "displayName": "Player 82",
+            "score": 1900
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000083",
+            "rank": 83,
+            "displayName": "Player 83",
+            "score": 1800
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000084",
+            "rank": 84,
+            "displayName": "Player 84",
+            "score": 1700
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000085",
+            "rank": 85,
+            "displayName": "Player 85",
+            "score": 1600
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000086",
+            "rank": 86,
+            "displayName": "Player 86",
+            "score": 1500
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000087",
+            "rank": 87,
+            "displayName": "Player 87",
+            "score": 1400
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000088",
+            "rank": 88,
+            "displayName": "Player 88",
+            "score": 1300
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000089",
+            "rank": 89,
+            "displayName": "Player 89",
+            "score": 1200
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000090",
+            "rank": 90,
+            "displayName": "Player 90",
+            "score": 1100
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000091",
+            "rank": 91,
+            "displayName": "Player 91",
+            "score": 1000
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000092",
+            "rank": 92,
+            "displayName": "Player 92",
+            "score": 900
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000093",
+            "rank": 93,
+            "displayName": "Player 93",
+            "score": 800
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000094",
+            "rank": 94,
+            "displayName": "Player 94",
+            "score": 700
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000095",
+            "rank": 95,
+            "displayName": "Player 95",
+            "score": 600
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000096",
+            "rank": 96,
+            "displayName": "Player 96",
+            "score": 500
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000097",
+            "rank": 97,
+            "displayName": "Player 97",
+            "score": 400
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000098",
+            "rank": 98,
+            "displayName": "Player 98",
+            "score": 300
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000099",
+            "rank": 99,
+            "displayName": "Player 99",
+            "score": 200
+          }
+        ],
+        "revision": "\"fixture\"",
+        "fetchedAtUtc": "2026-09-26T12:00:00.000Z"
+      }
+    },
+    {
+      "id": "rows-100",
+      "valid": true,
+      "snapshot": {
+        "entries": [
+          {
+            "entryId": "00000000-0000-0000-0000-000000000001",
+            "rank": 1,
+            "displayName": "Duplicate",
+            "score": 10000
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000002",
+            "rank": 2,
+            "displayName": "Duplicate",
+            "score": 10000
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000003",
+            "rank": 3,
+            "displayName": "Player 3",
+            "score": 9800
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000004",
+            "rank": 4,
+            "displayName": "Player 4",
+            "score": 9700
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000005",
+            "rank": 5,
+            "displayName": "Player 5",
+            "score": 9600
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000006",
+            "rank": 6,
+            "displayName": "Player 6",
+            "score": 9500
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000007",
+            "rank": 7,
+            "displayName": "Player 7",
+            "score": 9400
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000008",
+            "rank": 8,
+            "displayName": "Player 8",
+            "score": 9300
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000009",
+            "rank": 9,
+            "displayName": "Player 9",
+            "score": 9200
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000010",
+            "rank": 10,
+            "displayName": "Player 10",
+            "score": 9100
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000011",
+            "rank": 11,
+            "displayName": "Player 11",
+            "score": 9000
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000012",
+            "rank": 12,
+            "displayName": "Player 12",
+            "score": 8900
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000013",
+            "rank": 13,
+            "displayName": "Player 13",
+            "score": 8800
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000014",
+            "rank": 14,
+            "displayName": "Player 14",
+            "score": 8700
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000015",
+            "rank": 15,
+            "displayName": "Player 15",
+            "score": 8600
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000016",
+            "rank": 16,
+            "displayName": "Player 16",
+            "score": 8500
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000017",
+            "rank": 17,
+            "displayName": "Player 17",
+            "score": 8400
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000018",
+            "rank": 18,
+            "displayName": "Player 18",
+            "score": 8300
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000019",
+            "rank": 19,
+            "displayName": "Player 19",
+            "score": 8200
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000020",
+            "rank": 20,
+            "displayName": "Player 20",
+            "score": 8100
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000021",
+            "rank": 21,
+            "displayName": "Player 21",
+            "score": 8000
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000022",
+            "rank": 22,
+            "displayName": "Player 22",
+            "score": 7900
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000023",
+            "rank": 23,
+            "displayName": "Player 23",
+            "score": 7800
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000024",
+            "rank": 24,
+            "displayName": "Player 24",
+            "score": 7700
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000025",
+            "rank": 25,
+            "displayName": "Player 25",
+            "score": 7600
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000026",
+            "rank": 26,
+            "displayName": "Player 26",
+            "score": 7500
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000027",
+            "rank": 27,
+            "displayName": "Player 27",
+            "score": 7400
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000028",
+            "rank": 28,
+            "displayName": "Player 28",
+            "score": 7300
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000029",
+            "rank": 29,
+            "displayName": "Player 29",
+            "score": 7200
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000030",
+            "rank": 30,
+            "displayName": "Player 30",
+            "score": 7100
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000031",
+            "rank": 31,
+            "displayName": "Player 31",
+            "score": 7000
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000032",
+            "rank": 32,
+            "displayName": "Player 32",
+            "score": 6900
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000033",
+            "rank": 33,
+            "displayName": "Player 33",
+            "score": 6800
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000034",
+            "rank": 34,
+            "displayName": "Player 34",
+            "score": 6700
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000035",
+            "rank": 35,
+            "displayName": "Player 35",
+            "score": 6600
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000036",
+            "rank": 36,
+            "displayName": "Player 36",
+            "score": 6500
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000037",
+            "rank": 37,
+            "displayName": "Player 37",
+            "score": 6400
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000038",
+            "rank": 38,
+            "displayName": "Player 38",
+            "score": 6300
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000039",
+            "rank": 39,
+            "displayName": "Player 39",
+            "score": 6200
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000040",
+            "rank": 40,
+            "displayName": "Player 40",
+            "score": 6100
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000041",
+            "rank": 41,
+            "displayName": "Player 41",
+            "score": 6000
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000042",
+            "rank": 42,
+            "displayName": "Player 42",
+            "score": 5900
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000043",
+            "rank": 43,
+            "displayName": "Player 43",
+            "score": 5800
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000044",
+            "rank": 44,
+            "displayName": "Player 44",
+            "score": 5700
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000045",
+            "rank": 45,
+            "displayName": "Player 45",
+            "score": 5600
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000046",
+            "rank": 46,
+            "displayName": "Player 46",
+            "score": 5500
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000047",
+            "rank": 47,
+            "displayName": "Player 47",
+            "score": 5400
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000048",
+            "rank": 48,
+            "displayName": "Player 48",
+            "score": 5300
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000049",
+            "rank": 49,
+            "displayName": "Player 49",
+            "score": 5200
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000050",
+            "rank": 50,
+            "displayName": "Player 50",
+            "score": 5100
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000051",
+            "rank": 51,
+            "displayName": "Player 51",
+            "score": 5000
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000052",
+            "rank": 52,
+            "displayName": "Player 52",
+            "score": 4900
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000053",
+            "rank": 53,
+            "displayName": "Player 53",
+            "score": 4800
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000054",
+            "rank": 54,
+            "displayName": "Player 54",
+            "score": 4700
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000055",
+            "rank": 55,
+            "displayName": "Player 55",
+            "score": 4600
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000056",
+            "rank": 56,
+            "displayName": "Player 56",
+            "score": 4500
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000057",
+            "rank": 57,
+            "displayName": "Player 57",
+            "score": 4400
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000058",
+            "rank": 58,
+            "displayName": "Player 58",
+            "score": 4300
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000059",
+            "rank": 59,
+            "displayName": "Player 59",
+            "score": 4200
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000060",
+            "rank": 60,
+            "displayName": "Player 60",
+            "score": 4100
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000061",
+            "rank": 61,
+            "displayName": "Player 61",
+            "score": 4000
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000062",
+            "rank": 62,
+            "displayName": "Player 62",
+            "score": 3900
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000063",
+            "rank": 63,
+            "displayName": "Player 63",
+            "score": 3800
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000064",
+            "rank": 64,
+            "displayName": "Player 64",
+            "score": 3700
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000065",
+            "rank": 65,
+            "displayName": "Player 65",
+            "score": 3600
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000066",
+            "rank": 66,
+            "displayName": "Player 66",
+            "score": 3500
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000067",
+            "rank": 67,
+            "displayName": "Player 67",
+            "score": 3400
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000068",
+            "rank": 68,
+            "displayName": "Player 68",
+            "score": 3300
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000069",
+            "rank": 69,
+            "displayName": "Player 69",
+            "score": 3200
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000070",
+            "rank": 70,
+            "displayName": "Player 70",
+            "score": 3100
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000071",
+            "rank": 71,
+            "displayName": "Player 71",
+            "score": 3000
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000072",
+            "rank": 72,
+            "displayName": "Player 72",
+            "score": 2900
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000073",
+            "rank": 73,
+            "displayName": "Player 73",
+            "score": 2800
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000074",
+            "rank": 74,
+            "displayName": "Player 74",
+            "score": 2700
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000075",
+            "rank": 75,
+            "displayName": "Player 75",
+            "score": 2600
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000076",
+            "rank": 76,
+            "displayName": "Player 76",
+            "score": 2500
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000077",
+            "rank": 77,
+            "displayName": "Player 77",
+            "score": 2400
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000078",
+            "rank": 78,
+            "displayName": "Player 78",
+            "score": 2300
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000079",
+            "rank": 79,
+            "displayName": "Player 79",
+            "score": 2200
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000080",
+            "rank": 80,
+            "displayName": "Player 80",
+            "score": 2100
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000081",
+            "rank": 81,
+            "displayName": "Player 81",
+            "score": 2000
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000082",
+            "rank": 82,
+            "displayName": "Player 82",
+            "score": 1900
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000083",
+            "rank": 83,
+            "displayName": "Player 83",
+            "score": 1800
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000084",
+            "rank": 84,
+            "displayName": "Player 84",
+            "score": 1700
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000085",
+            "rank": 85,
+            "displayName": "Player 85",
+            "score": 1600
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000086",
+            "rank": 86,
+            "displayName": "Player 86",
+            "score": 1500
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000087",
+            "rank": 87,
+            "displayName": "Player 87",
+            "score": 1400
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000088",
+            "rank": 88,
+            "displayName": "Player 88",
+            "score": 1300
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000089",
+            "rank": 89,
+            "displayName": "Player 89",
+            "score": 1200
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000090",
+            "rank": 90,
+            "displayName": "Player 90",
+            "score": 1100
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000091",
+            "rank": 91,
+            "displayName": "Player 91",
+            "score": 1000
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000092",
+            "rank": 92,
+            "displayName": "Player 92",
+            "score": 900
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000093",
+            "rank": 93,
+            "displayName": "Player 93",
+            "score": 800
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000094",
+            "rank": 94,
+            "displayName": "Player 94",
+            "score": 700
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000095",
+            "rank": 95,
+            "displayName": "Player 95",
+            "score": 600
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000096",
+            "rank": 96,
+            "displayName": "Player 96",
+            "score": 500
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000097",
+            "rank": 97,
+            "displayName": "Player 97",
+            "score": 400
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000098",
+            "rank": 98,
+            "displayName": "Player 98",
+            "score": 300
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000099",
+            "rank": 99,
+            "displayName": "Player 99",
+            "score": 200
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000100",
+            "rank": 100,
+            "displayName": "Player 100",
+            "score": 100
+          }
+        ],
+        "revision": "\"fixture\"",
+        "fetchedAtUtc": "2026-09-26T12:00:00.000Z"
+      }
+    },
+    {
+      "id": "duplicate-id",
+      "valid": false,
+      "snapshot": {
+        "entries": [
+          {
+            "entryId": "00000000-0000-0000-0000-000000000001",
+            "rank": 1,
+            "displayName": "Duplicate",
+            "score": 10000
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000001",
+            "rank": 2,
+            "displayName": "Duplicate",
+            "score": 9900
+          }
+        ],
+        "revision": "\"fixture\"",
+        "fetchedAtUtc": "2026-09-26T12:00:00.000Z"
+      }
+    },
+    {
+      "id": "bad-rank",
+      "valid": false,
+      "snapshot": {
+        "entries": [
+          {
+            "entryId": "00000000-0000-0000-0000-000000000001",
+            "rank": 2,
+            "displayName": "Duplicate",
+            "score": 10000
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000002",
+            "rank": 2,
+            "displayName": "Duplicate",
+            "score": 9900
+          }
+        ],
+        "revision": "\"fixture\"",
+        "fetchedAtUtc": "2026-09-26T12:00:00.000Z"
+      }
+    },
+    {
+      "id": "increasing-score",
+      "valid": false,
+      "snapshot": {
+        "entries": [
+          {
+            "entryId": "00000000-0000-0000-0000-000000000001",
+            "rank": 1,
+            "displayName": "Duplicate",
+            "score": 10000
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000002",
+            "rank": 2,
+            "displayName": "Duplicate",
+            "score": 20000
+          }
+        ],
+        "revision": "\"fixture\"",
+        "fetchedAtUtc": "2026-09-26T12:00:00.000Z"
+      }
+    },
+    {
+      "id": "zero-id",
+      "valid": false,
+      "snapshot": {
+        "entries": [
+          {
+            "entryId": "00000000-0000-0000-0000-000000000000",
+            "rank": 1,
+            "displayName": "Duplicate",
+            "score": 10000
+          },
+          {
+            "entryId": "00000000-0000-0000-0000-000000000002",
+            "rank": 2,
+            "displayName": "Duplicate",
+            "score": 9900
+          }
+        ],
+        "revision": "\"fixture\"",
+        "fetchedAtUtc": "2026-09-26T12:00:00.000Z"
+      }
+    }
+  ]
+}

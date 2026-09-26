@@ -1,0 +1,11 @@
+--- a/AGENTS.md
++++ b/AGENTS.md
+@@ -82,7 +82,7 @@
+ | Author vendor | Required reviewer route | Specified fallback |
+ |---|---|---|
+ | Anthropic | Codex, model `gpt-6-astra`, reasoning `xhigh` | None |
+-| Any other vendor | Claude Code, model `claude-opus-5.5`, reasoning `high` | GitHub Copilot with `--model claude-opus-5.5 --reasoning-effort high` |
++| Any other vendor | Claude Code, model `claude-opus-5-5` (Opus 5.5), reasoning `high` | GitHub Copilot with `--model claude-opus-5.5 --reasoning-effort high` |
+ 
+ Before a real review, verify authenticated access to the required tool, exact model
+ and reasoning setting using a harmless probe without repository data. Inspect the

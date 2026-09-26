@@ -1,0 +1,133 @@
+{
+  "date": "2026-09-26",
+  "lead": {
+    "tool": "Codex",
+    "vendor": "OpenAI",
+    "exactModel": "not exposed in session metadata",
+    "reasoning": "not exposed in session metadata"
+  },
+  "reviewer": {
+    "tool": "Claude Code",
+    "version": "2.1.283",
+    "vendor": "Anthropic",
+    "requestedModel": "claude-opus-5-5",
+    "effortFlag": "high",
+    "CLAUDE_CODE_EFFORT_LEVEL": "high",
+    "effortVerification": "Explicit flag and environment; successful plain-text probe with no effort-limit warning. Provider metadata confirms canonical model and usage, but does not separately attest effective effort.",
+    "isolation": "temporary cwd, --safe-mode, empty tools, strict empty MCP, no session persistence"
+  },
+  "sessions": [
+    {
+      "record": "probe-json.stdout",
+      "sessionID": "978a772a-ef7e-4ac3-9752-ad1e357115bd",
+      "exitCode": 0,
+      "subtype": "success",
+      "isError": false,
+      "canonicalModel": "claude-opus-5-5",
+      "provider": "firstParty",
+      "inputTokens": 2,
+      "outputTokens": 16,
+      "cacheReadInputTokens": 1891,
+      "cacheCreationInputTokens": 0,
+      "toolVersion": "2.1.283"
+    },
+    {
+      "record": "resume-json.stdout",
+      "sessionID": "d8871d73-6568-4400-807b-8a03b2f96984",
+      "exitCode": 0,
+      "subtype": "success",
+      "isError": false,
+      "canonicalModel": "claude-opus-5-5",
+      "provider": "firstParty",
+      "inputTokens": 2,
+      "outputTokens": 16,
+      "cacheReadInputTokens": 1891,
+      "cacheCreationInputTokens": 0,
+      "toolVersion": "2.1.283"
+    },
+    {
+      "record": "backend-review.jsonl",
+      "sessionID": "1c23230b-f863-47b4-97d9-467358ec202a",
+      "exitCode": 0,
+      "subtype": "success",
+      "isError": false,
+      "canonicalModel": "claude-opus-5-5",
+      "provider": "firstParty",
+      "inputTokens": 2,
+      "outputTokens": 18428,
+      "cacheReadInputTokens": 1459,
+      "cacheCreationInputTokens": 88609,
+      "toolVersion": "2.1.283"
+    },
+    {
+      "record": "ios-review.jsonl",
+      "sessionID": "98698636-31f6-4722-97e7-db45ecc37529",
+      "exitCode": 0,
+      "subtype": "success",
+      "isError": false,
+      "canonicalModel": "claude-opus-5-5",
+      "provider": "firstParty",
+      "inputTokens": 4,
+      "outputTokens": 18464,
+      "cacheReadInputTokens": 139813,
+      "cacheCreationInputTokens": 136895,
+      "toolVersion": "2.1.283"
+    },
+    {
+      "record": "final-review.jsonl",
+      "sessionID": "2c324087-b4aa-435f-a7ea-7edaa09fe363",
+      "exitCode": 0,
+      "subtype": "success",
+      "isError": false,
+      "canonicalModel": "claude-opus-5-5",
+      "provider": "firstParty",
+      "inputTokens": 2,
+      "outputTokens": 6943,
+      "cacheReadInputTokens": 531,
+      "cacheCreationInputTokens": 109203,
+      "toolVersion": "2.1.283"
+    },
+    {
+      "record": "doc-review.jsonl",
+      "sessionID": "521f561e-baad-494e-ab83-a8044d73ec6a",
+      "exitCode": 0,
+      "subtype": "success",
+      "isError": false,
+      "canonicalModel": "claude-opus-5-5",
+      "provider": "firstParty",
+      "inputTokens": 2,
+      "outputTokens": 3167,
+      "cacheReadInputTokens": 1459,
+      "cacheCreationInputTokens": 49761,
+      "toolVersion": "2.1.283"
+    }
+  ],
+  "packets": {
+    "backend-packet.txt": {
+      "sha256": "3cdb7782dd282a2c3d886f0f7afefd2006a149d9c208a80e09940b52fc8c9010",
+      "bytes": 218602
+    },
+    "ios-packet.txt": {
+      "sha256": "3f1654153421bd20deb22818fdfad1e6e26970fe046b8b425ac38b9570cf0ba2",
+      "bytes": 336255
+    },
+    "final-review-packet.txt": {
+      "sha256": "f7b1a4a1a8c1c68d43a2cbaeb2c2a697a42d63f46c3121b59e452aa0edd12ec4",
+      "bytes": 280147
+    },
+    "doc-review-packet.txt": {
+      "sha256": "c9701632c70b62ac1f97c97b98279e86d96176d3dfb6f332fe7258618c067843",
+      "bytes": 124954
+    }
+  },
+  "plainTextProbes": {
+    "original": "REVIEW_ROUTE_OK; exit 0; empty stderr; no effort warning",
+    "resumption": "REVIEW_ROUTE_OK; exit 0; empty stderr; no effort warning"
+  },
+  "failedWholePacketAttempt": {
+    "exit": "timeout after 900 seconds; no completed verdict",
+    "completedVerdict": false,
+    "apiRetryEvents": 6,
+    "cause": "Not established. Unknown API retry events, then the 900-second bound; no approval inferred."
+  }
+}

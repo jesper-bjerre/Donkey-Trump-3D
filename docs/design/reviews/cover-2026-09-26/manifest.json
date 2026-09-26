@@ -1,0 +1,17 @@
+{
+  "README.md": "1e684d2749f91bef2cd7578d50fb190ad80b6055df6f4215aba200492b23c298",
+  "src/DonkeyTrump3D.xcodeproj/project.pbxproj": "65a3640343a8ff30f152155a1a3d5c1753368817a1a4db7af05bc5faa57c6c8e",
+  "src/DonkeyTrump3D/Resources/LaunchScreen.storyboard": "64746774ba248c775105d9847e47d5859126c909696fa40109ff86082f2ab09f",
+  "src/DonkeyTrump3D/Resources/Assets.xcassets/LaunchCover.imageset/Contents.json": "a6ed8ed89f18bb3aaddd71da03e2258f4a58c2d19ed360c94de54d6b1c188acd",
+  "src/DonkeyTrump3D/Resources/Assets.xcassets/LaunchCover.imageset/DonkeyTrumpCover.png": "89a8112846e8cfa154feaf486f990d024af9d218b5b773b790eea84099e7674d",
+  "docs/design/cover-art.md": "c8a32f9b2af686300cda05e3e62a76b19e62f6eb9230270557bd930b5b6b13bb",
+  "docs/design/cover-validation.md": "4abe780bcddbb9296c345babb7d2f3af7f8aa688a8f6bfa5201265188fec195b",
+  "specs/002-app-store-release/spec.md": "8e3ce3673f9d1283fb411873d1ebe9319b8bce9acecf7ff71daadbdb76cbca84",
+  "specs/002-app-store-release/source-notes.md": "d97bcd99582df510ff13ab9966f3522522bcc57d98a840d2a939eb783c88cc7d",
+  "specs/002-app-store-release/checklists/requirements.md": "112e887c83db5f79550d218f00381741da88d7834960bbe68901b283f23b6695",
+  "docs/design/evidence/cover-2026-09-26/check-results.txt": "fd8255aba0afce2a3533bc6b3ce879af62c3fc9bd63fc573c61939b6b3360909",
+  "docs/design/evidence/cover-2026-09-26/launch-layout.png": "6d27df9e16bb5d18a22915cb405eaec61adc7b1ba846d39df02139ed9f3bc66e",
+  "docs/design/evidence/cover-2026-09-26/ordinary-launch-frame.png": "9edbd154fe1fe9dbcf48800ee4582d13436e33e905a0c23be2f9787fec0e21f0",
+  "docs/design/evidence/cover-2026-09-26/title-after-launch.png": "58f03599c17c6e5bb136877134d8ef7d49d15d8cebdfd7d4c115af561abf209c",
+  "docs/design/images/DonkeyTrumpCover.png": "89a8112846e8cfa154feaf486f990d024af9d218b5b773b790eea84099e7674d"
+}

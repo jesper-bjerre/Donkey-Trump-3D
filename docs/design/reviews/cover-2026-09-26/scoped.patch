@@ -1,0 +1,283 @@
+--- captured-before/README.md
++++ candidate/README.md
+@@ -3,6 +3,8 @@
+ A native iPhone 3D remake of the [Donkey Trump](../Donkey-Trump) browser game, and the same political satire. You play Jumpman Løkke, climbing sloped red truss girders and ladders up a half-built **Trump Tower, Nuuk** to rescue Motzfeldt. Donkey Trump throws barrels stencilled `TARIFFS` down at you from the top. Every new game opens with the cutscene: Trump carries Motzfeldt to the top, then signs an **EXECUTIVE ORDER: ALL GIRDERS SLANTED**, and the girders tilt one by one.
+ 
+ Swift + SceneKit + SwiftUI. The iOS app has no third-party dependencies, accounts or tracking. It includes optional [global top-100 highscores](specs/001-global-highscores/spec.md) backed by a small [ASP.NET Core/Blob service](src/backend/README.md). Gameplay works independently of backend availability; a production HTTPS service URL must be configured before online use.
++
++Cold startup shows the owner's [Donkey Trump cover](docs/design/images/DonkeyTrumpCover.png), fitted without cropping over a dark background, then proceeds directly to the game. The [cover record](docs/design/cover-art.md) preserves its source prompt and possible use alongside App Store gameplay captures.
+ 
+ ## Run
+ 
+@@ -79,4 +81,6 @@
+ 
+ ## Asset originality
+ 
+-Every model, texture and effect is generated in code, and the sounds are the web game's original synthesized WAVs. No Nintendo or Donkey Kong material is used. This is an original satirical parody, not affiliated with any game publisher or politician.
++The 3D gameplay models, textures and effects are generated in code, and the soundtrack uses the project's synthesized audio. The launch screen also bundles the owner's prompt-generated cover illustration; its source and prompt are retained in [the cover provenance record](docs/design/cover-art.md). The generation tool and licensing terms were not supplied, and the release content/rights assessment remains open under [FR-006](specs/002-app-store-release/spec.md).
++
++References to the classic arcade game's style are design inspiration, not authorization to copy Nintendo/Donkey Kong assets or a claim of rights clearance. This is an original satirical parody, not affiliated with any game publisher or politician.
+--- captured-before/src/DonkeyTrump3D.xcodeproj/project.pbxproj
++++ candidate/src/DonkeyTrump3D.xcodeproj/project.pbxproj
+@@ -288,7 +288,7 @@
+ 				INFOPLIST_KEY_GCSupportsControllerUserInteraction = YES;
+ 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.arcade-games";
+ 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
++				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+ 				INFOPLIST_KEY_UIStatusBarHidden = YES;
+ 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+ 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+@@ -321,7 +321,7 @@
+ 				INFOPLIST_KEY_GCSupportsControllerUserInteraction = YES;
+ 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.arcade-games";
+ 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
++				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+ 				INFOPLIST_KEY_UIStatusBarHidden = YES;
+ 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+ 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+--- /dev/null
++++ candidate/src/DonkeyTrump3D/Resources/LaunchScreen.storyboard
+@@ -0,0 +1,41 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="24506" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="launch-controller">
++    <device id="retina6_1" orientation="landscape" appearance="dark"/>
++    <dependencies>
++        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24504"/>
++        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
++        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
++    </dependencies>
++    <scenes>
++        <scene sceneID="launch-scene">
++            <objects>
++                <viewController id="launch-controller" sceneMemberID="viewController">
++                    <view key="view" contentMode="scaleToFill" id="launch-view">
++                        <rect key="frame" x="0.0" y="0.0" width="844" height="390"/>
++                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
++                        <subviews>
++                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" image="LaunchCover" translatesAutoresizingMaskIntoConstraints="NO" id="launch-cover">
++                                <rect key="frame" x="47" y="0.0" width="750" height="369"/>
++                                <accessibility key="accessibilityConfiguration">
++                                    <bool key="isElement" value="NO"/>
++                                </accessibility>
++                            </imageView>
++                        </subviews>
++                        <viewLayoutGuide key="safeArea" id="launch-safe-area"/>
++                        <color key="backgroundColor" red="0.02352941176" green="0.06274509804" blue="0.1529411765" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
++                        <constraints>
++                            <constraint firstItem="launch-cover" firstAttribute="leading" secondItem="launch-safe-area" secondAttribute="leading" id="cover-leading"/>
++                            <constraint firstItem="launch-cover" firstAttribute="trailing" secondItem="launch-safe-area" secondAttribute="trailing" id="cover-trailing"/>
++                            <constraint firstItem="launch-cover" firstAttribute="top" secondItem="launch-safe-area" secondAttribute="top" id="cover-top"/>
++                            <constraint firstItem="launch-cover" firstAttribute="bottom" secondItem="launch-safe-area" secondAttribute="bottom" id="cover-bottom"/>
++                        </constraints>
++                    </view>
++                </viewController>
++                <placeholder placeholderIdentifier="IBFirstResponder" id="launch-responder" userLabel="First Responder" sceneMemberID="firstResponder"/>
++            </objects>
++        </scene>
++    </scenes>
++    <resources>
++        <image name="LaunchCover" width="1672" height="941"/>
++    </resources>
++</document>
+--- /dev/null
++++ candidate/src/DonkeyTrump3D/Resources/Assets.xcassets/LaunchCover.imageset/Contents.json
+@@ -0,0 +1,12 @@
++{
++  "images": [
++    {
++      "filename": "DonkeyTrumpCover.png",
++      "idiom": "universal"
++    }
++  ],
++  "info": {
++    "author": "xcode",
++    "version": 1
++  }
++}
+--- /dev/null
++++ candidate/docs/design/cover-art.md
+@@ -0,0 +1,40 @@
++# Donkey Trump cover artwork
++
++Added to the app's launch/loading screen at the owner's request on 2026-09-26.
++
++## Source and intended use
++
++- Source: [DonkeyTrumpCover.png](images/DonkeyTrumpCover.png), supplied by the owner.
++- PNG, 1672 × 941 pixels, opaque, landscape. Preserve this master unchanged.
++- The owner describes it as generated from the prompt below. The generation tool/model, date and its licensing terms were not supplied; the prompt records provenance and intent, not a legal clearance.
++- The prompt identifies the intended satirical characters as Donald Trump, Lars Løkke Rasmussen ("Jumpman Løkke") and Vivian Motzfeldt. Its references to the original arcade game describe visual inspiration; the implemented product remains the native 3D game.
++
++## App behavior
++
++The asset catalog bundles a byte-identical copy as `LaunchCover`. [LaunchScreen.storyboard](../../src/DonkeyTrump3D/Resources/LaunchScreen.storyboard) shows the complete illustration proportionally inside the safe area over a dark navy background. Both Debug and Release use that system launch screen while the app starts. There is no artificial minimum display time, download, progress counter or tap-to-continue gate. The system dismisses it when the app is ready; returning from the background may show the app's own saved snapshot instead.
++
++The title menu, interactive 3D scene and intro remain the game's normal next screens. The illustrated cover is a distinct piece of key art and does not claim to depict the rendered 3D gameplay.
++
++See [validation evidence](cover-validation.md) for the simulator captures, build checks and remaining physical-device release checks.
++
++## Possible App Store use
++
++Retain the image as a candidate for decorative framing or supporting promotional artwork around genuine gameplay captures. It is not itself an App Store gameplay screenshot or a replacement for the required in-use screenshot set. Apple requires screenshots to show the app in use, rather than merely title art or a splash screen; image/text overlays may support the actual app capture. See [App Review Guidelines 2.3.3](https://developer.apple.com/app-store/review/guidelines/#accurate-metadata).
++
++The current master is not automatically a correctly sized screenshot for the required large-iPhone display slots, and this task does not resize it into or upload a store asset. During release preparation, inspect the resulting composition at its submitted size, retain truthful 3D imagery, and complete the content/provenance assessment already required by [FR-006](../../specs/002-app-store-release/spec.md). The cover does not replace the app icon.
++
++## Owner-provided generation prompt
++
++The prompt is retained as supplied, including its original spelling and line-break notation:
++
++```text
++create et image, a landing page / game start screen\
++for my game
++"Donkey Trump"\
++**ivian Motzfeldt (født 1972):** Grønlandsk politiker, Lars Løkke Rasmussen og Donald Trump skal være på forsiden. De skal være tegnet i donkey kong stil, skal være satirisk.
++Spillet er det gamle klassiske Donkey Kong spil. Spillet skal hedde “Donkey Trump”.
++Jumpman skal se ud som den danske udenrigsminister Lars Løkke Rasmussen (tegnet). Han skal hedde “Jumpman Løkke” i spillet.
++Han skal redde “Motzfeldt” som står på toppen i hvert level.
++Donkey Kong skal ligne en sur Donald Trump (tegnet).\
++Lars Løkke er jumpman. Motzfeldt skal reddes.
++```
+--- /dev/null
++++ candidate/docs/design/cover-validation.md
+@@ -0,0 +1,61 @@
++# Cover startup validation — 2026-09-26
++
++Scope: the owner's supplied cover as the local iOS launch/loading screen, its provenance and optional App Store reuse. The wider App Store release remains specification work. No store assets were uploaded and no submission was sent.
++
++## Implemented behavior
++
++`LaunchCover` bundles the original PNG unchanged. Both app configurations select `LaunchScreen.storyboard`. Its image view uses aspect fit and safe-area edge constraints on navy, without runtime code, network access or an artificial minimum display time. The existing title menu, SceneKit scene, intro and settings code are unchanged.
++
++Original and bundled SHA-256: `89a8112846e8cfa154feaf486f990d024af9d218b5b773b790eea84099e7674d`.
++
++## Executed checks
++
++Environment: Xcode 27.0 (27A266a), iOS 27.0 simulator, iPhone 13. A disposable simulator named `Donkey Trump Cover Check` (`A49BD606-3350-4A5D-9D16-57DAE73D3B6F`) isolated the capture from the owner's simulator data. These are simulator results, not physical-device or distribution-signing evidence.
++
++| Check | Result |
++|---|---|
++| Debug and Release simulator builds | Passed, including storyboard/asset compilation. |
++| Built configuration | Both select `UILaunchStoryboardName=LaunchScreen`, have no generated `UILaunchScreen` dictionary, and contain `LaunchScreen.storyboardc`. The compiled asset catalog contains the 1672 × 941 opaque `LaunchCover`. |
++| Original / bundled image | Exact byte match; original master unchanged. |
++| Normal launch of locally signed Release build after reinstall | Cover visible, whole title and all three figures present, proportional image with navy borders. Automatically reaches the 3D title menu. No debugger or imposed delay in this recording. |
++| Existing `HighscoreBrowsingUITests` | 3 passed, 0 failures: title/list/empty refresh; Start during hung fetch; stale/error and larger-text navigation in both landscape orientations. |
++| Focused repeat with locally signed Debug build | `testStartDuringHungFetchAndNoLateReopening` passed again, 0 failures. Start reaches the intro's Skip control while the highscore request is hung. |
++| Documents and project | Property-list/XML/JSON syntax, local links, unique specification IDs, 16 quality checklist marks and scoped before/after changes checked. |
++
++Compact actual output: [check-results.txt](evidence/cover-2026-09-26/check-results.txt).
++
++### Visual evidence
++
++- [Ordinary launch frame](evidence/cover-2026-09-26/ordinary-launch-frame.png): frame at 1.6 seconds in the unpaused screen recording. The video canvas retains the simulator's initial portrait orientation, so the landscape app appears rotated in this raw frame.
++- [Launch layout](evidence/cover-2026-09-26/launch-layout.png): direct landscape simulator screenshot of the same native launch screen, held using `simctl launch --wait-for-debugger` **only to inspect its layout**. This held capture is not evidence of normal display duration; the ordinary recording above verifies automatic startup.
++- [Title after launch](evidence/cover-2026-09-26/title-after-launch.png): direct screenshot after the ordinary Release launch, showing the existing 3D menu and controls.
++
++The lead inspected all three captures against the source illustration. No illustration pixels were edited to create these captures.
++
++### Reproduction
++
++Use an available iPhone 13 simulator ID for `$DT3D_SIM_ID`. Local simulator signing must remain enabled to validate the native launch screen:
++
++```sh
++xcodebuild -project src/DonkeyTrump3D.xcodeproj -scheme DonkeyTrump3D \
++  -destination 'generic/platform=iOS Simulator' \
++  -derivedDataPath /tmp/dt3d-cover-release -configuration Release \
++  CODE_SIGNING_ALLOWED=YES CODE_SIGN_IDENTITY=- build
++
++xcodebuild -project src/DonkeyTrump3D.xcodeproj -scheme DonkeyTrump3D \
++  -destination "platform=iOS Simulator,id=$DT3D_SIM_ID" \
++  -derivedDataPath /tmp/dt3d-cover-build -configuration Debug \
++  -collect-test-diagnostics never -parallel-testing-enabled NO \
++  -only-testing:DonkeyTrump3DUITests/HighscoreBrowsingUITests/testStartDuringHungFetchAndNoLateReopening \
++  CODE_SIGNING_ALLOWED=YES CODE_SIGN_IDENTITY=- test
++```
++
++The initial full three-test run selected `-only-testing:DonkeyTrump3DUITests/HighscoreBrowsingUITests` with `CODE_SIGNING_ALLOWED=NO`. It passed navigation checks, but an unsigned app gave a black native launch screen: SpringBoard logged `Security error -67056` while validating the storyboard. Rebuilding with local ad-hoc signing, verifying with `codesign --verify --deep --strict`, and reinstalling resolved that observation without changing application code. Unsigned captures are not counted as cover acceptance evidence.
++
++For a normal capture, install the signed Release app using `xcrun simctl install`, begin `xcrun simctl io "$DT3D_SIM_ID" recordVideo`, then `xcrun simctl launch "$DT3D_SIM_ID" com.hyldenbrandt.donkeytrump3d`. End recording after the title scene appears. Do not hold the app in a debugger when checking automatic transition.
++
++## Limits and remaining release work
++
++This validates the focused resource/configuration change. Full physical gameplay, both-orientation cold-launch capture on hardware, minimum-supported iOS 26 behavior, distribution signing and the broader release gates remain future release checks. The repeated Start test reaches the intro; it is not a new full-gameplay endurance test. Existing audio-simulator diagnostics and the build's informational App Intents warning do not establish physical audio behavior.
++
++The App Store image set, content-rights assessment and account declarations remain governed by [the release specification](../../specs/002-app-store-release/spec.md). The original prompt and truthful store-use limits are in [cover-art.md](cover-art.md).
+--- captured-before/specs/002-app-store-release/spec.md
++++ candidate/specs/002-app-store-release/spec.md
+@@ -26,6 +26,7 @@
+ 2. **Given** the candidate's normal player experience, **When** screenshots are prepared, **Then** five ordered landscape screenshots show representative gameplay and features, without invented scenes, debug controls, real players' personal information or claims absent from the candidate.
+ 3. **Given** iPhone-only distribution, **When** media is validated, **Then** the icon and required screenshot sets meet Apple's current accepted format, size and content requirements; larger-display requirements are not assumed satisfied by iPhone 13 captures alone.
+ 4. **Given** original satirical content, **When** copy and images are reviewed, **Then** the page preserves the no-affiliation statement, avoids copied third-party assets and makes no unsupported endorsement or licensing claim.
++5. **Given** a cold app launch, **When** startup is in progress, **Then** the owner's Donkey Trump cover appears proportionally with its full title and characters visible and yields to the usable game without an artificial delay or network dependency. Possible store use is supporting key art around actual game captures, never a substitute for the in-use screenshot set.
+ 
+ ### User Story 2 - Receive a working and supportable release (Priority: P1)
+ 
+@@ -128,6 +129,7 @@
+ - **FR-021**: Completion MUST leave a validated, unsent version ready for the owner's review submission, with no remaining copy, media, declaration or build-selection work. The actual version/draft state and direct Connect link MUST be recorded. Apple review, response to later review feedback and final release belong to the owner and are outside this preparation scope.
+ - **FR-022**: A durable release record MUST identify artifact and candidate identities, version/build, saved Connect values, media verification, checks, declaration evidence, processing/draft status and blockers. It MUST support safe resumption without duplicate records or blind retries and give the owner concise submission and later manual-release instructions.
+ - **FR-023**: Preparation MUST preserve the constitution and independent cross-vendor review process. Specification, implementation, candidate readiness, upload, review submission, Apple approval and publication MUST be reported separately. Agent consensus does not authorize sending the owner's submission or publishing the app.
++- **FR-024**: The app MUST use the owner-supplied [DonkeyTrumpCover.png](../../docs/design/images/DonkeyTrumpCover.png) during startup, preserving its proportions and the full motif across supported landscape layouts. Startup MUST remain local and automatically yield to the game without a minimum display timer or extra action. The original image and supplied prompt MUST be retained as provenance. Store use is optional supporting artwork subject to FR-004–FR-006; it MUST NOT imply that the illustration is actual 3D gameplay or replace the required in-use screenshots.
+ 
+ ### Key Entities
+ 
+@@ -149,12 +151,14 @@
+ - **SC-005**: Reopening the store-management page shows the intended saved text, images and exact tested build, with no duplicate app or accidental changes to other versions.
+ - **SC-006**: The owner can submit the prepared version for review without supplying further copy, images, declarations or builds. There are zero agent-initiated review submissions or public releases; manual release is selected for later owner control.
+ - **SC-007**: After an interruption, the release record identifies completed work, external processing, remaining blockers and the next action without reconstructing materials or build identity from chat history.
++- **SC-008**: Cold-launch checks show the complete supplied illustration without distortion or cut-off title/characters, followed by a reachable title menu and playable game, with no added waiting period or network requirement. The retained source matches the bundled cover, and any store composition distinguishes the illustration from actual gameplay.
+ 
+ ## Assumptions
+ 
+ - **Confirmed by the owner on 2026-09-26:** iPhone only; free in all countries where applicable requirements can be met; the owner personally submits to Apple's review. The original request's final-release wording is narrowed by that later explicit answer. Review submission and final public release are not agent actions.
++- **Owner follow-up on 2026-09-26:** use the supplied cover as the loading screen and consider it for App Store artwork. This authorizes the focused launch-screen integration before the broader release plan; [cover-art.md](../../docs/design/cover-art.md) retains the image provenance and store-use boundaries.
+ - English store and in-game copy follow the existing constitution; additional localization is not in scope. The existing game name and original parody identity remain unless a concrete rights or eligibility problem requires an explicit product decision. Games/Arcade is the category direction, subject to current store choices and truthful classification. No child-directed positioning is assumed.
+-- This invocation creates the specification and quality evidence. Producing release assets, modifying the candidate, publishing pages/services and writing Connect data belong to the subsequent implementation of this specification.
++- The original invocation created the specification and quality evidence. Apart from the explicitly authorized cover integration above, producing release assets, modifying the candidate, publishing pages/services and writing Connect data belong to the subsequent implementation of this specification.
+ - Highscores remain part of the release with anonymous/no-login play and no deferred uploads. Minimum public-name safeguards are expressly included in this release scope. No chat, player accounts, tracking, purchases or additional language is introduced.
+ - Public support/privacy pages and necessary production service setup are included. Real hosting ownership, cost constraints, contact details, copyright owner, signing access and legal/trader facts must be established before dependent actions. Secrets and private contact evidence must stay outside the repository.
+ - The owner's signed-in Chrome session is the intended access route. Actual account access, permissions, app existence and saved values are unverified: browser initialization failed before connection in this specification session. No external reading, saving or submission is claimed.
+--- captured-before/specs/002-app-store-release/source-notes.md
++++ candidate/specs/002-app-store-release/source-notes.md
+@@ -44,3 +44,7 @@
+ Implementation must verify the organization/app, account role, prior distribution/device-support constraints, signing/upload access, required account-holder agreements, contact/copyright/trader facts and intended cloud/public-site resources. Request missing facts together after inspecting available account/project evidence. Unknown legal terms or attestations must not be accepted by guessing.
+ 
+ The owner-confirmed scope is complete enough for planning despite those execution dependencies. Browser access, production setup, physical evidence, media creation and Connect entry have not been performed or reported as successful in this specification phase.
++
++## Follow-up: owner-supplied cover
++
++On 2026-09-26 the owner supplied [DonkeyTrumpCover.png](../../docs/design/images/DonkeyTrumpCover.png) and its generation prompt, requesting loading-screen use and possible App Store reuse. The image is a 1672 × 941 opaque landscape illustration; the [provenance/use record](../../docs/design/cover-art.md) preserves the prompt and separates this focused startup change from the remaining release work. FR-024/SC-008 cover this new request. Apple's [Guideline 2.3.3](https://developer.apple.com/app-store/review/guidelines/#accurate-metadata), checked for this follow-up, calls for in-use screenshots rather than only title/splash art; supporting overlays can accompany truthful gameplay captures.
+--- captured-before/specs/002-app-store-release/checklists/requirements.md
++++ candidate/specs/002-app-store-release/checklists/requirements.md
+@@ -36,3 +36,4 @@
+ - Traceability: US1 covers FR-003–FR-006 / SC-002; US2 covers FR-007–FR-008 and FR-011–FR-016 / SC-003–SC-004; US3 covers FR-001–FR-002, FR-009–FR-010 and FR-017–FR-019 / SC-001, SC-005; US4 covers FR-020–FR-021, FR-023 / SC-006; US5 covers FR-022 and candidate/evidence continuity / SC-007.
+ - The owner confirmed iPhone-only, free eligible territories and personally submitting to Apple's review. English follows the constitution. Owner-specific facts and account access are execution dependencies with testable gates, not invented values or unresolved scope questions.
+ - Validation includes required sections, unique FR/SC identifiers, acceptance scenarios, relative links and the feature pointer. Earlier feature artifacts are preserved. Independent review is recorded separately once the specification passes its checks.
++- Cover follow-up (2026-09-26): US1 scenario 5, FR-024 and SC-008 add proportional local startup art, preserved source/prompt and optional truthful store reuse. All 16 requirements-quality criteria still apply; the earlier review record remains tied to its original pre-cover content.
+--- /dev/null
++++ candidate/docs/design/evidence/cover-2026-09-26/check-results.txt
+@@ -0,0 +1,24 @@
++Debug build:
++** BUILD SUCCEEDED **
++Release build:
++** BUILD SUCCEEDED **
++Signed Release build:
++** BUILD SUCCEEDED **
++Browsing regression tests:
++Test Case '-[DonkeyTrump3DUITests.HighscoreBrowsingUITests testStaleErrorAndLargeLandscapeNavigation]' passed (19.993 seconds).
++Test Case '-[DonkeyTrump3DUITests.HighscoreBrowsingUITests testStartDuringHungFetchAndNoLateReopening]' passed (9.591 seconds).
++Test Case '-[DonkeyTrump3DUITests.HighscoreBrowsingUITests testTitleListAndEmptyReadOnlyRefresh]' passed (23.417 seconds).
++	 Executed 3 tests, with 0 failures (0 unexpected) in 53.002 (53.008) seconds
++	 Executed 3 tests, with 0 failures (0 unexpected) in 53.002 (53.010) seconds
++	 Executed 3 tests, with 0 failures (0 unexpected) in 53.002 (53.012) seconds
++** TEST SUCCEEDED **
++Signed Debug focused regression:
++Test Case '-[DonkeyTrump3DUITests.HighscoreBrowsingUITests testStartDuringHungFetchAndNoLateReopening]' passed (7.966 seconds).
++	 Executed 1 test, with 0 failures (0 unexpected) in 7.966 (7.974) seconds
++	 Executed 1 test, with 0 failures (0 unexpected) in 7.966 (7.977) seconds
++	 Executed 1 test, with 0 failures (0 unexpected) in 7.966 (7.979) seconds
++** TEST SUCCEEDED **
++Debug: UILaunchStoryboardName=LaunchScreen; UILaunchScreen absent; compiled storyboard present
++Release: UILaunchStoryboardName=LaunchScreen; UILaunchScreen absent; compiled storyboard present
++Original/bundled SHA-256: 89a8112846e8cfa154feaf486f990d024af9d218b5b773b790eea84099e7674d
++Document check: XML/JSON/plist valid; local Markdown links resolve; 24 unique FR and 8 unique SC IDs; 16 quality marks; project diff limited to both launch storyboard settings.

@@ -1,0 +1,32 @@
+--- code-approved/specs/001-global-highscores/spec.md
++++ final/specs/001-global-highscores/spec.md
+@@ -6,7 +6,7 @@
+ 
+ **Created**: 2026-09-26
+ 
+-**Status**: Draft — requirements reviewed; feature not implemented
++**Status**: Implemented and locally validated; see [validation.md](validation.md). Physical-device, container and live Azure release checks remain pending. No deployment or release claim.
+ 
+ **Input**: The iPhone game needs a shared top-100 highscore list. After Game Over, qualifying players enter a name and see their score centred in the list. Non-qualifying players see the bottom. The list is also available from the title screen and must never delay starting a game. Scores must survive service restarts and simultaneous submissions. Keep the solution simple and inexpensive.
+ 
+@@ -156,4 +156,4 @@
+ - Network access is required only for fresh highscores, qualification and publication. Gameplay remains independent of the shared service.
+ - Moderation tools, verified replays, score archives and regional rankings require separate scope decisions.
+ - Hosting access and a deployed service address are dependencies for end-to-end release validation. User-specified backend constraints and storage recommendations appear separately in [technical-proposal.md](technical-proposal.md).
+-- [Constitution v1.0.0](../../.specify/memory/constitution.md), ratified 2026-09-26, governs this feature; the plan's current review and implementation tasks apply its principles. This feature supersedes the earlier product document's exclusion of public leaderboards; current gameplay remains unchanged until implementation.
++- [Constitution v1.0.0](../../.specify/memory/constitution.md), ratified 2026-09-26, governs this feature; the plan's current review and implementation tasks apply its principles. The implemented highscore feature supersedes the earlier product document's exclusion of public leaderboards and preserves the existing gameplay rules.
+
+--- code-approved/specs/001-global-highscores/validation.md
++++ final/specs/001-global-highscores/validation.md
+@@ -40,9 +40,9 @@
+ 
+ Docker is not installed on this Mac. No Azure deployment identity/hostname or physical-device results are supplied. Container execution, real Azure identity/storage and physical iPhone accessibility/audio remain release checks requiring their actual environments; local emulator/simulator tests cannot replace them.
+ 
+-## Independent review
++## Independent review — historical checkpoint after T026 (2026-09-26)
+ 
+-Pending until implementation and required local checks finish. No unfinished candidate has been submitted for completion review.
++At this checkpoint, independent review was pending completion of the remaining implementation and required local checks. No unfinished candidate was submitted for completion review. The later review findings and final dispositions are recorded separately.
+ 
+ ## T031 — nonqualification and cutoff race (2026-09-26)
+ 

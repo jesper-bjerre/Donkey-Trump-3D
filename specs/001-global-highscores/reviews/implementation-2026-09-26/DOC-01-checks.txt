@@ -1,0 +1,6 @@
+specs/001-global-highscores/spec.md: all relative links resolve
+FR-001–FR-020 and SC-001–SC-006 requirement lines unchanged; stale status wording removed
+specs/001-global-highscores/validation.md: all relative links resolve
+Pre-review status explicitly dated as historical; acceptance evidence unchanged
+git diff --check: passed (tracked diff); explicit changed-document checks include untracked files
+Only spec.md and validation.md differ from the code-approved manifest; 54 task IDs remain checked

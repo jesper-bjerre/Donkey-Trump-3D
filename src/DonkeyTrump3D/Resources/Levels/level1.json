@@ -1,0 +1,157 @@
+{
+  "id": "level-1",
+  "name": "Girder Warm-Up",
+  "order": 1,
+  "dimensions": {
+    "width": 800,
+    "height": 600
+  },
+  "playerSpawn": {
+    "x": 60,
+    "y": 579.1
+  },
+  "girders": [
+    {
+      "id": "g0",
+      "x1": 0,
+      "y1": 580,
+      "x2": 800,
+      "y2": 568,
+      "visualKey": "platform.placeholder",
+      "collisionMode": "slope-line"
+    },
+    {
+      "id": "g1",
+      "x1": 0,
+      "y1": 480,
+      "x2": 740,
+      "y2": 500,
+      "visualKey": "platform.placeholder",
+      "collisionMode": "slope-line"
+    },
+    {
+      "id": "g2",
+      "x1": 60,
+      "y1": 390,
+      "x2": 800,
+      "y2": 370,
+      "visualKey": "platform.placeholder",
+      "collisionMode": "slope-line"
+    },
+    {
+      "id": "g3",
+      "x1": 0,
+      "y1": 260,
+      "x2": 740,
+      "y2": 280,
+      "visualKey": "platform.placeholder",
+      "collisionMode": "slope-line"
+    },
+    {
+      "id": "g4",
+      "x1": 60,
+      "y1": 170,
+      "x2": 800,
+      "y2": 150,
+      "visualKey": "platform.placeholder",
+      "collisionMode": "slope-line"
+    },
+    {
+      "id": "g5",
+      "x1": 300,
+      "y1": 70,
+      "x2": 460,
+      "y2": 70,
+      "visualKey": "platform.placeholder",
+      "collisionMode": "slope-line"
+    }
+  ],
+  "ladders": [
+    {
+      "id": "l0",
+      "x": 590,
+      "y": 496.2,
+      "width": 20,
+      "height": 74.8,
+      "snapX": 600,
+      "climbSpeedOverride": null
+    },
+    {
+      "id": "l1",
+      "x": 140,
+      "y": 387.6,
+      "width": 20,
+      "height": 96.5,
+      "snapX": 150,
+      "climbSpeedOverride": null
+    },
+    {
+      "id": "l2",
+      "x": 550,
+      "y": 275.1,
+      "width": 20,
+      "height": 101.4,
+      "snapX": 560,
+      "climbSpeedOverride": null
+    },
+    {
+      "id": "l3",
+      "x": 190,
+      "y": 166.2,
+      "width": 20,
+      "height": 99.2,
+      "snapX": 200,
+      "climbSpeedOverride": null
+    },
+    {
+      "id": "l4",
+      "x": 430,
+      "y": 70,
+      "width": 20,
+      "height": 89.7,
+      "snapX": 440,
+      "climbSpeedOverride": null
+    }
+  ],
+  "boss": {
+    "x": 720,
+    "y": 152.2,
+    "spriteKey": "boss.trumpInspired",
+    "spawnAnchorOffset": {
+      "x": -44,
+      "y": -24
+    }
+  },
+  "barrels": {
+    "spriteKey": "barrel.original",
+    "spawnIntervalMs": 3200,
+    "firstSpawnDelayMs": 1500,
+    "speedMin": 90,
+    "speedMax": 120,
+    "gravityY": 500,
+    "platformFollowMode": "slope",
+    "maxActive": 5,
+    "route": {
+      "ladderDropChance": 0,
+      "directThrowChance": 0.2
+    }
+  },
+  "rescue": {
+    "x": 304,
+    "y": 18,
+    "width": 56,
+    "height": 52,
+    "spriteKey": "rescue.motzfeldt",
+    "objectiveKey": "motzfeldt",
+    "isFinalLevel": false
+  },
+  "difficulty": {
+    "tier": 1,
+    "label": "easy"
+  },
+  "tuning": {
+    "jumpClearanceRequired": true,
+    "maxDirectJumpPx": 48,
+    "minFloorGapPx": 68
+  }
+}

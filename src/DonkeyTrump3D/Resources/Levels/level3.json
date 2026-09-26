@@ -1,0 +1,166 @@
+{
+  "id": "level-3",
+  "name": "Summit Showdown",
+  "order": 3,
+  "dimensions": {
+    "width": 800,
+    "height": 600
+  },
+  "playerSpawn": {
+    "x": 60,
+    "y": 580.7
+  },
+  "girders": [
+    {
+      "id": "g0",
+      "x1": 0,
+      "y1": 582,
+      "x2": 800,
+      "y2": 564,
+      "visualKey": "platform.placeholder",
+      "collisionMode": "slope-line"
+    },
+    {
+      "id": "g1",
+      "x1": 0,
+      "y1": 474,
+      "x2": 740,
+      "y2": 504,
+      "visualKey": "platform.placeholder",
+      "collisionMode": "slope-line"
+    },
+    {
+      "id": "g2",
+      "x1": 60,
+      "y1": 396,
+      "x2": 800,
+      "y2": 364,
+      "visualKey": "platform.placeholder",
+      "collisionMode": "slope-line"
+    },
+    {
+      "id": "g3",
+      "x1": 0,
+      "y1": 256,
+      "x2": 740,
+      "y2": 288,
+      "visualKey": "platform.placeholder",
+      "collisionMode": "slope-line"
+    },
+    {
+      "id": "g4",
+      "x1": 60,
+      "y1": 178,
+      "x2": 800,
+      "y2": 146,
+      "visualKey": "platform.placeholder",
+      "collisionMode": "slope-line"
+    },
+    {
+      "id": "g5",
+      "x1": 340,
+      "y1": 70,
+      "x2": 500,
+      "y2": 70,
+      "visualKey": "platform.placeholder",
+      "collisionMode": "slope-line"
+    }
+  ],
+  "ladders": [
+    {
+      "id": "l0",
+      "x": 690,
+      "y": 502.4,
+      "width": 20,
+      "height": 63.9,
+      "snapX": 700,
+      "climbSpeedOverride": null
+    },
+    {
+      "id": "l1",
+      "x": 80,
+      "y": 394.7,
+      "width": 20,
+      "height": 82.9,
+      "snapX": 90,
+      "climbSpeedOverride": null
+    },
+    {
+      "id": "l2",
+      "x": 460,
+      "y": 378.3,
+      "width": 20,
+      "height": 114.8,
+      "snapX": 470,
+      "climbSpeedOverride": null
+    },
+    {
+      "id": "l3",
+      "x": 650,
+      "y": 284.5,
+      "width": 20,
+      "height": 85.6,
+      "snapX": 660,
+      "climbSpeedOverride": null
+    },
+    {
+      "id": "l4",
+      "x": 270,
+      "y": 168.5,
+      "width": 20,
+      "height": 99.6,
+      "snapX": 280,
+      "climbSpeedOverride": null
+    },
+    {
+      "id": "l5",
+      "x": 460,
+      "y": 70,
+      "width": 20,
+      "height": 90.3,
+      "snapX": 470,
+      "climbSpeedOverride": null
+    }
+  ],
+  "boss": {
+    "x": 720,
+    "y": 149.5,
+    "spriteKey": "boss.trumpInspired",
+    "spawnAnchorOffset": {
+      "x": -44,
+      "y": -24
+    }
+  },
+  "barrels": {
+    "spriteKey": "barrel.original",
+    "spawnIntervalMs": 2000,
+    "firstSpawnDelayMs": 1500,
+    "speedMin": 110,
+    "speedMax": 165,
+    "gravityY": 500,
+    "platformFollowMode": "slope",
+    "maxActive": 8,
+    "route": {
+      "ladderDropChance": 0.3,
+      "directThrowChance": 0.4
+    }
+  },
+  "rescue": {
+    "x": 344,
+    "y": 18,
+    "width": 56,
+    "height": 52,
+    "spriteKey": "rescue.motzfeldt",
+    "objectiveKey": "motzfeldt",
+    "isFinalLevel": true
+  },
+  "difficulty": {
+    "tier": 3,
+    "label": "hard"
+  },
+  "tuning": {
+    "jumpClearanceRequired": true,
+    "maxDirectJumpPx": 48,
+    "minFloorGapPx": 61
+  }
+}

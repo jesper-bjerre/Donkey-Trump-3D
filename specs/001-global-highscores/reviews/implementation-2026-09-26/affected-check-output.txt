@@ -1,0 +1,28 @@
+backend — /tmp/dt3d-final-backend.log
+Test Run Successful.
+Total tests: 49
+     Passed: 49
+
+review-fix-red — /tmp/dt3d-review-fix-red-suite.log
+✘ Test rejectedReadsNeverImplyUnconsentedPublication(_:) recorded an issue with 1 argument code → "internal_error" at HighscoreFailureTests.swift:40:13: Expectation failed: message == Copy.highscoreUnavailable
+✘ Test rejectedReadsNeverImplyUnconsentedPublication(_:) recorded an issue with 1 argument code → "internal_error" at HighscoreFailureTests.swift:41:13: Expectation failed: !message.contains("couldn't confirm")
+✘ Test rejectedReadsNeverImplyUnconsentedPublication(_:) recorded an issue with 1 argument code → "internal_error" at HighscoreFailureTests.swift:40:13: Expectation failed: message == Copy.highscoreUnavailable
+✘ Test rejectedReadsNeverImplyUnconsentedPublication(_:) recorded an issue with 1 argument code → "internal_error" at HighscoreFailureTests.swift:41:13: Expectation failed: !message.contains("couldn't confirm")
+✘ Test rejectedReadsNeverImplyUnconsentedPublication(_:) recorded an issue with 1 argument code → "unknown_problem" at HighscoreFailureTests.swift:40:13: Expectation failed: message == Copy.highscoreUnavailable
+✘ Test rejectedReadsNeverImplyUnconsentedPublication(_:) recorded an issue with 1 argument code → "unknown_problem" at HighscoreFailureTests.swift:41:13: Expectation failed: !message.contains("couldn't confirm")
+✘ Test rejectedReadsNeverImplyUnconsentedPublication(_:) recorded an issue with 1 argument code → "unknown_problem" at HighscoreFailureTests.swift:40:13: Expectation failed: message == Copy.highscoreUnavailable
+✘ Test rejectedReadsNeverImplyUnconsentedPublication(_:) recorded an issue with 1 argument code → "unknown_problem" at HighscoreFailureTests.swift:41:13: Expectation failed: !message.contains("couldn't confirm")
+✘ Test rejectedReadsNeverImplyUnconsentedPublication(_:) recorded an issue with 1 argument code → "submission_unconfirmed" at HighscoreFailureTests.swift:40:13: Expectation failed: message == Copy.highscoreUnavailable
+✘ Test rejectedReadsNeverImplyUnconsentedPublication(_:) recorded an issue with 1 argument code → "submission_unconfirmed" at HighscoreFailureTests.swift:41:13: Expectation failed: !message.contains("couldn't confirm")
+✘ Test rejectedReadsNeverImplyUnconsentedPublication(_:) recorded an issue with 1 argument code → "submission_unconfirmed" at HighscoreFailureTests.swift:40:13: Expectation failed: message == Copy.highscoreUnavailable
+✘ Test rejectedReadsNeverImplyUnconsentedPublication(_:) recorded an issue with 1 argument code → "submission_unconfirmed" at HighscoreFailureTests.swift:41:13: Expectation failed: !message.contains("couldn't confirm")
+​✘ Test rejectedReadsNeverImplyUnconsentedPublication(_:) with 3 test cases failed after 0.042 seconds with 12 issues.
+✘ Suite "Highscore failures" failed after 0.325 seconds with 12 issues.
+✘ Test run with 4 tests in 1 suite failed after 0.325 seconds with 12 issues.
+
+review-fix-green — /tmp/dt3d-review-fix-green.log
+✔ Test run with 14 tests in 4 suites passed after 0.486 seconds.
+** TEST SUCCEEDED **
+
+release — /tmp/dt3d-review-fix-release.log
+** BUILD SUCCEEDED **

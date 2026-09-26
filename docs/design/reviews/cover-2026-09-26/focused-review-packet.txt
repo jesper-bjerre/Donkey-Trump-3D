@@ -1,0 +1,826 @@
+FOCUSED INDEPENDENT RE-REVIEW. You are the Anthropic reviewer, no implementation participation. Lead is OpenAI Codex; precise lead model/reasoning metadata unavailable. Same required reviewer route/configuration as round 1: claude-opus-5-5, explicit high effort. No tools, writes, or recursive reviewers.
+
+Review only the material F1 disposition and final candidate identity. The previous independent review fully inspected the implementation, source, actual image attachments, requirements and check evidence. Its full verdict is below. It accepted every scoped item except README's inaccurate blanket originality claim. No image, source, configuration, requirements or prior acceptance evidence has changed since then. The lead VERIFIED hash differences against the first manifest: README.md is the ONLY changed candidate. Copy.swift is now added as immutable context because the first reviewer wanted to rule out a parallel in-app originality claim. Please independently assess the actual README and Copy.swift text supplied. If satisfied, explicitly mark F1 resolved and agree the focused final implementation meets applicable requirements with no unresolved important findings. No ceremonial additional review is required.
+
+Task: Owner explicitly requested supplied docs/design/images/DonkeyTrumpCover.png as local loading screen and possible App Store use. Existing release spec scope: iPhone only, free eligible countries, OWNER submits to Apple review. This focused integration is separately authorized now; broader release preparation is not performed. Acceptance: byte-identical original bundled; whole motif/title/characters aspect fit in safe area; native local startup automatically yields without timer/extra action/backend; existing 3D menu/intro/start/settings preserved; prompt provenance retained; optional store supporting art cannot replace genuine gameplay screenshots or imply illustrated art is gameplay. No generation, upload, store data writing or Apple submission here.
+
+Lead disposition of F1: AGREE, confirmed material documentation mismatch. README now explicitly limits code generation to the 3D gameplay models/textures/effects, describes the owner's prompt-generated launch illustration, links provenance and the open FR006 content/rights assessment, and makes no blanket asset-clearance assertion. No in-app correction needed: inspected entire Copy.swift plus RootView and searched both for all-art/code-generated claims; none. Player parody/no-affiliation copy retained. Documentation link re-check passed for all modified Markdown; unique requirements remain 24 FR and 8 SC with 16 quality checklist marks. Project/storyboard/assets unchanged. No build/test rerun warranted for this documentation-only fix; preceding Debug/Release, 3/3 existing UI regression and repeated signed Start test remain valid for unchanged runtime inputs. Copied before/after scoped diff and final identities supplied.
+
+Final manifest SHA256: 0ff45c2029885a1f0cf255bc332a70692338a7541c8f03f8f1c09f9303a4093d, base git e323551c539e40edbc7b8e57dda3ed2ee5735e09 plus captured pre-edit worktree. Round 1 manifest 339f27e10b8e32779a3041318d0cd294e5d733fe29794b2e9c998e8aa61ca4ed. Review records excluded from candidate identity. Final candidate is stable.
+
+Continued limitations: first reviewer inspected 4 actual images but not full video, no physical device/iOS26/distribution/Apple clearance validation. Ordinary startup transition observed by lead, native launch implementation has no hold/timer/runtime code. Held screenshot is layout-only; ordinary video frame+postlaunch screenshot separately documented. These remain honestly reported release limitations, not newly resolved claims.
+
+
+### FILE AGENTS.md
+1: # Repository agent instructions
+2: 
+3: These instructions apply to the entire repository and to both implementation and
+4: analysis work. Follow the user's authorized scope, the applicable skill, and the
+5: [project constitution](.specify/memory/constitution.md). Read the current feature's
+6: specification, plan, tasks and contracts when relevant. Preserve unrelated changes.
+7: This workflow supplements the constitution; it does not amend or weaken it.
+8: 
+9: ## Required independent cross-vendor review
+10: 
+11: Before declaring an authorized implementation or substantive review/analysis
+12: complete, obtain an independent review from an LLM supplied by a different model
+13: vendor. This includes code reviews and Spec Kit analysis reports, including a
+14: report that finds no problems. The reviewer must not have participated in the
+15: implementation or authored the analysis being reviewed.
+16: 
+17: Perform preparation, required checks, review, discussion, authorized fixes and
+18: focused re-review autonomously within the authorized task. Do not ask the owner to
+19: adjudicate review findings or to repeat authorization already given.
+20: 
+21: Ordinary questions, status reports and standalone instruction edits do not require
+22: this review unless explicitly requested. Creating or changing this instruction
+23: policy is a standalone instruction edit, not a request to run a feature review.
+24: Do not retroactively label previous work as independently reviewed.
+25: 
+26: The lead agent owns this workflow. An agent assigned only as the independent
+27: reviewer returns findings and a verdict to the lead; it must not recursively launch
+28: another reviewer. Same-vendor helpers do not satisfy the cross-vendor requirement.
+29: 
+30: ## When review starts
+31: 
+32: ### Implementation or authorized remediation
+33: 
+34: 1. Finish the authorized implementation and gather all required inputs.
+35: 2. Run the relevant checks and resolve known implementation failures.
+36: 3. Freeze the review scope and obtain independent review of the finished change
+37:    and its actual acceptance evidence.
+38: 4. Discuss important findings, fix confirmed problems within scope, rerun affected
+39:    checks, and obtain focused re-review until both agents explicitly agree.
+40: 
+41: If missing inputs, access, decisions or an unavailable environment prevent finishing
+42: the implementation or running required checks, continue independent work within
+43: scope, then report the concrete blocker. Do not review unfinished drafts,
+44: provisional implementations or blocker records as completed work. Resume review
+45: only after the implementation and check prerequisites are satisfied.
+46: 
+47: ### Code review, Spec Kit analysis and other read-only assessments
+48: 
+49: 1. Load the required artifacts and finish the requested assessment, including
+50:    prerequisite, coverage, dependency, consistency and constitution checks that
+51:    apply. A completed assessment of specified documents does not require the future
+52:    implementation to exist or its future tests to pass.
+53: 2. Give the independent reviewer the original task, governing artifacts and frozen
+54:    source revision. Have it inspect the source independently and then assess the
+55:    proposed report for unsupported findings, missed material issues, incorrect
+56:    severity, coverage errors and recommendations that exceed scope.
+57: 3. Discuss each important finding against exact artifact locations and evidence.
+58:    Correct the report, withdraw disproven findings with a reason, and include
+59:    confirmed omissions. Do not treat an earlier analyst's claim as evidence.
+60: 4. Obtain focused re-review of the final report and explicit agreement on every
+61:    important finding's validity, severity and disposition, including a no-findings
+62:    verdict when applicable.
+63: 
+64: Preserve the invoked skill's read-only boundary. For `speckit-analyze`, do not edit
+65: code, specifications, plans, tasks or repository review records. Keep the review
+66: packet, discussion and evidence in conversation/tool output. Obtain authorization
+67: before artifact remediation unless that remediation is already explicitly in
+68: scope. Consensus on an analysis report does not itself authorize fixes.
+69: 
+70: A completed analysis may contain confirmed HIGH or CRITICAL problems. Report
+71: separately whether the agents agree on the assessment and whether the underlying
+72: implementation may proceed. Agreeing that a problem exists does not resolve it.
+73: Constitution conflicts remain CRITICAL; do not downgrade them to obtain consensus.
+74: Missing assessment inputs block the affected conclusions; do not fabricate them.
+75: 
+76: ## Reviewer selection and verification
+77: 
+78: Select by the underlying model vendor, not the CLI, product or agent display name.
+79: Use the implementer's vendor for implementation and the analyst's vendor for an
+80: assessment. Record the actual author configuration and reviewer independence.
+81: 
+82: | Author vendor | Required reviewer route | Specified fallback |
+83: |---|---|---|
+84: | Anthropic | Codex, model `gpt-6-astra`, reasoning `xhigh` | None |
+85: | Any other vendor | Claude Code, model `claude-opus-5-5` (Opus 5.5), reasoning `high` | GitHub Copilot with `--model claude-opus-5.5 --reasoning-effort high`; account access unverified |
+86: 
+87: Use the full provider-specific identifier. Anthropic's
+88: [canonical Opus 5.5 ID](https://platform.claude.com/docs/en/models/opus-5-5/overview)
+89: is `claude-opus-5-5`; the dotted `claude-opus-5.5` did not work in Claude Code.
+90: Do not transfer an identifier between providers or use the moving `opus` alias.
+91: 
+92: Before a real review, verify authenticated access to the required tool, exact model
+93: and reasoning setting using a harmless probe without repository data. Inspect the
+94: installed tool's supported invocation syntax; do not guess unsupported flags.
+95: Use explicit model and effort settings for both the probe and every review round.
+96: Record the tool/version, requested configuration and available provider/session
+97: metadata establishing the configuration actually used. A model's own assertion of
+98: its identity is not verification. Keep credentials out of commands, logs and chat.
+99: 
+100: Published support, installed CLIs, Auto routing candidates, account login alone and
+101: an accepted command line do not establish exact model/effort access. If the route
+102: cannot be verified or used, try only its specified fallback with the same checks.
+103: If neither required route nor specified fallback works, report review as blocked.
+104: Do not silently substitute another model, Auto, default reasoning or self-review.
+105: Never relabel earlier reviews as evidence for a different configuration.
+106: 
+107: ### Verified Claude Code procedure
+108: 
+109: The [2026-09-26 review record](specs/001-global-highscores/review-remediation.md)
+110: records a successful independent review with Claude Code 2.1.283, model
+111: `claude-opus-5-5`, and explicit `high` effort. This is a reusable invocation,
+112: not a permanent guarantee of account access. Check `claude --version` and
+113: `claude --help` when starting a new workflow or after a tool upgrade.
+114: 
+115: Run from an isolated temporary directory. Use this shell helper to keep the probe
+116: and review configuration identical; it accepts its prompt on stdin:
+117: 
+118: ```sh
+119: dt3d_review() {
+120:   CLAUDE_CODE_EFFORT_LEVEL=high claude \
+121:     --safe-mode --print --model claude-opus-5-5 --effort high \
+122:     --tools '' --strict-mcp-config --mcp-config '{"mcpServers":{}}' \
+123:     --no-session-persistence "$@"
+124: }
+125: ```
+126: 
+127: 1. Send only `Reply exactly REVIEW_ROUTE_OK. Do not use any tools.` with
+128:    `--output-format text`. Require successful execution and inspect both stdout
+129:    and stderr for an effort-limit warning. An inherited effort environment setting
+130:    is overridden explicitly by the helper.
+131: 2. Send the same harmless prompt with `--output-format stream-json --verbose`.
+132:    Require exit 0, a successful final result, and an actual assistant response and
+133:    nonzero provider usage identifying `claude-opus-5-5`. Record the session ID,
+134:    tool version, provider and canonical model. Initialization's requested model
+135:    alone, `<synthetic>` error responses and empty usage do not establish access.
+136: 3. Only after both checks pass, use the same helper for the prepared review packet:
+137: 
+138:    ```sh
+139:    dt3d_review --output-format stream-json --verbose \
+140:      < review-packet.txt > review.stdout.jsonl 2> review.stderr.txt
+141:    ```
+142: 
+143:    Inspect the actual model and completion status again for every review round.
+144:    Preserve the reviewer's final text and sanitized configuration/result metadata;
+145:    raw debug logs, credentials and hidden reasoning do not belong in the record.
+146: 
+147: [Claude Code's model configuration documentation](https://code.claude.com/docs/en/model-config)
+148: explains that effort caps warn in plain-text runs but can apply silently with JSON
+149: output. The provider response does not separately attest to effective effort:
+150: record the explicit settings, successful probes and warning check accurately.
+151: `per_turn_effort_active: true` alone does not prove `high`. If a lower cap or
+152: unresolved configuration prevents verifying the required setting, use the fallback
+153: rules above; do not call that a verified `high` review.
+154: 
+155: Safe mode disables automatic instruction loading, so include current repository
+156: instructions in the packet explicitly. Keep tools and MCP disabled for a complete
+157: text-based review packet. Do not use `--bare` for the subscription-authenticated
+158: route: it skips OAuth/keychain authentication. The installed CLI help documents
+159: both modes; no credential or global account changes are needed for this procedure.
+160: 
+161: ### Access failures and efficient resumption
+162: 
+163: - Reuse successful preflight evidence for focused rounds in the same uninterrupted
+164:   workflow while tool, account, provider, model and effort configuration remain
+165:   unchanged. Still inspect each round's actual result. Revalidate after an access
+166:   error, configuration change or later resumption; old evidence is not current access.
+167: - Distinguish syntax errors, incorrect model IDs, authentication/subscription errors
+168:   and actual model unavailability. Resolve a confirmed spelling or flag error before
+169:   declaring the required route unavailable. Consult official documentation when
+170:   needed; do not guess another model or reinstall a working CLI for an access error.
+171: - The Copilot 1.0.88 probe rejected `claude-opus-5.5` on 2026-09-26. Treat that as
+172:   dated failed evidence, not a working fallback or proof of permanent unavailability.
+173:   Verify its exact Opus 5.5 route if needed; do not install or probe Copilot while
+174:   the primary route works. Preserve previous failures when a later attempt succeeds.
+175: - Allow minutes for substantive review. Yield or poll at intervals of roughly
+176:   30 seconds and keep the user informed; progress without final text is not itself
+177:   a hang. Use a bounded overall timeout and do not launch duplicate review sessions.
+178: 
+179: ## Review inputs and revision identity
+180: 
+181: Give the reviewer only the relevant, authorized material:
+182: 
+183: - The user task, scope, acceptance criteria and review mode: implementation or
+184:   assessment. Identify the lead and reviewer roles explicitly.
+185: - Applicable repository instructions, constitution, contracts and constraints.
+186: - The exact base and candidate revision, scoped diff, relevant surrounding source
+187:   and the list of changed files. For an assessment, also supply the reviewed report
+188:   and identify which source artifacts it evaluates, even when there is no diff.
+189: - Checks actually run, their commands/results, acceptance evidence, limitations
+190:   and unresolved prerequisites. Label planned checks as planned.
+191: 
+192: Do not commit merely to create review identity. For an uncommitted worktree, record
+193: the base commit plus a SHA-256 manifest of the in-scope file contents and the scoped
+194: staged/unstaged diff. Include relevant untracked files explicitly: `git diff` alone
+195: does not include them. Give the reviewer access to those exact contents. For a
+196: conversation-only report, retain its exact text and identify the reviewed version.
+197: 
+198: Capture pre-edit copies of relevant untracked files before remediation, so the
+199: before/after patch is reproducible. Identify that captured base separately from the
+200: Git commit; never imply an untracked file existed in the committed base.
+201: 
+202: Keep the candidate stable during a review round. If in-scope contents change,
+203: refresh the diff/manifest and evidence and obtain focused re-review of that new
+204: revision. Exclude the review record itself from the reviewed payload identity to
+205: avoid record-only changes invalidating their own evidence. Do not exclude changed
+206: source, contracts, instructions or acceptance evidence on that basis.
+207: 
+208: Respect restrictions on secrets, protected data and excluded content when preparing
+209: inputs. Do not send the whole repository by default. State any material access or
+210: redaction limitation; do not claim inspection of unavailable evidence. Keep the
+211: reviewer read-only and let the lead apply authorized changes.
+212: 
+213: Keep the packet complete for the authorized scope and concise: include full changed
+214: artifacts or sufficient surrounding code, governing requirements and directly
+215: relevant dependencies. Avoid duplicating unrelated feature documents or dumping
+216: the repository. Number source lines and provide the actual check output or a
+217: clearly attributed summary. Ask for each original finding's disposition, any new
+218: material findings, an explicit verdict and limitations. The reviewer must report
+219: missing necessary context before reaching a conclusion.
+220: 
+221: ## Code Review Rules
+222: 
+223: The reviewer must inspect the implementation or artifacts and evidence independently.
+224: Focus on material correctness, security, data integrity, regressions and unmet
+225: acceptance criteria. For analyses, also check false positives, material omissions,
+226: traceability and whether the stated conclusion follows from the evidence.
+227: 
+228: Each finding must have a stable ID, severity, affected file/artifact and location,
+229: concrete impact, and a requirement or supporting evidence. Provide a reproduction
+230: or counterexample when useful. Exclude cosmetic nits, speculative concerns and
+231: optional refactoring unless they cause a material problem. Do not expand scope.
+232: 
+233: Distinguish observed defects from uncertainty, future validation from executed
+234: checks, and implementation completeness from release readiness. In this project,
+235: pay particular attention to non-blocking iPhone gameplay, thread ownership,
+236: conditional Blob writes, ambiguous save acknowledgements, no deferred uploads,
+237: public-name consent and accurate physical-device versus simulator evidence.
+238: 
+239: For Spec Kit, trace acceptance scenarios through implementation tasks, dependencies
+240: and validation gates; requirement-ID coverage alone does not prove scenario coverage.
+241: Distinguish an initial slice, internal MVP, complete story and release acceptance.
+242: Check SDK/configuration scope against documented command working directories.
+243: Separate injected fixtures from real integration targets, and identify the enforcing
+244: component and repeatable checks for any test-mode exception or production boundary.
+245: 
+246: ## Findings, fixes and consensus
+247: 
+248: For each important finding, the lead and reviewer must:
+249: 
+250: 1. Agree whether it identifies a material problem, citing code/artifact locations,
+251:    the governing requirement and check evidence. Track disagreement explicitly.
+252: 2. Fix confirmed problems when remediation is authorized, or document the evidence
+253:    supporting dismissal. In a read-only assessment, correct the report and retain
+254:    confirmed source problems as findings; do not change the underlying artifacts.
+255: 3. Rerun checks affected by authorized changes. Recheck corrected analysis claims
+256:    against their sources; unrelated application builds are not analysis evidence.
+257: 4. Have the reviewer assess the final changes/report and each disposition.
+258: 
+259: Continue focused re-review until no important review disagreements remain and both
+260: agents explicitly agree on the final verdict. For implementation, no confirmed
+261: important in-scope problem may remain unfixed. For assessment, consensus concerns
+262: the report's accuracy, completeness within scope and agreed findings, not whether
+263: all defects in the assessed artifacts have already been repaired.
+264: 
+265: If the first review explicitly approves the unchanged candidate with no material
+266: unresolved findings, the lead's explicit agreement completes consensus. Do not
+267: request a ceremonial second review. Record optional suggestions as non-blocking;
+268: they do not require implementation, extra review rounds or owner adjudication.
+269: Assess materiality against requirements and evidence, not severity labels alone.
+270: 
+271: When important findings require changes, rerun affected checks and send a focused
+272: packet containing the prior verdict, finding IDs, lead responses, updated diff,
+273: final content identity and new evidence. Retain the relevant governing context;
+274: do not restart unrelated analysis or rerun unaffected checks without a reason.
+275: The no-session-persistence invocation cannot be resumed: supply the prior discussion
+276: explicitly to a fresh independent reviewer invocation, using the same required
+277: model and effort. Missing context is not agreement.
+278: 
+279: Do not obtain agreement by weakening requirements, suppressing findings, counting
+280: silence as approval or inventing evidence. If a material disagreement cannot be
+281: resolved, preserve both positions and their evidence, report review as blocked,
+282: and do not claim completion or ask the owner to adjudicate the finding. A genuine
+283: missing product decision/input may be reported as a prerequisite, not disguised
+284: as a request for the owner to choose between reviewers.
+285: 
+286: ## Evidence and completion
+287: 
+288: For tasks permitting writes, use the task's existing evidence document or a scoped
+289: repository review record. The [review record template](.agents/templates/review-record.md)
+290: provides a reusable structure; placeholders are never evidence. For read-only
+291: tasks, include equivalent information in the conversation report without file writes.
+292: 
+293: Record:
+294: 
+295: - Lead/reviewer tools, model IDs, vendors, reasoning settings, independence and
+296:   authenticated configuration verification; record unavailable metadata honestly.
+297: - Reviewed base/final revisions, scoped diff and manifests or report version.
+298: - Important findings, evidence, discussion and agreed dispositions.
+299: - Checks actually run and their results; distinguish planned or unavailable checks.
+300: - The reviewer's final verdict, the lead's explicit agreement and limitations.
+301: 
+302: Keep historical review records and manifests tied to the content actually reviewed.
+303: A later standalone policy edit does not rewrite those hashes, retroactively change
+304: the verdict or claim that the new instructions were reviewed. For documentation-only
+305: remediation, validate document consistency, links and applicable examples; preserve
+306: the distinction between passing document checks and unexecuted feature/runtime tests.
+307: 
+308: Declare implementation complete only when the authorized work is finished, required
+309: checks pass and independent review reaches consensus. Declare an assessment
+310: complete only when its required checks and independent review reach consensus;
+311: separately list confirmed source defects and implementation/release blockers.
+312: 
+313: Agent consensus completes this review without an additional owner review handoff.
+314: Existing human approvals for protected merges, releases, production changes or
+315: other controlled actions still apply. Review does not authorize additional scope.
+316: Finish with a concise completion or blocker summary and a reference to the evidence.
+
+### FILE .specify/memory/constitution.md
+1: # Donkey Trump 3D Constitution
+2: 
+3: ## Core Principles
+4: 
+5: ### I. Native iPhone Play Comes First
+6: 
+7: The product MUST remain a native 3D arcade game with iPhone as its primary acceptance target.
+8: Starting, restarting and playing installed game content MUST work without a backend connection.
+9: Optional online features MUST load asynchronously, have finite user-visible deadlines, and leave
+10: navigation usable while loading or failing. A late response MUST NOT interrupt a newer game or
+11: change a different run's result. Network or storage work MUST NOT block the render loop or UI thread.
+12: 
+13: New or changed player-facing screens MUST work in landscape with safe areas, readable text and
+14: reachable actions. Applicable menu/list controls MUST support VoiceOver and larger text. Changes
+15: MUST preserve the existing Reduce Motion, sound and haptics settings unless the feature explicitly
+16: changes their behaviour. These rules keep short play sessions usable on the baseline iPhone.
+17: 
+18: ### II. Simple Components and Explicit Ownership
+19: 
+20: Gameplay rules, scoring, collision logic and run transitions MUST remain testable independently of
+21: SceneKit, SwiftUI and networking. Rendering presents simulation state; UI presents player actions
+22: and results. Cross-thread state transfers MUST use snapshots or an explicit synchronization boundary;
+23: new UI state MUST have a defined main-thread/main-actor owner.
+24: 
+25: The backend default is one small ASP.NET Core service in `src/backend`, using built-in platform
+26: facilities and a separate test project when needed. Additional services, stores, frameworks or
+27: architectural layers MUST have a feature-level justification explaining the requirement they solve
+28: and why the existing structure is insufficient. Package versions and runtime baselines belong in
+29: project files and feature plans, rather than being frozen permanently in this constitution.
+30: 
+31: Each state has a clear owner: the app owns local gameplay and its personal best; the backend owns
+32: validation, ordering and persistence of shared rankings. Accepting a client-reported score MUST NOT
+33: be described as proof of genuine gameplay. Simplicity does not remove these ownership boundaries.
+34: 
+35: ### III. Correct Shared Data and Bounded Failures
+36: 
+37: Shared read-modify-write state MUST use storage-enforced concurrency control that works across
+38: multiple service instances. An in-process lock alone is insufficient. A conflict retry MUST read
+39: current state and recompute the result; unconditional overwrite MUST NOT be a fallback. Duplicate
+40: submissions MUST use a stable result identity, with the supported deduplication scope documented.
+41: 
+42: Remote operations MUST define deadlines, cancellation behaviour, retry conditions and finite retry
+43: limits. A potentially committed write with a lost acknowledgement MUST be reported as unconfirmed;
+44: retry behaviour MUST NOT imply that a failed response proves no save occurred. Missing, corrupt or
+45: unavailable storage MUST NOT silently become an empty replacement. Tests MUST cover these distinctions
+46: when shared persistence is introduced or changed.
+47: 
+48: Local personal-best data MUST survive remote failures. Cached results MUST be identifiable as stale
+49: and MUST NOT establish fresh qualification or confirmed publication. For the agreed highscore v1,
+50: a failed qualification or submission MUST NOT create an automatic, deferred or next-launch upload.
+51: 
+52: ### IV. Original Content and Deliberate Data Use
+53: 
+54: Game models, textures, animation and audio MUST remain original project material or have documented
+55: permission compatible with their use. Copied Nintendo/Donkey Kong assets MUST NOT replace the
+56: project's procedural characters or synthesized soundtrack. References to the original game's feel
+57: are design inspiration, not authorization to copy its assets. Player copy MUST preserve the original
+58: parody/no-affiliation description.
+59: 
+60: Public name/score publication MUST require an explicit player action and explain what is public.
+61: Data collection and logs MUST be limited to the feature's documented purpose; diagnostics MUST NOT
+62: record secrets, full submission bodies or player names. Storage credentials MUST stay out of the
+63: app, repository and logs. Public service traffic MUST use HTTPS; local development exceptions MUST
+64: remain isolated from release configuration. Azure-hosted storage access MUST use managed identity
+65: with permissions scoped to the required data resources.
+66: 
+67: Privacy/help copy MUST match implemented data flows. A new account, analytics, advertising or
+68: tracking capability MUST be an explicit product-scope change, never an incidental dependency.
+69: 
+70: ### V. Evidence Before Completion Claims
+71: 
+72: Changed gameplay rules, persistence, concurrency, retry and cancellation behaviour MUST have
+73: repeatable checks for their observable outcomes and relevant failure cases. Use deterministic
+74: inputs, clocks or service/storage substitutes where timing and randomness would hide defects.
+75: Cross-component contracts MUST be checked at their boundaries; a test that only mirrors an
+76: implementation detail is not sufficient evidence for the player's requirement.
+77: 
+78: Verification MUST be proportional to the change. Run the affected build/tests and relevant existing
+79: regression checks; documentation-only edits need document validation, not an unrelated full build.
+80: Device-dependent claims, including physical silent-switch behaviour, touch usability and sustained
+81: performance, MUST be backed by checks on the relevant physical device before release acceptance.
+82: A simulator pass MUST NOT be presented as physical-device evidence.
+83: 
+84: Reports and documentation MUST distinguish planned, implemented, tested and deployed behaviour,
+85: identify what was actually checked, and record material limitations. Test instructions or a scaffold
+86: MUST NOT be reported as a passing feature. Historical results MUST retain their date/context rather
+87: than silently becoming evidence for a newer build.
+88: 
+89: ## Product and Technology Boundaries
+90: 
+91: - The current app baseline is Swift, SceneKit and SwiftUI, iOS 26+, landscape, with iPhone 13 as the
+92:   reference device for acceptance. iPad is enabled in the project but needs its own evidence before
+93:   iPad release-readiness claims. A platform or rendering-engine change requires an explicit design
+94:   decision and appropriate regression coverage.
+95: - Game content remains bundled for offline play. The imported 2D/browser project is a reference,
+96:   not the deployment architecture. Player-facing copy and repository product documentation remain
+97:   in English unless localization is explicitly scoped.
+98: - In-game Sound controls game audio. With Sound enabled and audible output volume, physical silent
+99:   mode MUST NOT suppress it; the in-game mute setting MUST silence active game audio. Intro skip or
+100:   exit MUST stop intro audio without playing queued effects afterward.
+101: - The agreed online extension is a global all-time top 100 of completed runs, without login or
+102:   server-verified replays. Failed publication leaves the local personal best; no offline submission
+103:   queue is in scope. Exact tie, name, scrolling, timeout and endpoint rules belong in its feature spec
+104:   and contracts, not as duplicated constants here.
+105: - The initial backend design uses ASP.NET Core Minimal APIs and private Azure Blob Storage with
+106:   conditional writes. Hosting and storage choices MUST document expected traffic, contention and
+107:   running-cost tradeoffs. Use supported stable platform releases and serviced production runtimes;
+108:   adding infrastructure requires a concrete feature or measured operational need.
+109: - Accounts, online multiplayer, cloud-saved runs, purchases, advertising and extra languages are not
+110:   implicitly authorized by this baseline. They require their own explicit feature scope. Release
+111:   channel, cloud resource identifiers and organizational ownership MUST use real supplied values.
+112: 
+113: ## Development Workflow and Quality Gates
+114: 
+115: For features managed through Spec Kit, the specification MUST state player outcomes, failure cases,
+116: measurable acceptance criteria and explicit scope decisions. Clarification MUST address meaningful
+117: unknowns without asking the user to reconfirm decisions already made. The plan MUST record a
+118: Constitution Check against the current version before detailed design and recheck it after design.
+119: 
+120: The task list MUST map buildable requirements to concrete implementation and validation work with
+121: correct dependency order. Cross-artifact analysis requires a complete task list; missing artifacts
+122: MUST be reported rather than invented. A principle conflict MUST be resolved before implementation
+123: through compliant design or an explicit constitution amendment, not by silently weakening the rule.
+124: 
+125: Implementation completion MUST include the required checks for the changed scope and documentation
+126: updates describing actual behaviour. Release readiness additionally requires the selected simulator
+127: and physical-device evidence, valid configuration/credentials outside source control, and a recorded
+128: release/recovery procedure for the real target. A local build, commit or push does not itself establish
+129: that an app or service was published.
+130: 
+131: The existing [product specification](../../docs/prd_spec.md),
+132: [architecture](../../docs/architecture_options.md), [backlog](../../docs/backlog.md) and
+133: [release runbook](../../docs/production-smoke-and-rollback.md) provide the baseline. Feature-specific
+134: requirements and contracts extend it explicitly. Existing work and unrelated user changes MUST be
+135: preserved when applying a scoped change.
+136: 
+137: ## Governance
+138: 
+139: This is the first adopted project constitution, version 1.0.0, established on 2026-09-26 at the user's
+140: request. It governs cross-cutting project decisions; feature specifications define product detail,
+141: plans define design, and tasks define execution. Explicit user instructions remain authoritative.
+142: Routine work already authorized within an agreed scope does not require repeated permission.
+143: 
+144: An amendment MUST state the intended rule change, its rationale, affected artifacts and any migration
+145: or validation work. Update this file, its version and Last Amended date, and include a temporary Sync
+146: Impact Report for review. Remove that scratch report before committing the amended constitution.
+147: Preserve the original Ratified date. A governance conflict requires a deliberate amendment; changing
+148: an unrelated plan or interpreting a placeholder example as policy is not an amendment.
+149: 
+150: Version changes use semantic versioning: MAJOR for incompatible principle removal or redefinition,
+151: MINOR for new principles or materially expanded guidance, PATCH for wording corrections that do not
+152: change obligations. First adoption starts at 1.0.0. Every feature plan and pre-implementation review
+153: MUST use the current version; existing plans with obsolete governance claims MUST be reconciled when
+154: that feature's artifacts are next updated, before relying on their old gate result.
+155: 
+156: MUST and MUST NOT are requirements. A compliance review MUST cite applicable principles and the
+157: relevant design or verification evidence; it MUST report unmet requirements and cannot waive them by
+158: marking a checklist complete. Adoption of these rules does not assert that all existing code or
+159: unreleased features have already passed their future implementation and release gates.
+160: 
+161: **Version**: 1.0.0 | **Ratified**: 2026-09-26 | **Last Amended**: 2026-09-26
+
+### FILE README.md
+1: # Donkey Trump 3D
+2: 
+3: A native iPhone 3D remake of the [Donkey Trump](../Donkey-Trump) browser game, and the same political satire. You play Jumpman Løkke, climbing sloped red truss girders and ladders up a half-built **Trump Tower, Nuuk** to rescue Motzfeldt. Donkey Trump throws barrels stencilled `TARIFFS` down at you from the top. Every new game opens with the cutscene: Trump carries Motzfeldt to the top, then signs an **EXECUTIVE ORDER: ALL GIRDERS SLANTED**, and the girders tilt one by one.
+4: 
+5: Swift + SceneKit + SwiftUI. The iOS app has no third-party dependencies, accounts or tracking. It includes optional [global top-100 highscores](specs/001-global-highscores/spec.md) backed by a small [ASP.NET Core/Blob service](src/backend/README.md). Gameplay works independently of backend availability; a production HTTPS service URL must be configured before online use.
+6: 
+7: Cold startup shows the owner's [Donkey Trump cover](docs/design/images/DonkeyTrumpCover.png), fitted without cropping over a dark background, then proceeds directly to the game. The [cover record](docs/design/cover-art.md) preserves its source prompt and possible use alongside App Store gameplay captures.
+8: 
+9: ## Run
+10: 
+11: Open `src/DonkeyTrump3D.xcodeproj` in Xcode 27 or later and run the `DonkeyTrump3D` scheme on an iPhone or simulator (iOS 26+, landscape). To run on a device, set your team under *Signing & Capabilities*.
+12: 
+13: ```sh
+14: cd src
+15: xcodebuild -project DonkeyTrump3D.xcodeproj -scheme DonkeyTrump3D \
+16:   -destination 'platform=iOS Simulator,name=iPhone 13,OS=27.0' test
+17: ```
+18: 
+19: Debug launch arguments (set them in the scheme, or pass them to `simctl launch`):
+20: 
+21: | Argument | Effect |
+22: |---|---|
+23: | `-autostart` | Skip the title screen and the intro |
+24: | `-autopilot` | The bot plays (used for automated playtests) |
+25: | `-introAt 7.5` | Start the intro cutscene at a given second |
+26: | `-iconShot` | UI-free close-up of the boss, used to render the app icon |
+27: 
+28: ## Global highscores
+29: 
+30: Open Highscores from the title, or finish a run. A fresh qualifying result offers optional public-name entry; Submit publishes and centres/highlights that exact run. A nonqualifying result shows the bottom and final score. Ties retain earlier successful saves. Close, Start and Play Again work during network requests; list refresh is read-only and stale data is labelled. Failed or unconfirmed submissions are never queued or sent later, while the local best is retained. Scores are client-reported without login or cheat-proof verification.
+31: 
+32: Set the Xcode `HIGHSCORE_API_BASE_URL` build setting to the real HTTPS backend origin. It is intentionally empty by default. Debug accepts loopback development transport; Release keeps ATS enabled and excludes synthetic fixtures and integration overrides. See the [reproducible local guide](specs/001-global-highscores/quickstart.md) and [validation evidence](specs/001-global-highscores/validation.md). Physical iPhone, container and live Azure checks remain distinct release prerequisites.
+33: 
+34: ## Controls
+35: 
+36: | Input | Action |
+37: |---|---|
+38: | Left thumb, anywhere on the left half | A floating stick. Move, and push up/down on a ladder to climb (hold up mid-jump to grab one) |
+39: | Right thumb, anywhere on the right half | Jump (it can't reach the next floor, so use the ladders) |
+40: | Game controller | Stick/D-pad, A/B jump, Menu pauses |
+41: | Keyboard | Arrows/WASD, Space jumps, P/Esc pauses, Enter confirms |
+42: 
+43: ## What's "3D" about it
+44: 
+45: - **Rendering:** physically based materials, HDR with bloom, SSAO, vignette and chromatic fringe, and soft deferred shadows from a moonlit key light, with image-based lighting generated per level theme.
+46: - **World:** a Greenland night. An animated aurora shader in the sky, reflected in an icy sea, plus low-poly procedural icebergs, snowy mountains, colourful Nuuk houses, a rotating tower crane with blinking beacons, falling snow, and a gold "TRUMP TOWER" sign on the roof.
+47: - **Characters:** procedural caricatures with jointed rigs (walk, climb, jump, tumble, cheer, rage, wind-up/throw, signing, carrying).
+48: - **Themes:** each of the three layouts has its own sky and aurora (green, violet, ember).
+49: - **Cameras:** a follow camera in play, and cinematic cameras for the title orbit, the intro, the rescue (with depth of field) and game over.
+50: - **Effects:** sparks on a hit, dust when girders land and when thrown barrels touch down, fire trails on barrels hurled straight at you, Greenland red-and-white confetti on a rescue, and floating score text.
+51: - **Feel:** haptics, screen shake (off with Reduce Motion), and iOS 26 Liquid Glass UI.
+52: 
+53: ## Gameplay: a faithful port
+54: 
+55: The gameplay core in `src/DonkeyTrump3D/Core` is a direct Swift port of the web game's pure systems. It keeps the same 800×600 level coordinates, the same `level1–3.json` files and the same tuning:
+56: 
+57: - `Slope.swift` is the line-segment slope resolver.
+58: - `Player.swift` covers movement, the short 44 px jump (it can never clear a floor gap), coyote time, jump cut and overlap-gated ladders.
+59: - `Barrels.swift` handles rolling, dropping off girder ends, taking ladders, and direct throws aimed at the player.
+60: - `Simulation.swift` handles hits, barrel-jump points, the rescue, and `GameSession` (lives, score, retry, endless levels).
+61: - `Level.swift` holds the endless difficulty ramp: layouts repeat 1, 2, 3, 1, … and the barrels approach fair limits.
+62: - `IntroTimeline.swift` is the executive-order cutscene choreography.
+63: 
+64: Scoring follows the web game: 3 lives, +100 per barrel jumped, +1000 per rescue, a hit retries the level and keeps the score, and game over restarts from level 1. The best score is stored on the device. The simulation runs at a fixed 120 Hz step on SceneKit's render loop (`App/GameEngine.swift`). Each retry gets fresh barrel randomness.
+65: 
+66: ## Layout
+67: 
+68: | Path | Responsibility |
+69: |---|---|
+70: | `src/DonkeyTrump3D/Core` | Framework-free gameplay (testable) |
+71: | `src/DonkeyTrump3D/Render` | Materials and procedural textures, world builder (environment, girders, ladders, barrels, aurora shader, icebergs), character rigs, particle effects |
+72: | `src/DonkeyTrump3D/App` | App entry, `GameEngine` (loop, scene sync, cameras, cutscene, events) |
+73: | `src/DonkeyTrump3D/UI` | SwiftUI title, HUD, intro overlays, pause and game-over menus, all copy |
+74: | `src/DonkeyTrump3D/Input` | Multi-touch controls, game controller and keyboard polling |
+75: | `src/DonkeyTrump3D/Audio` | Sound and music (the web game's original synthesized WAVs) and haptics |
+76: | `src/DonkeyTrump3DTests` | Swift Testing suite for levels, slopes, player, flow and intro |
+77: | `src/backend` | .NET 10 Minimal API, private Blob persistence and conditional writes |
+78: | `src/DonkeyTrump3D/Highscores` | Async service/coordinator, DTOs and Debug-only fixtures |
+79: | `src/backend.tests`, `src/DonkeyTrump3DUITests` | Contract, concurrency, lifecycle and UI acceptance tests |
+80: | `specs/001-global-highscores` | Highscore requirements, implementation tasks, contracts and validation evidence |
+81: 
+82: ## Asset originality
+83: 
+84: The 3D gameplay models, textures and effects are generated in code, and the soundtrack uses the project's synthesized audio. The launch screen also bundles the owner's prompt-generated cover illustration; its source and prompt are retained in [the cover provenance record](docs/design/cover-art.md). The generation tool and licensing terms were not supplied, and the release content/rights assessment remains open under [FR-006](specs/002-app-store-release/spec.md).
+85: 
+86: References to the classic arcade game's style are design inspiration, not authorization to copy Nintendo/Donkey Kong assets or a claim of rights clearance. This is an original satirical parody, not affiliated with any game publisher or politician.
+
+### FILE docs/design/cover-art.md
+1: # Donkey Trump cover artwork
+2: 
+3: Added to the app's launch/loading screen at the owner's request on 2026-09-26.
+4: 
+5: ## Source and intended use
+6: 
+7: - Source: [DonkeyTrumpCover.png](images/DonkeyTrumpCover.png), supplied by the owner.
+8: - PNG, 1672 × 941 pixels, opaque, landscape. Preserve this master unchanged.
+9: - The owner describes it as generated from the prompt below. The generation tool/model, date and its licensing terms were not supplied; the prompt records provenance and intent, not a legal clearance.
+10: - The prompt identifies the intended satirical characters as Donald Trump, Lars Løkke Rasmussen ("Jumpman Løkke") and Vivian Motzfeldt. Its references to the original arcade game describe visual inspiration; the implemented product remains the native 3D game.
+11: 
+12: ## App behavior
+13: 
+14: The asset catalog bundles a byte-identical copy as `LaunchCover`. [LaunchScreen.storyboard](../../src/DonkeyTrump3D/Resources/LaunchScreen.storyboard) shows the complete illustration proportionally inside the safe area over a dark navy background. Both Debug and Release use that system launch screen while the app starts. There is no artificial minimum display time, download, progress counter or tap-to-continue gate. The system dismisses it when the app is ready; returning from the background may show the app's own saved snapshot instead.
+15: 
+16: The title menu, interactive 3D scene and intro remain the game's normal next screens. The illustrated cover is a distinct piece of key art and does not claim to depict the rendered 3D gameplay.
+17: 
+18: See [validation evidence](cover-validation.md) for the simulator captures, build checks and remaining physical-device release checks.
+19: 
+20: ## Possible App Store use
+21: 
+22: Retain the image as a candidate for decorative framing or supporting promotional artwork around genuine gameplay captures. It is not itself an App Store gameplay screenshot or a replacement for the required in-use screenshot set. Apple requires screenshots to show the app in use, rather than merely title art or a splash screen; image/text overlays may support the actual app capture. See [App Review Guidelines 2.3.3](https://developer.apple.com/app-store/review/guidelines/#accurate-metadata).
+23: 
+24: The current master is not automatically a correctly sized screenshot for the required large-iPhone display slots, and this task does not resize it into or upload a store asset. During release preparation, inspect the resulting composition at its submitted size, retain truthful 3D imagery, and complete the content/provenance assessment already required by [FR-006](../../specs/002-app-store-release/spec.md). The cover does not replace the app icon.
+25: 
+26: ## Owner-provided generation prompt
+27: 
+28: The prompt is retained as supplied, including its original spelling and line-break notation:
+29: 
+30: ```text
+31: create et image, a landing page / game start screen\
+32: for my game
+33: "Donkey Trump"\
+34: **ivian Motzfeldt (født 1972):** Grønlandsk politiker, Lars Løkke Rasmussen og Donald Trump skal være på forsiden. De skal være tegnet i donkey kong stil, skal være satirisk.
+35: Spillet er det gamle klassiske Donkey Kong spil. Spillet skal hedde “Donkey Trump”.
+36: Jumpman skal se ud som den danske udenrigsminister Lars Løkke Rasmussen (tegnet). Han skal hedde “Jumpman Løkke” i spillet.
+37: Han skal redde “Motzfeldt” som står på toppen i hvert level.
+38: Donkey Kong skal ligne en sur Donald Trump (tegnet).\
+39: Lars Løkke er jumpman. Motzfeldt skal reddes.
+40: ```
+
+### FILE src/DonkeyTrump3D/UI/Copy.swift
+1: import Foundation
+2: 
+3: /// All player-facing English copy in one place, for the native iPhone game.
+4: enum Copy {
+5:     static let title = "DONKEY TRUMP"
+6:     static let tagline = "Climb. Dodge. Rescue Motzfeldt."
+7:     static let start = "Start Game"
+8:     static let howTo = "How to Play"
+9:     static let parody = "An original satirical parody. Not affiliated with any game publisher or politician."
+10:     static let accountFree = "No account. No tracking. Just play."
+11: 
+12:     static let howToGoal = "Climb the girders and reach Motzfeldt at the top. The levels never end, and every rescue makes the barrels faster. Watch out: some are hurled straight at you!"
+13:     static let howToLines: [(icon: String, text: String)] = [
+14:         ("hand.draw", "Left thumb: drag anywhere on the left half to move"),
+15:         ("arrow.up.and.down", "Push up or down on a ladder to climb (hold up mid-jump to grab one)"),
+16:         ("arrowshape.up.fill", "Right thumb: tap anywhere on the right half to jump over barrels"),
+17:         ("gamecontroller.fill", "Game controllers and keyboards work too: A / Space jumps, Menu / P pauses"),
+18:         ("stairs", "You cannot jump from one floor to the next. Use the ladders."),
+19:         ("star.fill", "+100 per barrel jumped, +1000 per rescue. A hit retries the level and keeps your score."),
+20:     ]
+21:     static let privacy = "No accounts or tracking. Your personal best and settings stay on this iPhone. If you choose to submit a highscore, your chosen name and score are public. Failed submissions are not queued or sent later."
+22:     static let highscoreUnconfirmed = "We couldn't confirm whether your score was saved."
+23:     static let highscoreUnavailable = "Highscores are unavailable. Your personal best is saved on this iPhone."
+24:     static let publicScoreNotice = "Your name and score will be public. You do not need to use your real name."
+25: 
+26:     static let objective = "Rescue Motzfeldt!"
+27:     static let ladderHint = "Use the ladders — you can't jump between floors"
+28: 
+29:     static let paused = "Paused"
+30:     static let resume = "Resume"
+31:     static let restart = "Restart from Level 1"
+32:     static let toTitle = "Return to Title"
+33: 
+34:     static let lifeLost = "Ouch! A barrel got you."
+35:     static let retrying = "Try again..."
+36:     static let gameOver = "GAME OVER"
+37:     static let finalScore = "Final score"
+38:     static let levelReached = "Level reached"
+39:     static let newBest = "NEW BEST!"
+40:     static let playAgain = "Play Again"
+41: 
+42:     static let rescued = "Motzfeldt rescued!"
+43:     static let nextFaster = "Get ready: the next level is faster..."
+44: 
+45:     static let orderTitle = "EXECUTIVE ORDER"
+46:     static let orderText = "ALL GIRDERS SLANTED.\nEFFECTIVE IMMEDIATELY."
+47:     static let orderSeal = "The White House · Nuuk Annex"
+48:     static let cardGoal = "Jumpman Løkke, rescue Motzfeldt!"
+49:     static let skip = "Skip"
+50: }
+
+### round-1-verdict.md
+# Independent Implementation Review: Donkey Trump cover as launch screen
+
+**Role:** independent reviewer (Anthropic, Opus 5.5, `claude-opus-5-5`). I did not implement this change. I reviewed read-only with no tools and did not recursively review. The lead implementer is OpenAI Codex; its exact model and reasoning metadata are unavailable, as stated.
+
+**Candidate:** `manifest.json` SHA-256 `339f27e10b8e32779a3041318d0cd294e5d733fe29794b2e9c998e8aa61ca4ed`, on base `e323551c…` plus the captured-before hashes.
+
+## What I checked independently
+
+- **Configuration (`project.pbxproj:291`, `:324`).** Both app configurations replace `UILaunchScreen_Generation` with `UILaunchStoryboardName = LaunchScreen`. No other project settings changed. The folder is a synchronized root group, so the new `Resources/` files are picked up without adding file references. The built plist check confirms no `UILaunchScreen` dictionary is left over from `Configuration/*-Info.plist`.
+- **Storyboard (`LaunchScreen.storyboard:17–31`).**
+  - The image view uses `scaleAspectFit` and is pinned to all four safe-area edges over an opaque navy background.
+  - It has no runtime code, timer, gesture or network use, and the accessibility element is disabled.
+  - Aspect-fit inside the safe area structurally guarantees no cropping or distortion on any landscape size.
+  - The design-time device (`retina6_1`) and placeholder frames don't match iPhone 13. That only matters at design time and is not material.
+- **Asset (`LaunchCover.imageset/Contents.json`).** A single universal image. The source hash (captured before and after) equals the bundled hash `89a81128…`, so the master is unchanged. The compiled 1672×941 image at scale 1 is consistent with this.
+- **Images, inspected myself:**
+  - **`launch-layout.png`:** the complete illustration is visible, with the whole title, Trump with barrel, Løkke and Motzfeldt with flag. Navy borders show on all sides, with no cropping or distortion.
+    - The fitted image is about 550×309 pt, smaller than the roughly 656×369 pt the landscape safe area would allow. Its top/bottom insets (about 47/34 pt) match portrait safe-area values applied during launch.
+    - That is a system layout characteristic, not a cropping defect. The motif stays whole and proportional, which is what the acceptance criteria require.
+  - **`ordinary-launch-frame.png`:** the same composition, rotated on the portrait video canvas, with an identical fitted size. It is consistent with the held capture.
+  - **`title-after-launch.png`:** the existing 3D title shows Start Game, Highscores, How to Play, Sound and Haptics, plus the parody and no-affiliation footer. The menu is preserved.
+- **Regressions.** No Swift, gameplay, intro, menu or settings source changed. The full `HighscoreBrowsingUITests` suite passed 3/3, and the focused signed Start/hung-fetch test passed again. Both are proportionate for a resource-only change.
+- **The -67056 black screen with an unsigned build.** This is a local signing and environment artifact. It is correctly excluded from acceptance evidence, and ordinary Xcode runs sign locally.
+- **Specification changes.**
+  - US1 scenario 5, FR-024 and SC-008 are testable.
+  - They keep store use subordinate to FR-004–FR-006 and forbid presenting the cover as gameplay or as a substitute for screenshots, consistent with Guideline 2.3.3.
+  - The historical review record is explicitly not relabeled (`requirements.md:39`), and the Assumptions scope carve-out (`spec.md:159–161`) is accurate.
+- **Provenance and store boundaries (`cover-art.md`).**
+  - The prompt is retained.
+  - The unknown generation tool and terms are stated honestly, with no legal clearance claimed.
+  - The cover is not presented as a store screenshot or icon, and nothing was uploaded.
+
+## Findings
+
+### F1: Medium, blocking. README originality statement is now inaccurate
+
+- **Location:** `README.md:82–84` ("Asset originality").
+- **What's wrong:** this section still says *"Every model, texture and effect is generated in code … No Nintendo or Donkey Kong material is used."* This change adds the project's first bundled raster artwork. It was not generated in code, it is an owner-supplied AI-generated illustration explicitly prompted "i donkey kong stil", and its generation and licensing terms are unknown (`cover-art.md:9`).
+- **Impact:** the repository's main originality claim now misdescribes the shipped bundle. The release work in FR-006 and FR-009 (content-rights declaration) will draw on this project provenance, so the stale sentence invites an unsupported "all assets code-generated" assertion.
+- **Requirement:**
+  - Constitution V: implementation completion MUST include documentation describing actual behaviour.
+  - Constitution IV: bundled visual material must be original project material or have documented permission.
+  - The task's own acceptance item: "prompt provenance retained".
+  - The README was edited in this change (line 7), so fixing it is in scope.
+- **Required fix:**
+  - Limit the "generated in code" claim to the 3D game's models, textures and effects.
+  - State that the launch screen bundles the owner-supplied, prompt-generated cover, and link to `docs/design/cover-art.md`.
+  - Note that its generation terms and rights assessment remain open under FR-006.
+  - Do not assert clearance. The "No Nintendo or Donkey Kong material is used" sentence can remain as a no-copied-assets statement if the wording makes clear the cover's arcade style is inspiration, not permission.
+- **Re-check needed:** refresh the manifest and run the local link and document check. No build or UI test rerun is needed.
+
+I found no other important defects. Specifically:
+
+- Byte identity holds.
+- Proportional, uncropped display is shown by the images.
+- The transition is automatic and local, with no timer.
+- Flows and settings are preserved.
+- The Debug/Release scope is limited to the launch setting.
+- The store-use boundary is truthful.
+
+Once F1 is fixed, I agree the focused implementation satisfies the applicable requirements.
+
+## Missing context and limitations
+
+- **Player-facing copy not supplied.** I did not receive `src/DonkeyTrump3D/UI/Copy.swift` or the privacy and How to Play text. I cannot verify whether any in-app statement also claims all art is generated in code. If one does, the same fix as F1 applies. If none does, F1 stays limited to the README.
+- **No video.** I saw only the recording frame at 1.6 s, not the video itself. Automatic dismissal rests on the lead's recording description plus the title screenshot showing the 3D menu. The flow is plausible and consistent, but I did not observe it directly.
+- **Prompt not compared.** I cannot compare the retained prompt against the owner's original message and accept it as supplied.
+- **Simulator only.** All evidence is from an iOS 27 iPhone 13 simulator in one orientation. The following remain outstanding future release gates and do not block this focused change:
+  - physical-device display, including very large launch-image handling on hardware;
+  - both orientations on hardware;
+  - iOS 26 minimum behavior;
+  - distribution signing;
+  - FR-006 content and rights assessment of the cover's likenesses and arcade resemblance.
+
+## Verdict
+
+**BLOCKED**, pending F1 (Medium): the README asset-originality statement at `README.md:82–84` contradicts the newly bundled AI-generated cover. Everything else in the focused change is acceptable. A focused re-review needs only the corrected README diff (plus any in-app copy correction, if applicable), the refreshed manifest and the document-check output.
+
+
+### round-1-manifest.json
+{
+  "README.md": "33a0d44aae2338879f2704a4dca899892b4bb1ea7a32b394102d75753822a867",
+  "src/DonkeyTrump3D.xcodeproj/project.pbxproj": "65a3640343a8ff30f152155a1a3d5c1753368817a1a4db7af05bc5faa57c6c8e",
+  "src/DonkeyTrump3D/Resources/LaunchScreen.storyboard": "64746774ba248c775105d9847e47d5859126c909696fa40109ff86082f2ab09f",
+  "src/DonkeyTrump3D/Resources/Assets.xcassets/LaunchCover.imageset/Contents.json": "a6ed8ed89f18bb3aaddd71da03e2258f4a58c2d19ed360c94de54d6b1c188acd",
+  "src/DonkeyTrump3D/Resources/Assets.xcassets/LaunchCover.imageset/DonkeyTrumpCover.png": "89a8112846e8cfa154feaf486f990d024af9d218b5b773b790eea84099e7674d",
+  "docs/design/cover-art.md": "c8a32f9b2af686300cda05e3e62a76b19e62f6eb9230270557bd930b5b6b13bb",
+  "docs/design/cover-validation.md": "4abe780bcddbb9296c345babb7d2f3af7f8aa688a8f6bfa5201265188fec195b",
+  "specs/002-app-store-release/spec.md": "8e3ce3673f9d1283fb411873d1ebe9319b8bce9acecf7ff71daadbdb76cbca84",
+  "specs/002-app-store-release/source-notes.md": "d97bcd99582df510ff13ab9966f3522522bcc57d98a840d2a939eb783c88cc7d",
+  "specs/002-app-store-release/checklists/requirements.md": "112e887c83db5f79550d218f00381741da88d7834960bbe68901b283f23b6695",
+  "docs/design/evidence/cover-2026-09-26/check-results.txt": "fd8255aba0afce2a3533bc6b3ce879af62c3fc9bd63fc573c61939b6b3360909",
+  "docs/design/evidence/cover-2026-09-26/launch-layout.png": "6d27df9e16bb5d18a22915cb405eaec61adc7b1ba846d39df02139ed9f3bc66e",
+  "docs/design/evidence/cover-2026-09-26/ordinary-launch-frame.png": "9edbd154fe1fe9dbcf48800ee4582d13436e33e905a0c23be2f9787fec0e21f0",
+  "docs/design/evidence/cover-2026-09-26/title-after-launch.png": "58f03599c17c6e5bb136877134d8ef7d49d15d8cebdfd7d4c115af561abf209c",
+  "docs/design/images/DonkeyTrumpCover.png": "89a8112846e8cfa154feaf486f990d024af9d218b5b773b790eea84099e7674d"
+}
+
+
+### manifest.json
+{
+  "README.md": "1e684d2749f91bef2cd7578d50fb190ad80b6055df6f4215aba200492b23c298",
+  "src/DonkeyTrump3D.xcodeproj/project.pbxproj": "65a3640343a8ff30f152155a1a3d5c1753368817a1a4db7af05bc5faa57c6c8e",
+  "src/DonkeyTrump3D/Resources/LaunchScreen.storyboard": "64746774ba248c775105d9847e47d5859126c909696fa40109ff86082f2ab09f",
+  "src/DonkeyTrump3D/Resources/Assets.xcassets/LaunchCover.imageset/Contents.json": "a6ed8ed89f18bb3aaddd71da03e2258f4a58c2d19ed360c94de54d6b1c188acd",
+  "src/DonkeyTrump3D/Resources/Assets.xcassets/LaunchCover.imageset/DonkeyTrumpCover.png": "89a8112846e8cfa154feaf486f990d024af9d218b5b773b790eea84099e7674d",
+  "docs/design/cover-art.md": "c8a32f9b2af686300cda05e3e62a76b19e62f6eb9230270557bd930b5b6b13bb",
+  "docs/design/cover-validation.md": "4abe780bcddbb9296c345babb7d2f3af7f8aa688a8f6bfa5201265188fec195b",
+  "specs/002-app-store-release/spec.md": "8e3ce3673f9d1283fb411873d1ebe9319b8bce9acecf7ff71daadbdb76cbca84",
+  "specs/002-app-store-release/source-notes.md": "d97bcd99582df510ff13ab9966f3522522bcc57d98a840d2a939eb783c88cc7d",
+  "specs/002-app-store-release/checklists/requirements.md": "112e887c83db5f79550d218f00381741da88d7834960bbe68901b283f23b6695",
+  "docs/design/evidence/cover-2026-09-26/check-results.txt": "fd8255aba0afce2a3533bc6b3ce879af62c3fc9bd63fc573c61939b6b3360909",
+  "docs/design/evidence/cover-2026-09-26/launch-layout.png": "6d27df9e16bb5d18a22915cb405eaec61adc7b1ba846d39df02139ed9f3bc66e",
+  "docs/design/evidence/cover-2026-09-26/ordinary-launch-frame.png": "9edbd154fe1fe9dbcf48800ee4582d13436e33e905a0c23be2f9787fec0e21f0",
+  "docs/design/evidence/cover-2026-09-26/title-after-launch.png": "58f03599c17c6e5bb136877134d8ef7d49d15d8cebdfd7d4c115af561abf209c",
+  "docs/design/images/DonkeyTrumpCover.png": "89a8112846e8cfa154feaf486f990d024af9d218b5b773b790eea84099e7674d"
+}
+
+
+### context-manifest.json
+{
+  "AGENTS.md": "24f26a7f9d82431caa9f9de0863d92341c72c9a48c6e94e6f26d12d052fff192",
+  ".specify/memory/constitution.md": "48aad1c55de956264342aa88070cb3d9a21a3f0985f684f19ce77cc095b73129",
+  "src/DonkeyTrump3D/App/DonkeyTrump3DApp.swift": "2e26cf3c78932f889091815849c62af0093853a267ffcf148268c18107870775",
+  "src/DonkeyTrump3D/UI/RootView.swift": "ea56d29ba79cc4a58c42a28be92878015bc490d01d2922c8503aff4ea0b64d2a",
+  "src/DonkeyTrump3DUITests/HighscoreBrowsingUITests.swift": "b64e812b8e7ede6bae6ada2c44e1f7ad51da1d867d8488038c5d784a02cb5490",
+  "src/DonkeyTrump3D/UI/Copy.swift": "8e3047ab5666709023dece4eb704e0c8480cbe93e35a180c107370236d6f7206"
+}
+
+
+### focused-readme.patch
+--- round-1/README.md
++++ final/README.md
+@@ -81,4 +81,6 @@
+ 
+ ## Asset originality
+ 
+-Every model, texture and effect is generated in code, and the sounds are the web game's original synthesized WAVs. No Nintendo or Donkey Kong material is used. This is an original satirical parody, not affiliated with any game publisher or politician.
++The 3D gameplay models, textures and effects are generated in code, and the soundtrack uses the project's synthesized audio. The launch screen also bundles the owner's prompt-generated cover illustration; its source and prompt are retained in [the cover provenance record](docs/design/cover-art.md). The generation tool and licensing terms were not supplied, and the release content/rights assessment remains open under [FR-006](specs/002-app-store-release/spec.md).
++
++References to the classic arcade game's style are design inspiration, not authorization to copy Nintendo/Donkey Kong assets or a claim of rights clearance. This is an original satirical parody, not affiliated with any game publisher or politician.
+
+
+### Relevant release requirements
+- **FR-006**: Rights, originality and content suitability MUST be assessed for the full shipped experience: app/character names, in-game text, real public figures' names/depictions, icon, models, audio, marketing and the overall gameplay/presentation resemblance to its reference game. The assessment MUST use project provenance and current store rules and support FR-009's declarations. Copied assets, unsupported rights claims and implied endorsement MUST be removed or treated as concrete blockers. Parody wording alone is not proof of permission or approval; an unresolved material naming/content issue requires an explicit product decision, not a silent rename or an unsupported legal conclusion.
+- **FR-009**: Age ratings, content rights, export/encryption declarations, accessibility claims and applicable territory requirements MUST have a factual basis. Missing facts MUST be obtained before attestation; a desired rating or unchecked assumption is not evidence.
+- **FR-024**: The app MUST use the owner-supplied [DonkeyTrumpCover.png](../../docs/design/images/DonkeyTrumpCover.png) during startup, preserving its proportions and the full motif across supported landscape layouts. Startup MUST remain local and automatically yield to the game without a minimum display timer or extra action. The original image and supplied prompt MUST be retained as provenance. Store use is optional supporting artwork subject to FR-004–FR-006; it MUST NOT imply that the illustration is actual 3D gameplay or replace the required in-use screenshots.
+- **SC-008**: Cold-launch checks show the complete supplied illustration without distortion or cut-off title/characters, followed by a reachable title menu and playable game, with no added waiting period or network requirement. The retained source matches the bundled cover, and any store composition distinguishes the illustration from actual gameplay.
+- **Owner follow-up on 2026-09-26:** use the supplied cover as the loading screen and consider it for App Store artwork. This authorizes the focused launch-screen integration before the broader release plan; [cover-art.md](../../docs/design/cover-art.md) retains the image provenance and store-use boundaries.

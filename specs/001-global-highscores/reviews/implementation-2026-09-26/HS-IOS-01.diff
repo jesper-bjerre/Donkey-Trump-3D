@@ -1,0 +1,40 @@
+--- initial-reviewed/src/DonkeyTrump3D/Highscores/HighscoreCoordinator.swift
++++ final/src/DonkeyTrump3D/Highscores/HighscoreCoordinator.swift
+@@ -125,7 +125,7 @@
+                 } else {
+                     let unconfirmed: Bool
+                     if case HighscoreServiceError.rejected(let problem) = error {
+-                        unconfirmed = problem.code == "submission_unconfirmed" || !["validation_failed", "malformed_request", "submission_conflict", "payload_too_large", "unsupported_media_type", "rate_limited", "service_unavailable", "storage_invalid", "contention_exhausted", "operation_timed_out"].contains(problem.code)
++                        unconfirmed = submission != nil && (problem.code == "submission_unconfirmed" || !["validation_failed", "malformed_request", "submission_conflict", "payload_too_large", "unsupported_media_type", "rate_limited", "service_unavailable", "storage_invalid", "contention_exhausted", "operation_timed_out"].contains(problem.code))
+                     } else { unconfirmed = submission != nil }
+                     self.fail(unconfirmed: unconfirmed)
+                 }
+
+--- initial-reviewed/src/DonkeyTrump3DTests/HighscoreFailureTests.swift
++++ final/src/DonkeyTrump3DTests/HighscoreFailureTests.swift
+@@ -25,6 +25,25 @@
+         #expect(await eventually { if case .browsing = coordinator.state { true } else { false } })
+         coordinator.complete(run); coordinator.submit(name: "Again"); coordinator.cancel(); coordinator.complete(run)
+         #expect(coordinator.state == .closed); #expect(await service.posts.count == 1)
++    }
++    @Test(arguments: ["internal_error", "unknown_problem", "submission_unconfirmed"])
++    func rejectedReadsNeverImplyUnconsentedPublication(_ code: String) async {
++        for fromTitle in [true, false] {
++            let service = ScriptedHighscoreService(read: {
++                throw HighscoreServiceError.rejected(.init(type: "about:blank", title: "Unavailable", status: 500, code: code, errors: nil))
++            })
++            let coordinator = HighscoreCoordinator(service: service)
++            let run = CompletedRun(id: UUID(), score: 1200, levelReached: 1)
++            if fromTitle { coordinator.openTitle() } else { coordinator.complete(run) }
++            #expect(await eventually { if case .failed = coordinator.state { true } else { false } })
++            guard case .failed(let message, _) = coordinator.state else { continue }
++            #expect(message == Copy.highscoreUnavailable)
++            #expect(!message.contains("couldn't confirm"))
++            coordinator.submit(name: "No consent")
++            if !fromTitle { coordinator.complete(run) }
++            #expect(await service.posts.isEmpty)
++            #expect(await service.reads == 1)
++        }
+     }
+     @Test func FailedQualificationDoesNotInferRankOrPublishLater() async {
+         let response = MutableHighscoreRead(); await response.set(.failure(.unavailable))

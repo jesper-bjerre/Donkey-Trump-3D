@@ -1,0 +1,6 @@
+PASS: R-001 compatibility gate labels simulator evidence, excludes native iPad claims and blocks on failed flows.
+PASS: R-002 covers all shipped text/public figures/overall resemblance and informs FR-009 without assuming infringement or satire exemption.
+PASS: all relative links, whitespace,23 FR IDs,7 SC IDs,16 checklist criteria.
+PASS: confirmed owner-only review submission boundary unchanged.
+PASS: only spec.md and source-notes.md changed; no code/build test warranted.
+Official Apple 2.4.1,1.1.1,4.1 checked live; reviewer trademark speculation not adopted.

@@ -1,0 +1,15 @@
+**/bin/
+**/obj/
+.git/
+node_modules/
+**/*.log*
+.env*
+**/.env*
+**/appsettings.Local.json
+**/appsettings.Development.json
+**/secrets/
+**/.azurite/
+**/TestResults/
+**/coverage/
+Dockerfile*
+.dockerignore

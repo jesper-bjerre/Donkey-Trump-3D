@@ -1,0 +1,17 @@
+**
+!global.json
+!src/
+!src/backend/
+!src/backend/**
+**/bin/
+**/obj/
+**/appsettings.Development.json
+**/appsettings.Local.json
+**/.env*
+**/*.log*
+**/secrets/
+**/.azurite/
+**/TestResults/
+**/README.md
+**/Dockerfile*
+**/.dockerignore

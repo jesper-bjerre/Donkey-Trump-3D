@@ -1,0 +1,10 @@
+--- round-1/README.md
++++ final/README.md
+@@ -81,4 +81,6 @@
+ 
+ ## Asset originality
+ 
+-Every model, texture and effect is generated in code, and the sounds are the web game's original synthesized WAVs. No Nintendo or Donkey Kong material is used. This is an original satirical parody, not affiliated with any game publisher or politician.
++The 3D gameplay models, textures and effects are generated in code, and the soundtrack uses the project's synthesized audio. The launch screen also bundles the owner's prompt-generated cover illustration; its source and prompt are retained in [the cover provenance record](docs/design/cover-art.md). The generation tool and licensing terms were not supplied, and the release content/rights assessment remains open under [FR-006](specs/002-app-store-release/spec.md).
++
++References to the classic arcade game's style are design inspiration, not authorization to copy Nintendo/Donkey Kong assets or a claim of rights clearance. This is an original satirical parody, not affiliated with any game publisher or politician.

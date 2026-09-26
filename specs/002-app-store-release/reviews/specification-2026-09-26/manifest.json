@@ -1,0 +1,12 @@
+{
+  "baseCommit": "e323551c539e40edbc7b8e57dda3ed2ee5735e09",
+  "candidateDigest": "d6af68140477f428f6e55aac3a08612621b33c2d767b96a2ae1aa61295744c61",
+  "files": {
+    ".specify/feature.json": "e1fc971011a426544eada45fc497401168f99f3886a805c37499f33035c03061",
+    "specs/002-app-store-release/checklists/requirements.md": "37f534df1e438e14b0684ed53d66cdf62319718a0aecd7dd9f170c2b817846e6",
+    "specs/002-app-store-release/source-notes.md": "ec6ff6a763077ab6b6b3f682e88b976e0f929c33a5b0c48d9f6c9367ae528354",
+    "specs/002-app-store-release/spec.md": "49f951fae514b40000783c86e3888c0b19992f35c357ce7ef9da64c8baecce2d"
+  },
+  "capturedPointerBaseSHA256": "debf1c33d006051134881415ce9f56b9102e3774152a9b8d3c9663e93cdbff32",
+  "baseNote": "Only .specify/feature.json existed before this invocation; its ignored/untracked base was captured separately from the Git commit."
+}

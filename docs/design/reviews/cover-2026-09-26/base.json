@@ -1,0 +1,11 @@
+{
+  "commit": "e323551c539e40edbc7b8e57dda3ed2ee5735e09",
+  "before": {
+    "src/DonkeyTrump3D.xcodeproj/project.pbxproj": "6f157be6585be7e1fc7df1fafc4ea219462497318522a94a71796cc0155f686c",
+    "README.md": "1b4c36ae8711f89f9e25f30912d9a1e60639aee6596de7fac345fac7bb783c39",
+    "specs/002-app-store-release/spec.md": "49f951fae514b40000783c86e3888c0b19992f35c357ce7ef9da64c8baecce2d",
+    "specs/002-app-store-release/source-notes.md": "ec6ff6a763077ab6b6b3f682e88b976e0f929c33a5b0c48d9f6c9367ae528354",
+    "specs/002-app-store-release/checklists/requirements.md": "37f534df1e438e14b0684ed53d66cdf62319718a0aecd7dd9f170c2b817846e6",
+    "docs/design/images/DonkeyTrumpCover.png": "89a8112846e8cfa154feaf486f990d024af9d218b5b773b790eea84099e7674d"
+  }
+}
