@@ -29,7 +29,7 @@ final class HighscoreFailureUITests: HighscoreUITestCase {
     func testLostAcknowledgementIsUnconfirmedAndNoDeferredPost() {
         launch("save-ack-lost", completed: true)
         let field = app.textFields["highscoreName"]; XCTAssertTrue(field.waitForExistence(timeout: 4))
-        let before = evidence(); field.tap(); field.typeText("Test"); app.buttons["highscoreSubmit"].tap()
+        let before = evidence(); field.tap(); field.typeText("Test"); tapSubmit()
         XCTAssertTrue(app.staticTexts["highscoreError"].waitForExistence(timeout: 4))
         XCTAssertEqual(app.staticTexts["highscoreError"].label, "We couldn't confirm whether your score was saved.")
         XCTAssertEqual(evidence()["posts"], (before["posts"] ?? 0) + 1)

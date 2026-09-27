@@ -32,6 +32,9 @@
 		A10000000000000000000021 /* DonkeyTrump3DTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DonkeyTrump3DTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A10000000000000000000071 /* DonkeyTrump3DUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DonkeyTrump3DUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A10000000000000000000090 /* tests/fixtures/highscores.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = tests/fixtures/highscores.json; sourceTree = "<group>"; };
+		B20000000000000000000064 /* Backend-Local.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Backend-Local.xcconfig"; sourceTree = "<group>"; };
+		B20000000000000000000065 /* Backend-DEV.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Backend-DEV.xcconfig"; sourceTree = "<group>"; };
+		B20000000000000000000066 /* Backend-PROD.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Backend-PROD.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -80,6 +83,7 @@
 		A10000000000000000000002 = {
 			isa = PBXGroup;
 			children = (
+				B2000000000000000000006E /* Configuration */,
 				A10000000000000000000012 /* DonkeyTrump3D */,
 				A10000000000000000000022 /* DonkeyTrump3DTests */,
 				A10000000000000000000072 /* DonkeyTrump3DUITests */,
@@ -96,6 +100,16 @@
 				A10000000000000000000071 /* DonkeyTrump3DUITests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		B2000000000000000000006E /* Configuration */ = {
+			isa = PBXGroup;
+			children = (
+				B20000000000000000000064 /* Backend-Local.xcconfig */,
+				B20000000000000000000065 /* Backend-DEV.xcconfig */,
+				B20000000000000000000066 /* Backend-PROD.xcconfig */,
+			);
+			path = Configuration;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -274,6 +288,7 @@
 /* Begin XCBuildConfiguration section */
 		A10000000000000000000031 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = B20000000000000000000065 /* Backend-DEV.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -282,7 +297,6 @@
 				DEVELOPMENT_TEAM = QHL89A7A8J;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				HIGHSCORE_API_BASE_URL = "";
 				INFOPLIST_FILE = "Configuration/Debug-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Donkey Trump 3D";
 				INFOPLIST_KEY_GCSupportsControllerUserInteraction = YES;
@@ -307,6 +321,7 @@
 		};
 		A10000000000000000000032 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = B20000000000000000000066 /* Backend-PROD.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -315,7 +330,6 @@
 				DEVELOPMENT_TEAM = QHL89A7A8J;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				HIGHSCORE_API_BASE_URL = "";
 				INFOPLIST_FILE = "Configuration/Release-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Donkey Trump 3D";
 				INFOPLIST_KEY_GCSupportsControllerUserInteraction = YES;
@@ -463,6 +477,204 @@
 			};
 			name = Release;
 		};
+		B200000000000000000000C8 /* Debug Local */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = B20000000000000000000064 /* Backend-Local.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = QHL89A7A8J;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Configuration/Debug-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Donkey Trump 3D";
+				INFOPLIST_KEY_GCSupportsControllerUserInteraction = YES;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.arcade-games";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UIStatusBarHidden = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hyldenbrandt.donkeytrump3d;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = "Debug Local";
+		};
+		B200000000000000000000C9 /* Debug PROD */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = B20000000000000000000066 /* Backend-PROD.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = QHL89A7A8J;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Configuration/Debug-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Donkey Trump 3D";
+				INFOPLIST_KEY_GCSupportsControllerUserInteraction = YES;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.arcade-games";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UIStatusBarHidden = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hyldenbrandt.donkeytrump3d;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = "Debug PROD";
+		};
+		B200000000000000000000D2 /* Debug Local */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = "Debug Local";
+		};
+		B200000000000000000000D3 /* Debug PROD */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = "Debug PROD";
+		};
+		B200000000000000000000DC /* Debug Local */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hyldenbrandt.donkeytrump3d.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/DonkeyTrump3D.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/DonkeyTrump3D";
+			};
+			name = "Debug Local";
+		};
+		B200000000000000000000DD /* Debug PROD */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hyldenbrandt.donkeytrump3d.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/DonkeyTrump3D.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/DonkeyTrump3D";
+			};
+			name = "Debug PROD";
+		};
+		B200000000000000000000E6 /* Debug Local */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hyldenbrandt.donkeytrump3d.uitests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = DonkeyTrump3D;
+			};
+			name = "Debug Local";
+		};
+		B200000000000000000000E7 /* Debug PROD */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hyldenbrandt.donkeytrump3d.uitests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = DonkeyTrump3D;
+			};
+			name = "Debug PROD";
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -470,6 +682,8 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				A10000000000000000000031 /* Debug */,
+				B200000000000000000000C9 /* Debug PROD */,
+				B200000000000000000000C8 /* Debug Local */,
 				A10000000000000000000032 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
@@ -479,6 +693,8 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				A10000000000000000000041 /* Debug */,
+				B200000000000000000000D3 /* Debug PROD */,
+				B200000000000000000000D2 /* Debug Local */,
 				A10000000000000000000042 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
@@ -488,6 +704,8 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				A10000000000000000000051 /* Debug */,
+				B200000000000000000000DD /* Debug PROD */,
+				B200000000000000000000DC /* Debug Local */,
 				A10000000000000000000052 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
@@ -497,6 +715,8 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				A10000000000000000000081 /* Debug */,
+				B200000000000000000000E7 /* Debug PROD */,
+				B200000000000000000000E6 /* Debug Local */,
 				A10000000000000000000082 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;

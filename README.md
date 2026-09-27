@@ -2,13 +2,13 @@
 
 A native iPhone 3D remake of the [Donkey Trump](../Donkey-Trump) browser game, and the same political satire. You play Jumpman Løkke, climbing sloped red truss girders and ladders up a half-built **Trump Tower, Nuuk** to rescue Motzfeldt. Donkey Trump throws barrels stencilled `TARIFFS` down at you from the top. Every new game opens with the cutscene: Trump carries Motzfeldt to the top, then signs an **EXECUTIVE ORDER: ALL GIRDERS SLANTED**, and the girders tilt one by one.
 
-Swift + SceneKit + SwiftUI. The iOS app has no third-party dependencies, accounts or tracking. It includes optional [global top-100 highscores](specs/001-global-highscores/spec.md) backed by a small [ASP.NET Core/Blob service](src/backend/README.md). Gameplay works independently of backend availability; a production HTTPS service URL must be configured before online use.
+Swift + SceneKit + SwiftUI. The iOS app has no third-party dependencies, accounts or tracking. It includes optional [global top-100 highscores](specs/001-global-highscores/spec.md) backed by a small [ASP.NET Core/Blob service](src/backend/README.md). Gameplay works independently of backend availability; the selected Xcode scheme determines which backend it uses.
 
 Cold startup shows the owner's [Donkey Trump cover](docs/design/images/DonkeyTrumpCover.png), fitted without cropping over a dark background, then proceeds directly to the game. The [cover record](docs/design/cover-art.md) preserves its source prompt and possible use alongside App Store gameplay captures.
 
 ## Run
 
-Open `src/DonkeyTrump3D.xcodeproj` in Xcode 27 or later and run the `DonkeyTrump3D` scheme on an iPhone or simulator (iOS 26+, landscape). To run on a device, set your team under *Signing & Capabilities*.
+Open `src/DonkeyTrump3D.xcodeproj` in Xcode 27 or later and select `DonkeyTrump3D Local`, `DonkeyTrump3D DEV` or `DonkeyTrump3D PROD` beside the Run button (iOS 26+, landscape). Local uses the Mac through the simulator; DEV and PROD also work on physical iPhone. The original `DonkeyTrump3D` scheme defaults to DEV. See [backend selection and local startup](docs/ios-backend-environments.md). To run on a device, set your team under *Signing & Capabilities*.
 
 ```sh
 cd src
@@ -29,7 +29,7 @@ Debug launch arguments (set them in the scheme, or pass them to `simctl launch`)
 
 Open Highscores from the title, or finish a run. A fresh qualifying result offers optional public-name entry; Submit publishes and centres/highlights that exact run. A nonqualifying result shows the bottom and final score. Ties retain earlier successful saves. Close, Start and Play Again work during network requests; list refresh is read-only and stale data is labelled. Failed or unconfirmed submissions are never queued or sent later, while the local best is retained. Scores are client-reported without login or cheat-proof verification.
 
-Set the Xcode `HIGHSCORE_API_BASE_URL` build setting to the real HTTPS backend origin. It is intentionally empty by default. Debug accepts loopback development transport; Release keeps ATS enabled and excludes synthetic fixtures and integration overrides. See the [reproducible local guide](specs/001-global-highscores/quickstart.md) and [validation evidence](specs/001-global-highscores/validation.md). Backend delivery uses [DEV/PROD App Service pipelines](docs/backend-deployment.md). Physical iPhone and App Store release checks remain separate prerequisites.
+The shared Xcode schemes select the origins in `src/Configuration/Backend-*.xcconfig`. Run supports Local, DEV and PROD; Archive and Profile always use Release with PROD. Debug accepts loopback development transport; Release keeps ATS enabled and excludes synthetic fixtures and integration overrides. See the [reproducible local guide](specs/001-global-highscores/quickstart.md) and [validation evidence](specs/001-global-highscores/validation.md). Backend delivery uses [DEV/PROD App Service pipelines](docs/backend-deployment.md). Physical iPhone and App Store release checks remain separate prerequisites.
 
 ## Controls
 

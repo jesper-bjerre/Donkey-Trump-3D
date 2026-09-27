@@ -1,0 +1,3 @@
+Command line invocation:
+    /Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild -project src/DonkeyTrump3D.xcodeproj -scheme DonkeyTrump3D -configuration Release -destination "generic/platform=iOS Simulator" -derivedDataPath /tmp/dt3d-menu-music-release build
+** BUILD SUCCEEDED **

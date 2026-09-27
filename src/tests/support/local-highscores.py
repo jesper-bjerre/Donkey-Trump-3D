@@ -7,8 +7,11 @@ from urllib.parse import urlsplit
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--state-file', required=True)
+parser.add_argument('--port', type=int, default=0, help='Loopback API port; 0 selects an available port')
 parser.add_argument('--azurite-endpoint', default='http://127.0.0.1:10000/devstoreaccount1')
 args = parser.parse_args()
+if not 0 <= args.port <= 65535:
+    raise SystemExit('Port must be between 0 and 65535')
 endpoint = urlsplit(args.azurite_endpoint)
 if endpoint.scheme != 'http' or endpoint.hostname not in ('127.0.0.1', 'localhost', '::1') or endpoint.path != '/devstoreaccount1' or endpoint.query or endpoint.fragment or endpoint.username:
     raise SystemExit('A loopback Azurite endpoint is required')
@@ -28,7 +31,7 @@ def container_request(method):
         if response.status not in (201, 202): raise RuntimeError('Unexpected emulator status')
 
 with socket.socket() as probe:
-    probe.bind(('127.0.0.1', 0)); port = probe.getsockname()[1]
+    probe.bind(('127.0.0.1', args.port)); port = probe.getsockname()[1]
 origin = f'http://127.0.0.1:{port}'
 dotnet = str(pathlib.Path.home() / '.dotnet/dotnet')
 subprocess.run([dotnet, 'build', 'src/backend', '--no-restore'], cwd=root, check=True, stdout=subprocess.DEVNULL)

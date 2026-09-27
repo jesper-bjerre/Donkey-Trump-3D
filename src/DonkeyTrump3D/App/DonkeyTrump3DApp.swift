@@ -13,6 +13,9 @@ struct DonkeyTrump3DApp: App {
                 .persistentSystemOverlays(.hidden)
                 .preferredColorScheme(.dark)
         }
+        .onChange(of: scenePhase, initial: true) { _, phase in
+            AudioSystem.shared.setMenuMusicActive(phase == .active)
+        }
         .onChange(of: scenePhase) { old, phase in
             // Only pause when leaving an active session, not during the launch transition.
             if old == .active && phase != .active { model.engine.send(.pause) }
@@ -25,6 +28,7 @@ struct DonkeyTrump3DApp: App {
 final class GameModel {
     var hud = HUDState()
     var showHowTo = false
+    private(set) var isSceneReady = false
     var muted = AudioSystem.shared.muted {
         didSet { AudioSystem.shared.muted = muted }
     }
@@ -67,6 +71,9 @@ final class GameModel {
         highscores = HighscoreCoordinator(service: selected)
         #endif
         engine = GameEngine()
+        engine.firstFrameSink = { [weak self] in
+            MainActor.assumeIsolated { self?.isSceneReady = true }
+        }
         engine.hudSink = { [weak self] snapshot in
             MainActor.assumeIsolated { self?.receive(snapshot) }
         }

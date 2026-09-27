@@ -1,0 +1,411 @@
+diff --git a/README.md b/README.md
+index 2eae607..1567d67 100644
+--- a/README.md
++++ b/README.md
+@@ -2,13 +2,13 @@
+ 
+ A native iPhone 3D remake of the [Donkey Trump](../Donkey-Trump) browser game, and the same political satire. You play Jumpman Løkke, climbing sloped red truss girders and ladders up a half-built **Trump Tower, Nuuk** to rescue Motzfeldt. Donkey Trump throws barrels stencilled `TARIFFS` down at you from the top. Every new game opens with the cutscene: Trump carries Motzfeldt to the top, then signs an **EXECUTIVE ORDER: ALL GIRDERS SLANTED**, and the girders tilt one by one.
+ 
+-Swift + SceneKit + SwiftUI. The iOS app has no third-party dependencies, accounts or tracking. It includes optional [global top-100 highscores](specs/001-global-highscores/spec.md) backed by a small [ASP.NET Core/Blob service](src/backend/README.md). Gameplay works independently of backend availability; a production HTTPS service URL must be configured before online use.
++Swift + SceneKit + SwiftUI. The iOS app has no third-party dependencies, accounts or tracking. It includes optional [global top-100 highscores](specs/001-global-highscores/spec.md) backed by a small [ASP.NET Core/Blob service](src/backend/README.md). Gameplay works independently of backend availability; the selected Xcode scheme determines which backend it uses.
+ 
+ Cold startup shows the owner's [Donkey Trump cover](docs/design/images/DonkeyTrumpCover.png), fitted without cropping over a dark background, then proceeds directly to the game. The [cover record](docs/design/cover-art.md) preserves its source prompt and possible use alongside App Store gameplay captures.
+ 
+ ## Run
+ 
+-Open `src/DonkeyTrump3D.xcodeproj` in Xcode 27 or later and run the `DonkeyTrump3D` scheme on an iPhone or simulator (iOS 26+, landscape). To run on a device, set your team under *Signing & Capabilities*.
++Open `src/DonkeyTrump3D.xcodeproj` in Xcode 27 or later and select `DonkeyTrump3D Local`, `DonkeyTrump3D DEV` or `DonkeyTrump3D PROD` beside the Run button (iOS 26+, landscape). Local uses the Mac through the simulator; DEV and PROD also work on physical iPhone. The original `DonkeyTrump3D` scheme defaults to DEV. See [backend selection and local startup](docs/ios-backend-environments.md). To run on a device, set your team under *Signing & Capabilities*.
+ 
+ ```sh
+ cd src
+@@ -29,7 +29,7 @@ Debug launch arguments (set them in the scheme, or pass them to `simctl launch`)
+ 
+ Open Highscores from the title, or finish a run. A fresh qualifying result offers optional public-name entry; Submit publishes and centres/highlights that exact run. A nonqualifying result shows the bottom and final score. Ties retain earlier successful saves. Close, Start and Play Again work during network requests; list refresh is read-only and stale data is labelled. Failed or unconfirmed submissions are never queued or sent later, while the local best is retained. Scores are client-reported without login or cheat-proof verification.
+ 
+-Set the Xcode `HIGHSCORE_API_BASE_URL` build setting to the real HTTPS backend origin. It is intentionally empty by default. Debug accepts loopback development transport; Release keeps ATS enabled and excludes synthetic fixtures and integration overrides. See the [reproducible local guide](specs/001-global-highscores/quickstart.md) and [validation evidence](specs/001-global-highscores/validation.md). Backend delivery uses [DEV/PROD App Service pipelines](docs/backend-deployment.md). Physical iPhone and App Store release checks remain separate prerequisites.
++The shared Xcode schemes select the origins in `src/Configuration/Backend-*.xcconfig`. Run supports Local, DEV and PROD; Archive and Profile always use Release with PROD. Debug accepts loopback development transport; Release keeps ATS enabled and excludes synthetic fixtures and integration overrides. See the [reproducible local guide](specs/001-global-highscores/quickstart.md) and [validation evidence](specs/001-global-highscores/validation.md). Backend delivery uses [DEV/PROD App Service pipelines](docs/backend-deployment.md). Physical iPhone and App Store release checks remain separate prerequisites.
+ 
+ ## Controls
+ 
+diff --git a/docs/backend-deployment.md b/docs/backend-deployment.md
+index c5bda6c..5605f74 100644
+--- a/docs/backend-deployment.md
++++ b/docs/backend-deployment.md
+@@ -191,4 +191,4 @@ bill. Review the budget before its September 2036 expiry.
+ 
+ The deployment [evidence and independent review](reviews/backend-deployment-2026-09-26.md)
+ records the executed checks and observed resources. App Store moderation, physical
+-iPhone acceptance and the iOS production endpoint are separate release work.
++iPhone acceptance remain separate release work. The [iOS Xcode schemes](ios-backend-environments.md) select Local/DEV/PROD for Run and PROD for Archive.
+diff --git a/docs/production-smoke-and-rollback.md b/docs/production-smoke-and-rollback.md
+index ed5f51b..f56963f 100644
+--- a/docs/production-smoke-and-rollback.md
++++ b/docs/production-smoke-and-rollback.md
+@@ -128,7 +128,7 @@ An App Store version cannot simply be reverted to an earlier version. Recovering
+ 
+ ## Credentials and release records
+ 
+-Signing identities, certificates, provisioning profiles and any future App Store Connect API credentials must stay in the approved local/build-system credential store. Never put private keys, passwords or tokens in source, docs, command examples or logs. The optional highscore integration needs a real HTTPS API origin in Release; the app never embeds an Azure storage key or service credential. The backend deployment guide records Azure origins; the iOS build setting still needs explicit release configuration.
++Signing identities, certificates, provisioning profiles and any future App Store Connect API credentials must stay in the approved local/build-system credential store. Never put private keys, passwords or tokens in source, docs, command examples or logs. The optional highscore integration needs a real HTTPS API origin in Release; the app never embeds an Azure storage key or service credential. The backend deployment guide records Azure origins; the [shared Xcode configuration](ios-backend-environments.md) now selects PROD for Release/Archive. Verify the actual archive before distribution.
+ 
+ Release records should distinguish automated passes, simulator smoke results and physical-device checks. The last audio-change validation on 2026-09-25 passed 18 tests on iPhone 18 Pro/iOS 27 and reached gameplay after the intro; physical mute-switch verification was still outstanding. Revalidate the actual candidate rather than treating that earlier run as current release approval.
+ 
+@@ -150,7 +150,7 @@ remain separate release prerequisites.
+   rate limits and delayed budget alerts do not guarantee a monthly bill.
+ - DEV F1 may cold-start; PROD uses Always On. Backend delays must never block offline
+   gameplay. Shared-plan capacity and existing-app health require operational checks.
+-- Configure the real `HIGHSCORE_API_BASE_URL` HTTPS origin; verify Release ATS and fixture/integration exclusion. On physical iPhone 13, check ranks 1/50/100, keyboard dismissal, optional public-name notice, VoiceOver focus/labels, large Dynamic Type, both landscapes, buttons during hang/failure, background/reconnect/relaunch without queued uploads, and existing silent-switch/intro audio.
++- Verify the archived `HIGHSCORE_API_BASE_URL` matches the intended PROD HTTPS origin; verify Release ATS and fixture/integration exclusion. On physical iPhone 13, check ranks 1/50/100, keyboard dismissal, optional public-name notice, VoiceOver focus/labels, large Dynamic Type, both landscapes, buttons during hang/failure, background/reconnect/relaunch without queued uploads, and existing silent-switch/intro audio.
+ 
+ A rollback changes the API/app revision while preserving the private ranking blob. Never reset, delete or overwrite scores to hide a deployment/storage error. Unknown schema/corruption must fail closed; investigate against a protected backup under an explicitly authorized recovery plan. Retain the prior tested release package/configuration and validate compatibility before changing revisions. A lost POST acknowledgement may already have committed; rollback/refresh must not replay that player's submission. Record actual recovery results and remaining limitations.
+ 
+diff --git a/specs/001-global-highscores/quickstart.md b/specs/001-global-highscores/quickstart.md
+index 29ac7da..d6186fa 100644
+--- a/specs/001-global-highscores/quickstart.md
++++ b/specs/001-global-highscores/quickstart.md
+@@ -87,7 +87,7 @@ xcodebuild -project src/DonkeyTrump3D.xcodeproj -scheme DonkeyTrump3D \
+   -collect-test-diagnostics never -parallel-testing-enabled NO test
+ ```
+ 
+-`TEST_RUNNER_` forwards variables to the XCUITest runner. The tests launch the app with explicit `-highscoreIntegration -highscoreLocalOrigin ORIGIN`. That route accepts only loopback HTTP, refuses redirects and never falls back to a configured production URL. Release excludes fixtures, synthetic Game Over, integration overrides, counters and performance instrumentation. `HIGHSCORE_API_BASE_URL` is empty by default; configure a real HTTPS origin before release. Missing/invalid configuration leaves gameplay usable with unavailable highscores. Debug also accepts a bundled localhost URL; a physical iPhone's localhost is not the Mac.
++`TEST_RUNNER_` forwards variables to the XCUITest runner. The tests launch the app with explicit `-highscoreIntegration -highscoreLocalOrigin ORIGIN`. That route accepts only loopback HTTP, refuses redirects and never falls back to a configured production URL. Release excludes fixtures, synthetic Game Over, integration overrides, counters and performance instrumentation. The [shared Xcode schemes](../../docs/ios-backend-environments.md) configure `HIGHSCORE_API_BASE_URL`: the original Debug scheme uses DEV, Local uses port 5281, and Release uses PROD. For interactive Local runs, pass `--port 5281` to the helper; automated integration tests keep using its dynamically allocated origin. Missing/invalid configuration leaves gameplay usable with unavailable highscores. Debug also accepts a bundled localhost URL; a physical iPhone's localhost is not the Mac.
+ 
+ Fixture names: `rank-1`, `rank-50`, `rank-100`, `below-cutoff`, `equal-cutoff`, `empty`, `duplicate-names`, `cutoff-race`, `validation-error`, `unavailable`, `hang`, `slow-stream`, `late-response`, `save-ack-lost`, `offline-first`, `refresh-fails`. Use `-highscoreFixture NAME -highscoreUITest`, adding `-highscoreCompletedRun` for Game Over. Synthetic personal best uses a separate preferences suite; request counters persist only for Debug accounting. The ordinary slow-stream fixture simulates an unresolved service; the real chunked HTTP fixture proves network progress does not extend the deadline.
+ 
+diff --git a/src/DonkeyTrump3D.xcodeproj/project.pbxproj b/src/DonkeyTrump3D.xcodeproj/project.pbxproj
+index 6224a11..c733c45 100644
+--- a/src/DonkeyTrump3D.xcodeproj/project.pbxproj
++++ b/src/DonkeyTrump3D.xcodeproj/project.pbxproj
+@@ -32,6 +32,9 @@
+ 		A10000000000000000000021 /* DonkeyTrump3DTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DonkeyTrump3DTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+ 		A10000000000000000000071 /* DonkeyTrump3DUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DonkeyTrump3DUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+ 		A10000000000000000000090 /* tests/fixtures/highscores.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = tests/fixtures/highscores.json; sourceTree = "<group>"; };
++		B20000000000000000000064 /* Backend-Local.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Backend-Local.xcconfig"; sourceTree = "<group>"; };
++		B20000000000000000000065 /* Backend-DEV.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Backend-DEV.xcconfig"; sourceTree = "<group>"; };
++		B20000000000000000000066 /* Backend-PROD.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Backend-PROD.xcconfig"; sourceTree = "<group>"; };
+ /* End PBXFileReference section */
+ 
+ /* Begin PBXFileSystemSynchronizedRootGroup section */
+@@ -80,6 +83,7 @@
+ 		A10000000000000000000002 = {
+ 			isa = PBXGroup;
+ 			children = (
++				B2000000000000000000006E /* Configuration */,
+ 				A10000000000000000000012 /* DonkeyTrump3D */,
+ 				A10000000000000000000022 /* DonkeyTrump3DTests */,
+ 				A10000000000000000000072 /* DonkeyTrump3DUITests */,
+@@ -98,6 +102,16 @@
+ 			name = Products;
+ 			sourceTree = "<group>";
+ 		};
++		B2000000000000000000006E /* Configuration */ = {
++			isa = PBXGroup;
++			children = (
++				B20000000000000000000064 /* Backend-Local.xcconfig */,
++				B20000000000000000000065 /* Backend-DEV.xcconfig */,
++				B20000000000000000000066 /* Backend-PROD.xcconfig */,
++			);
++			path = Configuration;
++			sourceTree = "<group>";
++		};
+ /* End PBXGroup section */
+ 
+ /* Begin PBXNativeTarget section */
+@@ -274,6 +288,7 @@
+ /* Begin XCBuildConfiguration section */
+ 		A10000000000000000000031 /* Debug */ = {
+ 			isa = XCBuildConfiguration;
++			baseConfigurationReference = B20000000000000000000065 /* Backend-DEV.xcconfig */;
+ 			buildSettings = {
+ 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+ 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+@@ -282,7 +297,6 @@
+ 				DEVELOPMENT_TEAM = QHL89A7A8J;
+ 				ENABLE_PREVIEWS = YES;
+ 				GENERATE_INFOPLIST_FILE = YES;
+-				HIGHSCORE_API_BASE_URL = "";
+ 				INFOPLIST_FILE = "Configuration/Debug-Info.plist";
+ 				INFOPLIST_KEY_CFBundleDisplayName = "Donkey Trump 3D";
+ 				INFOPLIST_KEY_GCSupportsControllerUserInteraction = YES;
+@@ -307,6 +321,7 @@
+ 		};
+ 		A10000000000000000000032 /* Release */ = {
+ 			isa = XCBuildConfiguration;
++			baseConfigurationReference = B20000000000000000000066 /* Backend-PROD.xcconfig */;
+ 			buildSettings = {
+ 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+ 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+@@ -315,7 +330,6 @@
+ 				DEVELOPMENT_TEAM = QHL89A7A8J;
+ 				ENABLE_PREVIEWS = YES;
+ 				GENERATE_INFOPLIST_FILE = YES;
+-				HIGHSCORE_API_BASE_URL = "";
+ 				INFOPLIST_FILE = "Configuration/Release-Info.plist";
+ 				INFOPLIST_KEY_CFBundleDisplayName = "Donkey Trump 3D";
+ 				INFOPLIST_KEY_GCSupportsControllerUserInteraction = YES;
+@@ -463,6 +477,204 @@
+ 			};
+ 			name = Release;
+ 		};
++		B200000000000000000000C8 /* Debug Local */ = {
++			isa = XCBuildConfiguration;
++			baseConfigurationReference = B20000000000000000000064 /* Backend-Local.xcconfig */;
++			buildSettings = {
++				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
++				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
++				CODE_SIGN_STYLE = Automatic;
++				CURRENT_PROJECT_VERSION = 1;
++				DEVELOPMENT_TEAM = QHL89A7A8J;
++				ENABLE_PREVIEWS = YES;
++				GENERATE_INFOPLIST_FILE = YES;
++				INFOPLIST_FILE = "Configuration/Debug-Info.plist";
++				INFOPLIST_KEY_CFBundleDisplayName = "Donkey Trump 3D";
++				INFOPLIST_KEY_GCSupportsControllerUserInteraction = YES;
++				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.arcade-games";
++				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
++				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
++				INFOPLIST_KEY_UIStatusBarHidden = YES;
++				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
++				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
++				LD_RUNPATH_SEARCH_PATHS = (
++					"$(inherited)",
++					"@executable_path/Frameworks",
++				);
++				MARKETING_VERSION = 1.0;
++				PRODUCT_BUNDLE_IDENTIFIER = com.hyldenbrandt.donkeytrump3d;
++				PRODUCT_NAME = "$(TARGET_NAME)";
++				SWIFT_EMIT_LOC_STRINGS = YES;
++				SWIFT_VERSION = 5.0;
++				TARGETED_DEVICE_FAMILY = "1,2";
++			};
++			name = "Debug Local";
++		};
++		B200000000000000000000C9 /* Debug PROD */ = {
++			isa = XCBuildConfiguration;
++			baseConfigurationReference = B20000000000000000000066 /* Backend-PROD.xcconfig */;
++			buildSettings = {
++				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
++				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
++				CODE_SIGN_STYLE = Automatic;
++				CURRENT_PROJECT_VERSION = 1;
++				DEVELOPMENT_TEAM = QHL89A7A8J;
++				ENABLE_PREVIEWS = YES;
++				GENERATE_INFOPLIST_FILE = YES;
++				INFOPLIST_FILE = "Configuration/Debug-Info.plist";
++				INFOPLIST_KEY_CFBundleDisplayName = "Donkey Trump 3D";
++				INFOPLIST_KEY_GCSupportsControllerUserInteraction = YES;
++				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.arcade-games";
++				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
++				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
++				INFOPLIST_KEY_UIStatusBarHidden = YES;
++				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
++				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
++				LD_RUNPATH_SEARCH_PATHS = (
++					"$(inherited)",
++					"@executable_path/Frameworks",
++				);
++				MARKETING_VERSION = 1.0;
++				PRODUCT_BUNDLE_IDENTIFIER = com.hyldenbrandt.donkeytrump3d;
++				PRODUCT_NAME = "$(TARGET_NAME)";
++				SWIFT_EMIT_LOC_STRINGS = YES;
++				SWIFT_VERSION = 5.0;
++				TARGETED_DEVICE_FAMILY = "1,2";
++			};
++			name = "Debug PROD";
++		};
++		B200000000000000000000D2 /* Debug Local */ = {
++			isa = XCBuildConfiguration;
++			buildSettings = {
++				ALWAYS_SEARCH_USER_PATHS = NO;
++				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
++				CLANG_ANALYZER_NONNULL = YES;
++				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
++				CLANG_ENABLE_MODULES = YES;
++				CLANG_ENABLE_OBJC_ARC = YES;
++				COPY_PHASE_STRIP = NO;
++				DEBUG_INFORMATION_FORMAT = dwarf;
++				ENABLE_STRICT_OBJC_MSGSEND = YES;
++				ENABLE_TESTABILITY = YES;
++				ENABLE_USER_SCRIPT_SANDBOXING = YES;
++				GCC_C_LANGUAGE_STANDARD = gnu17;
++				GCC_DYNAMIC_NO_PIC = NO;
++				GCC_NO_COMMON_BLOCKS = YES;
++				GCC_OPTIMIZATION_LEVEL = 0;
++				GCC_PREPROCESSOR_DEFINITIONS = (
++					"DEBUG=1",
++					"$(inherited)",
++				);
++				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
++				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
++				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
++				MTL_FAST_MATH = YES;
++				ONLY_ACTIVE_ARCH = YES;
++				SDKROOT = iphoneos;
++				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
++				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
++			};
++			name = "Debug Local";
++		};
++		B200000000000000000000D3 /* Debug PROD */ = {
++			isa = XCBuildConfiguration;
++			buildSettings = {
++				ALWAYS_SEARCH_USER_PATHS = NO;
++				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
++				CLANG_ANALYZER_NONNULL = YES;
++				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
++				CLANG_ENABLE_MODULES = YES;
++				CLANG_ENABLE_OBJC_ARC = YES;
++				COPY_PHASE_STRIP = NO;
++				DEBUG_INFORMATION_FORMAT = dwarf;
++				ENABLE_STRICT_OBJC_MSGSEND = YES;
++				ENABLE_TESTABILITY = YES;
++				ENABLE_USER_SCRIPT_SANDBOXING = YES;
++				GCC_C_LANGUAGE_STANDARD = gnu17;
++				GCC_DYNAMIC_NO_PIC = NO;
++				GCC_NO_COMMON_BLOCKS = YES;
++				GCC_OPTIMIZATION_LEVEL = 0;
++				GCC_PREPROCESSOR_DEFINITIONS = (
++					"DEBUG=1",
++					"$(inherited)",
++				);
++				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
++				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
++				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
++				MTL_FAST_MATH = YES;
++				ONLY_ACTIVE_ARCH = YES;
++				SDKROOT = iphoneos;
++				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
++				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
++			};
++			name = "Debug PROD";
++		};
++		B200000000000000000000DC /* Debug Local */ = {
++			isa = XCBuildConfiguration;
++			buildSettings = {
++				BUNDLE_LOADER = "$(TEST_HOST)";
++				CODE_SIGN_STYLE = Automatic;
++				CURRENT_PROJECT_VERSION = 1;
++				GENERATE_INFOPLIST_FILE = YES;
++				MARKETING_VERSION = 1.0;
++				PRODUCT_BUNDLE_IDENTIFIER = com.hyldenbrandt.donkeytrump3d.tests;
++				PRODUCT_NAME = "$(TARGET_NAME)";
++				SWIFT_EMIT_LOC_STRINGS = NO;
++				SWIFT_VERSION = 5.0;
++				TARGETED_DEVICE_FAMILY = "1,2";
++				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/DonkeyTrump3D.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/DonkeyTrump3D";
++			};
++			name = "Debug Local";
++		};
++		B200000000000000000000DD /* Debug PROD */ = {
++			isa = XCBuildConfiguration;
++			buildSettings = {
++				BUNDLE_LOADER = "$(TEST_HOST)";
++				CODE_SIGN_STYLE = Automatic;
++				CURRENT_PROJECT_VERSION = 1;
++				GENERATE_INFOPLIST_FILE = YES;
++				MARKETING_VERSION = 1.0;
++				PRODUCT_BUNDLE_IDENTIFIER = com.hyldenbrandt.donkeytrump3d.tests;
++				PRODUCT_NAME = "$(TARGET_NAME)";
++				SWIFT_EMIT_LOC_STRINGS = NO;
++				SWIFT_VERSION = 5.0;
++				TARGETED_DEVICE_FAMILY = "1,2";
++				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/DonkeyTrump3D.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/DonkeyTrump3D";
++			};
++			name = "Debug PROD";
++		};
++		B200000000000000000000E6 /* Debug Local */ = {
++			isa = XCBuildConfiguration;
++			buildSettings = {
++				CODE_SIGN_STYLE = Automatic;
++				CURRENT_PROJECT_VERSION = 1;
++				GENERATE_INFOPLIST_FILE = YES;
++				MARKETING_VERSION = 1.0;
++				PRODUCT_BUNDLE_IDENTIFIER = com.hyldenbrandt.donkeytrump3d.uitests;
++				PRODUCT_NAME = "$(TARGET_NAME)";
++				SWIFT_EMIT_LOC_STRINGS = NO;
++				SWIFT_VERSION = 5.0;
++				TARGETED_DEVICE_FAMILY = "1,2";
++				TEST_TARGET_NAME = DonkeyTrump3D;
++			};
++			name = "Debug Local";
++		};
++		B200000000000000000000E7 /* Debug PROD */ = {
++			isa = XCBuildConfiguration;
++			buildSettings = {
++				CODE_SIGN_STYLE = Automatic;
++				CURRENT_PROJECT_VERSION = 1;
++				GENERATE_INFOPLIST_FILE = YES;
++				MARKETING_VERSION = 1.0;
++				PRODUCT_BUNDLE_IDENTIFIER = com.hyldenbrandt.donkeytrump3d.uitests;
++				PRODUCT_NAME = "$(TARGET_NAME)";
++				SWIFT_EMIT_LOC_STRINGS = NO;
++				SWIFT_VERSION = 5.0;
++				TARGETED_DEVICE_FAMILY = "1,2";
++				TEST_TARGET_NAME = DonkeyTrump3D;
++			};
++			name = "Debug PROD";
++		};
+ /* End XCBuildConfiguration section */
+ 
+ /* Begin XCConfigurationList section */
+@@ -470,6 +682,8 @@
+ 			isa = XCConfigurationList;
+ 			buildConfigurations = (
+ 				A10000000000000000000031 /* Debug */,
++				B200000000000000000000C9 /* Debug PROD */,
++				B200000000000000000000C8 /* Debug Local */,
+ 				A10000000000000000000032 /* Release */,
+ 			);
+ 			defaultConfigurationIsVisible = 0;
+@@ -479,6 +693,8 @@
+ 			isa = XCConfigurationList;
+ 			buildConfigurations = (
+ 				A10000000000000000000041 /* Debug */,
++				B200000000000000000000D3 /* Debug PROD */,
++				B200000000000000000000D2 /* Debug Local */,
+ 				A10000000000000000000042 /* Release */,
+ 			);
+ 			defaultConfigurationIsVisible = 0;
+@@ -488,6 +704,8 @@
+ 			isa = XCConfigurationList;
+ 			buildConfigurations = (
+ 				A10000000000000000000051 /* Debug */,
++				B200000000000000000000DD /* Debug PROD */,
++				B200000000000000000000DC /* Debug Local */,
+ 				A10000000000000000000052 /* Release */,
+ 			);
+ 			defaultConfigurationIsVisible = 0;
+@@ -497,6 +715,8 @@
+ 			isa = XCConfigurationList;
+ 			buildConfigurations = (
+ 				A10000000000000000000081 /* Debug */,
++				B200000000000000000000E7 /* Debug PROD */,
++				B200000000000000000000E6 /* Debug Local */,
+ 				A10000000000000000000082 /* Release */,
+ 			);
+ 			defaultConfigurationIsVisible = 0;
+diff --git a/src/tests/support/local-highscores.py b/src/tests/support/local-highscores.py
+index e9fd3cd..2570fea 100644
+--- a/src/tests/support/local-highscores.py
++++ b/src/tests/support/local-highscores.py
+@@ -7,8 +7,11 @@ from urllib.parse import urlsplit
+ 
+ parser = argparse.ArgumentParser()
+ parser.add_argument('--state-file', required=True)
++parser.add_argument('--port', type=int, default=0, help='Loopback API port; 0 selects an available port')
+ parser.add_argument('--azurite-endpoint', default='http://127.0.0.1:10000/devstoreaccount1')
+ args = parser.parse_args()
++if not 0 <= args.port <= 65535:
++    raise SystemExit('Port must be between 0 and 65535')
+ endpoint = urlsplit(args.azurite_endpoint)
+ if endpoint.scheme != 'http' or endpoint.hostname not in ('127.0.0.1', 'localhost', '::1') or endpoint.path != '/devstoreaccount1' or endpoint.query or endpoint.fragment or endpoint.username:
+     raise SystemExit('A loopback Azurite endpoint is required')
+@@ -28,7 +31,7 @@ def container_request(method):
+         if response.status not in (201, 202): raise RuntimeError('Unexpected emulator status')
+ 
+ with socket.socket() as probe:
+-    probe.bind(('127.0.0.1', 0)); port = probe.getsockname()[1]
++    probe.bind(('127.0.0.1', args.port)); port = probe.getsockname()[1]
+ origin = f'http://127.0.0.1:{port}'
+ dotnet = str(pathlib.Path.home() / '.dotnet/dotnet')
+ subprocess.run([dotnet, 'build', 'src/backend', '--no-restore'], cwd=root, check=True, stdout=subprocess.DEVNULL)

@@ -66,8 +66,18 @@ struct HighscorePanel: View {
     @Environment(\.dynamicTypeSize) private var textSize
     let model: GameModel
     private var coordinator: HighscoreCoordinator { model.highscores }
+    private var isEnteringName: Bool {
+        if case .enteringName = coordinator.state { return true }
+        return false
+    }
     var body: some View {
+        GeometryReader { geometry in
+            panel(compact: isEnteringName && geometry.size.height < 300)
+        }
+    }
+    private func panel(compact: Bool) -> some View {
         VStack(spacing: 8) {
+            if !compact {
             HStack {
                 Text("Highscores").font(.title2.bold())
                 Spacer()
@@ -82,6 +92,7 @@ struct HighscorePanel: View {
                 Button { coordinator.cancel() } label: { Label("Close", systemImage: "xmark.circle").labelStyle(.iconOnly) }.accessibilityIdentifier("highscoreClose")
             }
             .layoutPriority(1)
+            }
             Group {
                 switch coordinator.state {
                 case .closed: EmptyView()
@@ -102,7 +113,24 @@ struct HighscorePanel: View {
             }
             .frame(minHeight: 0, maxHeight: .infinity).clipped()
             HStack {
-                if model.hud.phase == .gameOver {
+                if compact {
+                    Text("Final score: \(model.hud.score)")
+                        .font(.caption.bold()).monospacedDigit()
+                        .accessibilityIdentifier("highscoreFinalScore")
+                    Spacer(minLength: 8)
+                    Button { model.send(.restart) } label: {
+                        Image(systemName: "arrow.counterclockwise").frame(width: 44, height: 44)
+                            .contentShape(Rectangle())
+                    }.accessibilityLabel("Play Again")
+                    Button { model.send(.toTitle) } label: {
+                        Image(systemName: "house").frame(width: 44, height: 44)
+                            .contentShape(Rectangle())
+                    }.accessibilityLabel("Return to Title")
+                    Button { coordinator.cancel() } label: {
+                        Image(systemName: "xmark").frame(width: 44, height: 44)
+                            .contentShape(Rectangle())
+                    }.accessibilityLabel("Close").accessibilityIdentifier("highscoreClose")
+                } else if model.hud.phase == .gameOver {
                     Button("Play Again") { model.send(.restart) }.buttonStyle(.borderedProminent)
                     Button("Return to Title") { model.send(.toTitle) }.buttonStyle(.bordered)
                 } else {
@@ -117,10 +145,12 @@ struct HighscorePanel: View {
                         .accessibilityLabel(model.haptics ? "Haptics on" : "Haptics off")
                 }
             }
+            .font(compact ? .system(size: 22, weight: .semibold) : .body)
+            .foregroundStyle(compact ? .white : .primary)
             .layoutPriority(1)
         }
         .padding(12)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(.black.opacity(0.94))
+        .background(.black.opacity(isEnteringName ? 0.72 : 0.94))
     }
 }

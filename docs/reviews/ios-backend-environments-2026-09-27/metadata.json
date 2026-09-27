@@ -1,0 +1,71 @@
+{
+  "date": "2026-09-27",
+  "lead": {
+    "tool": "OpenAI Codex",
+    "model": "Exact model ID not exposed in this session",
+    "reasoning": "Effective setting not exposed"
+  },
+  "reviewer": {
+    "tool": "Claude Code",
+    "version": "2.1.283",
+    "requestedModel": "claude-opus-5-5",
+    "effortArgument": "high",
+    "effortEnvironment": "high",
+    "tools": [],
+    "mcpServers": {},
+    "safeMode": true,
+    "noSessionPersistence": true,
+    "textProbe": "REVIEW_ROUTE_OK; exit 0; empty stderr; no effort-cap warning",
+    "effortLimitation": "Explicit settings and warning-free text probe; provider does not separately attest effective effort"
+  },
+  "sessions": [
+    {
+      "phase": "probe-json.out",
+      "sessionId": "19e5af5b-8769-4ead-a0a5-6eb5497e26d1",
+      "exitCode": 0,
+      "subtype": "success",
+      "actualAssistantModels": [
+        "claude-opus-5-5"
+      ],
+      "provider": "firstParty",
+      "canonicalModel": "claude-opus-5-5",
+      "inputTokens": 2,
+      "outputTokens": 16
+    },
+    {
+      "phase": "review.stdout.jsonl",
+      "sessionId": "5e3b8ed0-a7ac-4592-9273-cd94db4256dd",
+      "exitCode": 0,
+      "subtype": "success",
+      "actualAssistantModels": [
+        "claude-opus-5-5"
+      ],
+      "provider": "firstParty",
+      "canonicalModel": "claude-opus-5-5",
+      "inputTokens": 2,
+      "outputTokens": 8143
+    },
+    {
+      "phase": "review-2.stdout.jsonl",
+      "sessionId": "180d0a49-2cf2-49bc-90d4-ae6f1a4444b2",
+      "exitCode": 0,
+      "subtype": "success",
+      "actualAssistantModels": [
+        "claude-opus-5-5"
+      ],
+      "provider": "firstParty",
+      "canonicalModel": "claude-opus-5-5",
+      "inputTokens": 2,
+      "outputTokens": 6332
+    }
+  ],
+  "identity": {
+    "base": "4c191a6c8998c37b6765362b9b17c957fb8ae61f",
+    "manifestSha256": "a1b9705fd71f1d361db825fd0f07fe90e3c6e05513b3a356ec0ed620059b6daa",
+    "finalChecksSha256": "f85978dc5cf09a54a65c5926d0d2a219c96d2bc609453e1736a2a834978df5cb",
+    "packetSha256": [
+      "53b5f0aa84ad183c6a09a1403c13a538bcc506b30000bb1143cdc54ccee1b598",
+      "bcd8b3ba6e36c432be78014b27bc70300d8bb3eb5156b5f3a89f96f9081a7287"
+    ]
+  }
+}

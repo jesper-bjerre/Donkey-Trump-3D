@@ -128,7 +128,7 @@ An App Store version cannot simply be reverted to an earlier version. Recovering
 
 ## Credentials and release records
 
-Signing identities, certificates, provisioning profiles and any future App Store Connect API credentials must stay in the approved local/build-system credential store. Never put private keys, passwords or tokens in source, docs, command examples or logs. The optional highscore integration needs a real HTTPS API origin in Release; the app never embeds an Azure storage key or service credential. The backend deployment guide records Azure origins; the iOS build setting still needs explicit release configuration.
+Signing identities, certificates, provisioning profiles and any future App Store Connect API credentials must stay in the approved local/build-system credential store. Never put private keys, passwords or tokens in source, docs, command examples or logs. The optional highscore integration needs a real HTTPS API origin in Release; the app never embeds an Azure storage key or service credential. The backend deployment guide records Azure origins; the [shared Xcode configuration](ios-backend-environments.md) now selects PROD for Release/Archive. Verify the actual archive before distribution.
 
 Release records should distinguish automated passes, simulator smoke results and physical-device checks. The last audio-change validation on 2026-09-25 passed 18 tests on iPhone 18 Pro/iOS 27 and reached gameplay after the intro; physical mute-switch verification was still outstanding. Revalidate the actual candidate rather than treating that earlier run as current release approval.
 
@@ -150,7 +150,7 @@ remain separate release prerequisites.
   rate limits and delayed budget alerts do not guarantee a monthly bill.
 - DEV F1 may cold-start; PROD uses Always On. Backend delays must never block offline
   gameplay. Shared-plan capacity and existing-app health require operational checks.
-- Configure the real `HIGHSCORE_API_BASE_URL` HTTPS origin; verify Release ATS and fixture/integration exclusion. On physical iPhone 13, check ranks 1/50/100, keyboard dismissal, optional public-name notice, VoiceOver focus/labels, large Dynamic Type, both landscapes, buttons during hang/failure, background/reconnect/relaunch without queued uploads, and existing silent-switch/intro audio.
+- Verify the archived `HIGHSCORE_API_BASE_URL` matches the intended PROD HTTPS origin; verify Release ATS and fixture/integration exclusion. On physical iPhone 13, check ranks 1/50/100, keyboard dismissal, clear name field, explicit Submit/Cancel, VoiceOver focus/labels, large Dynamic Type, both landscapes, buttons during hang/failure, background/reconnect/relaunch without queued uploads, and existing silent-switch/intro audio.
 
 A rollback changes the API/app revision while preserving the private ranking blob. Never reset, delete or overwrite scores to hide a deployment/storage error. Unknown schema/corruption must fail closed; investigate against a protected backup under an explicitly authorized recovery plan. Retain the prior tested release package/configuration and validate compatibility before changing revisions. A lost POST acknowledgement may already have committed; rollback/refresh must not replay that player's submission. Record actual recovery results and remaining limitations.
 

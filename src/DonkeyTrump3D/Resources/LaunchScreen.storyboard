@@ -20,10 +20,38 @@
                                     <bool key="isElement" value="NO"/>
                                 </accessibility>
                             </imageView>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="loading-panel">
+                                <rect key="frame" x="252" y="285" width="340" height="72"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" text="Loading…" textAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="loading-label">
+                                        <rect key="frame" x="16" y="12" width="308" height="22"/>
+                                        <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
+                                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    </label>
+                                    <progressView opaque="NO" contentMode="scaleToFill" progress="0.15" translatesAutoresizingMaskIntoConstraints="NO" id="loading-progress">
+                                        <rect key="frame" x="16" y="46" width="308" height="4"/>
+                                        <color key="progressTintColor" red="1" green="0.84" blue="0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <color key="trackTintColor" white="0.35" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    </progressView>
+                                </subviews>
+                                <color key="backgroundColor" red="0.02352941176" green="0.06274509804" blue="0.1529411765" alpha="0.95" colorSpace="custom" customColorSpace="sRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="340" id="panel-width"/>
+                                    <constraint firstAttribute="height" constant="72" id="panel-height"/>
+                                    <constraint firstItem="loading-label" firstAttribute="top" secondItem="loading-panel" secondAttribute="top" constant="12" id="label-top"/>
+                                    <constraint firstItem="loading-label" firstAttribute="leading" secondItem="loading-panel" secondAttribute="leading" constant="16" id="label-leading"/>
+                                    <constraint firstAttribute="trailing" secondItem="loading-label" secondAttribute="trailing" constant="16" id="label-trailing"/>
+                                    <constraint firstItem="loading-progress" firstAttribute="top" secondItem="loading-label" secondAttribute="bottom" constant="12" id="progress-top"/>
+                                    <constraint firstItem="loading-progress" firstAttribute="leading" secondItem="loading-panel" secondAttribute="leading" constant="16" id="progress-leading"/>
+                                    <constraint firstAttribute="trailing" secondItem="loading-progress" secondAttribute="trailing" constant="16" id="progress-trailing"/>
+                                </constraints>
+                            </view>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="launch-safe-area"/>
                         <color key="backgroundColor" red="0.02352941176" green="0.06274509804" blue="0.1529411765" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
+                            <constraint firstItem="loading-panel" firstAttribute="centerX" secondItem="launch-safe-area" secondAttribute="centerX" id="panel-center"/>
+                            <constraint firstItem="launch-safe-area" firstAttribute="bottom" secondItem="loading-panel" secondAttribute="bottom" constant="12" id="panel-bottom"/>
                             <constraint firstItem="launch-cover" firstAttribute="leading" secondItem="launch-safe-area" secondAttribute="leading" id="cover-leading"/>
                             <constraint firstItem="launch-cover" firstAttribute="trailing" secondItem="launch-safe-area" secondAttribute="trailing" id="cover-trailing"/>
                             <constraint firstItem="launch-cover" firstAttribute="top" secondItem="launch-safe-area" secondAttribute="top" id="cover-top"/>

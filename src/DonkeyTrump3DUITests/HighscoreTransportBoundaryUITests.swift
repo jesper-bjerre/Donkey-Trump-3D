@@ -10,7 +10,7 @@ final class HighscoreTransportBoundaryUITests: HighscoreUITestCase {
         app.launch()
         let field = app.textFields["highscoreName"]
         XCTAssertTrue(field.waitForExistence(timeout: 5)); field.tap(); field.typeText("Redirect Guard")
-        app.buttons["highscoreSubmit"].tap()
+        tapSubmit()
         XCTAssertTrue(app.staticTexts["highscoreError"].waitForExistence(timeout: 5))
         XCTAssertEqual(app.staticTexts["highscoreError"].label, "We couldn't confirm whether your score was saved.")
         XCTAssertTrue(app.buttons["Play Again"].exists)

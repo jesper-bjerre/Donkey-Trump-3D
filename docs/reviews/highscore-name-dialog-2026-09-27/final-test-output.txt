@@ -1,0 +1,25 @@
+Command line invocation:
+    /Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild -project src/DonkeyTrump3D.xcodeproj -scheme DonkeyTrump3D -destination "platform=iOS Simulator,id=31C13DEB-E27B-46F9-8598-BB36342D54A6" -derivedDataPath /var/folders/b4/x_pxbldj501f8hjttv97fdpr0000gn/T/dt3d-name-dialog-v7ounbl2/DerivedData -resultBundlePath /var/folders/b4/x_pxbldj501f8hjttv97fdpr0000gn/T/dt3d-name-dialog-v7ounbl2/ui-edge.xcresult "-only-testing:DonkeyTrump3DUITests/HighscorePublicationUITests" "-only-testing:DonkeyTrump3DUITests/HighscoreFailureUITests" "-only-testing:DonkeyTrump3DUITests/HighscoreNonqualificationUITests" "-only-testing:DonkeyTrump3DUITests/HighscoreBrowsingUITests" -collect-test-diagnostics never CODE_SIGNING_ALLOWED=NO test
+
+Test Case '-[DonkeyTrump3DUITests.HighscoreBrowsingUITests testStaleErrorAndLargeLandscapeNavigation]' passed (10.658 seconds).
+Test Case '-[DonkeyTrump3DUITests.HighscoreBrowsingUITests testStartDuringHungFetchAndNoLateReopening]' passed (7.392 seconds).
+Test Case '-[DonkeyTrump3DUITests.HighscoreBrowsingUITests testTitleListAndEmptyReadOnlyRefresh]' passed (18.111 seconds).
+	 Executed 3 tests, with 0 failures (0 unexpected) in 36.161 (36.168) seconds
+Test Case '-[DonkeyTrump3DUITests.HighscoreFailureUITests testBackgroundAbandonsPendingQualification]' passed (10.034 seconds).
+Test Case '-[DonkeyTrump3DUITests.HighscoreFailureUITests testLostAcknowledgementIsUnconfirmedAndNoDeferredPost]' passed (24.522 seconds).
+Test Case '-[DonkeyTrump3DUITests.HighscoreFailureUITests testOfflineQualificationReconnectAndRelaunchNeverPost]' passed (20.436 seconds).
+	 Executed 3 tests, with 0 failures (0 unexpected) in 54.992 (54.994) seconds
+Test Case '-[DonkeyTrump3DUITests.HighscoreNonqualificationUITests testBelowCutoff]' passed (8.754 seconds).
+Test Case '-[DonkeyTrump3DUITests.HighscoreNonqualificationUITests testCutoffChangesDuringNameEntry]' passed (11.760 seconds).
+Test Case '-[DonkeyTrump3DUITests.HighscoreNonqualificationUITests testEqualCutoff]' passed (8.522 seconds).
+	 Executed 3 tests, with 0 failures (0 unexpected) in 29.037 (29.039) seconds
+Test Case '-[DonkeyTrump3DUITests.HighscorePublicationUITests testLargeNameFormCancelAndCloseEdges]' passed (32.116 seconds).
+Test Case '-[DonkeyTrump3DUITests.HighscorePublicationUITests testLargeNameFormKeepsKeyboardAndNavigationUsable]' passed (28.082 seconds).
+Test Case '-[DonkeyTrump3DUITests.HighscorePublicationUITests testNameDialogCancelAndInvalidName]' passed (12.602 seconds).
+Test Case '-[DonkeyTrump3DUITests.HighscorePublicationUITests testRank100IsVisible]' passed (15.996 seconds).
+Test Case '-[DonkeyTrump3DUITests.HighscorePublicationUITests testRank1IsVisible]' passed (16.163 seconds).
+Test Case '-[DonkeyTrump3DUITests.HighscorePublicationUITests testRank50IsCentred]' passed (16.036 seconds).
+	 Executed 6 tests, with 0 failures (0 unexpected) in 120.996 (120.999) seconds
+	 Executed 15 tests, with 0 failures (0 unexpected) in 241.185 (241.206) seconds
+	 Executed 15 tests, with 0 failures (0 unexpected) in 241.185 (241.208) seconds
+** TEST SUCCEEDED **

@@ -1,0 +1,271 @@
+--- before/src/DonkeyTrump3D/Audio/AudioSystem.swift
++++ after/src/DonkeyTrump3D/Audio/AudioSystem.swift
+@@ -1,8 +1,8 @@
+ import AVFoundation
+ import UIKit
+ 
+-/// Sound effects, jingles and the background loop, from the web game's original
+-/// synthesized WAVs and original arcade-style intro effects. Every call is safe
++/// Original synthesized effects and gameplay loop, plus the owner-supplied menu
++/// soundtrack. Every call is safe
+ /// when audio is missing: sound never blocks play.
+ final class AudioSystem {
+     static let shared = AudioSystem()
+@@ -32,6 +32,9 @@
+     private let lock = NSLock()
+     private var voices: [String: [AVAudioPlayer]] = [:]
+     private var music: AVAudioPlayer?
++    private var menuMusic: AVAudioPlayer?
++    private var menuMusicRequested = false
++    private var menuMusicActive = false
+     private var prepared = false
+     // Only current loops survive preparation. One-shot cues are never queued.
+     private var requestedLoops: [String: Float] = [:]
+@@ -46,7 +49,13 @@
+     #if DEBUG
+     func isPlaying(_ key: String) -> Bool {
+         lock.lock(); defer { lock.unlock() }
++        if key == "menuMusic" { return menuMusic?.isPlaying == true }
+         return key == "music" ? music?.isPlaying == true : voices[key]?.contains { $0.isPlaying } == true
++    }
++
++    var menuMusicVolume: Float? {
++        lock.lock(); defer { lock.unlock() }
++        return menuMusic?.volume
+     }
+     #endif
+     private var lastStep = 0.0
+@@ -68,6 +77,7 @@
+                 pool.forEach { $0.volume = newValue ? 0 : AudioSystem.files[key]?.volume ?? 0 }
+             }
+             music?.volume = newValue ? 0 : 0.22
++            menuMusic?.volume = newValue ? 0 : 0.35
+         }
+     }
+ 
+@@ -82,6 +92,19 @@
+         // Game audio stays audible with the physical silent switch enabled.
+         try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: [.mixWithOthers])
+         try? AVAudioSession.sharedInstance().setActive(true)
++        // Publish the loading/menu track first; it need not wait for all effects.
++        // Decode/prepare outside the lock so controls and scene startup stay free.
++        if let url = Bundle.main.url(forResource: "menu-music", withExtension: "mp3"),
++           let player = try? AVAudioPlayer(contentsOf: url) {
++            player.numberOfLoops = -1
++            player.volume = 0
++            player.prepareToPlay()
++            lock.lock()
++            menuMusic = player
++            player.volume = isMuted ? 0 : 0.35
++            if menuMusicRequested && menuMusicActive { player.play() }
++            lock.unlock()
++        }
+         var loadedVoices: [String: [AVAudioPlayer]] = [:]
+         for (key, spec) in AudioSystem.files {
+             guard let url = Bundle.main.url(forResource: spec.file, withExtension: "wav") else { continue }
+@@ -158,6 +181,8 @@
+     /// Later levels play the loop faster to raise the tension.
+     func startMusic(level: Int) {
+         lock.lock(); defer { lock.unlock() }
++        menuMusicRequested = false
++        menuMusic?.stop()
+         requestedMusicLevel = level; musicPaused = false
+         guard let music else { return }
+         music.rate = min(1.6, 1 + Float(max(0, level)) * 0.08)
+@@ -183,6 +208,30 @@
+         musicPaused = false
+         if requestedMusicLevel != nil, let music, !music.isPlaying { music.play() }
+     }
++
++    /// One continuous track across loading, title and title overlays.
++    func startMenuMusic() {
++        lock.lock(); defer { lock.unlock() }
++        if !menuMusicRequested { menuMusic?.currentTime = 0 }
++        menuMusicRequested = true
++        if menuMusicActive, let menuMusic, !menuMusic.isPlaying { menuMusic.play() }
++    }
++
++    func stopMenuMusic() {
++        lock.lock(); defer { lock.unlock() }
++        menuMusicRequested = false
++        menuMusic?.stop()
++    }
++
++    /// Scene activity is independent of the render thread's title/intro intent.
++    /// A late load or queued return to title cannot start music in the background.
++    func setMenuMusicActive(_ active: Bool) {
++        lock.lock(); defer { lock.unlock() }
++        menuMusicActive = active
++        if active && menuMusicRequested {
++            if let menuMusic, !menuMusic.isPlaying { menuMusic.play() }
++        } else { menuMusic?.pause() }
++    }
+ }
+ 
+ enum Haptics {
+--- before/src/DonkeyTrump3D/App/DonkeyTrump3DApp.swift
++++ after/src/DonkeyTrump3D/App/DonkeyTrump3DApp.swift
+@@ -13,7 +13,8 @@
+                 .persistentSystemOverlays(.hidden)
+                 .preferredColorScheme(.dark)
+         }
+-        .onChange(of: scenePhase) { old, phase in
++        .onChange(of: scenePhase, initial: true) { old, phase in
++            AudioSystem.shared.setMenuMusicActive(phase == .active)
+             // Only pause when leaving an active session, not during the launch transition.
+             if old == .active && phase != .active { model.engine.send(.pause) }
+             if phase == .background { model.highscores.background() }
+--- before/src/DonkeyTrump3D/App/GameEngine.swift
++++ after/src/DonkeyTrump3D/App/GameEngine.swift
+@@ -129,6 +129,9 @@
+         }
+         #endif
+         super.init()
++        if session.phase == .title && !options.autostart && options.introAt == nil {
++            AudioSystem.shared.startMenuMusic()
++        }
+         buildScene()
+         buildLevel(session.level, tilt: 1)
+         if options.autostart {
+@@ -389,6 +392,7 @@
+                 intro = nil
+                 introSoundtrack = nil
+                 session.showTitle()
++                AudioSystem.shared.startMenuMusic()
+                 buildLevel(session.level, tilt: 1)
+             default:
+                 break
+@@ -437,6 +441,7 @@
+     // MARK: Intro
+ 
+     private func startIntro(at time: Double = 0) {
++        AudioSystem.shared.stopMenuMusic()
+         buildLevel(session.level, tilt: 0)
+         let timeline = IntroTimeline(level: session.level)
+         intro = timeline
+--- before/src/DonkeyTrump3DTests/IntroAudioTests.swift
++++ after/src/DonkeyTrump3DTests/IntroAudioTests.swift
+@@ -2,7 +2,7 @@
+ import Testing
+ @testable import DonkeyTrump3D
+ 
+-@Suite("Intro audio timing")
++@Suite("Intro and menu audio", .serialized)
+ struct IntroAudioTests {
+     @Test func everyCuePlaysOnceAcrossFrameRatesAndStalls() {
+         for level in LevelLibrary.layouts {
+@@ -106,6 +106,80 @@
+         audio.stopMusic()
+     }
+ 
++    @Test func bundledMenuTrackDecodesAsStereoMP3() throws {
++        let url = try #require(Bundle.main.url(forResource: "menu-music", withExtension: "mp3"))
++        let player = try AVAudioPlayer(contentsOf: url)
++        #expect(player.duration > 71 && player.duration < 72)
++        #expect(player.numberOfChannels == 2)
++        #expect(player.prepareToPlay())
++    }
++
++    @Test func menuDoesNotStartAfterLeavingWhileAudioIsLoading() async {
++        let queue = DispatchQueue(label: "test.menu-skip")
++        queue.suspend()
++        let audio = AudioSystem(preparationQueue: queue)
++        audio.setMenuMusicActive(true)
++        audio.startMenuMusic()
++        audio.stopMenuMusic() // Start takes us into the intro before decoding finishes.
++        audio.play("intro", looping: true)
++        #expect(!audio.isPrepared)
++        queue.resume()
++        await waitForPreparation(audio)
++        #expect(!audio.isPlaying("menuMusic"))
++        #expect(audio.isPlaying("intro"))
++        audio.stopIntro()
++    }
++
++    @Test func menuWaitsForForegroundEvenWhenLoadingOrReturningToTitle() async {
++        let queue = DispatchQueue(label: "test.menu-background")
++        queue.suspend()
++        let audio = AudioSystem(preparationQueue: queue)
++        audio.setMenuMusicActive(true)
++        audio.startMenuMusic()
++        audio.setMenuMusicActive(false)
++        queue.resume()
++        await waitForPreparation(audio)
++        #expect(!audio.isPlaying("menuMusic"))
++        audio.setMenuMusicActive(true)
++        #expect(audio.isPlaying("menuMusic"))
++        audio.setMenuMusicActive(false)
++        #expect(!audio.isPlaying("menuMusic"))
++        audio.stopMenuMusic()
++        audio.startMenuMusic() // A late render-thread title command while inactive.
++        #expect(!audio.isPlaying("menuMusic"))
++        audio.setMenuMusicActive(true)
++        #expect(audio.isPlaying("menuMusic"))
++        audio.stopMenuMusic()
++        audio.setMenuMusicActive(false); audio.setMenuMusicActive(true)
++        #expect(!audio.isPlaying("menuMusic"))
++    }
++
++    @Test func menuRespectsSoundSettingAndGameplayTransition() async {
++        let queue = DispatchQueue(label: "test.menu-mute")
++        queue.suspend()
++        let audio = AudioSystem(preparationQueue: queue)
++        let originalMute = audio.muted
++        defer { audio.stopMenuMusic(); audio.stopMusic(); audio.muted = originalMute }
++        audio.muted = true
++        audio.setMenuMusicActive(true)
++        audio.startMenuMusic()
++        queue.resume()
++        await waitForPreparation(audio)
++        #expect(audio.isPlaying("menuMusic"))
++        #expect(audio.menuMusicVolume == 0)
++        audio.muted = false
++        #expect(audio.menuMusicVolume == 0.35)
++        audio.muted = true
++        #expect(audio.menuMusicVolume == 0)
++        audio.startMusic(level: 0)
++        #expect(!audio.isPlaying("menuMusic"))
++        #expect(audio.isPlaying("music"))
++        audio.stopMusic()
++        audio.startMenuMusic()
++        #expect(audio.isPlaying("menuMusic"))
++        #expect(!audio.isPlaying("music"))
++    }
++
+     private func waitForPreparation(_ audio: AudioSystem) async {
+         for _ in 0..<1_000 {
+             if audio.isPrepared { return }
+Added binary src/DonkeyTrump3D/Resources/Audio/menu-music.mp3; SHA256 55f763b5e79c4c7ffef3c37726d873164240901c9180cef67b6dade79d110d58
+--- before/docs/design/menu-music.md
++++ after/docs/design/menu-music.md
+@@ -0,0 +1,30 @@
++# Loading and menu music
++
++The owner supplied the three `Donkey Trump 2` files in [music](music/) and explicitly
++requested their use for loading and menu playback on 2026-09-27. This records that
++project authorization, not an independently verified third-party licence.
++
++The app bundles an unchanged copy of `Donkey Trump 2.mp3` as
++[`menu-music.mp3`](../../src/DonkeyTrump3D/Resources/Audio/menu-music.mp3).
++Inspection with macOS `afinfo` found stereo MP3 at 48 kHz, approximately 71.6 seconds
++and 1.7 MB. The supplied `.m4a` contains Opus rather than AAC, with duration reported
++as zero by `afinfo`; the PCM WAV is about 13 MB. MP3 provides a compact supplied
++asset that is verified to decode with the app's `AVAudioPlayer` path, without
++transcoding or adding a decoder dependency. Original files remain unchanged.
++
++The track prepares first on the existing background audio queue. Once ready and
++the app is active, it loops continuously across the runtime loading cover, title
++menu, help and highscores opened from that menu. It does not delay the first frame
++or wait for the backend. The system's static launch storyboard cannot execute
++audio code; playback starts once the app is running, active and the player is ready.
++
++Starting the intro stops the menu track. Intro effects and gameplay music retain
++their existing roles. Returning to the title starts the menu track again. Leaving
++the active app pauses it; returning resumes only if the menu is still requested.
++Late audio preparation cannot restart a departed menu or play it in the background.
++
++The existing Sound setting controls its volume, including changes during loading.
++The existing playback audio-session category is retained for sound in silent mode.
++Physical silent-switch and speaker/headphone listening checks remain device checks;
++simulator decoding/playback-state tests do not establish acoustic quality or release
++acceptance on a physical iPhone.

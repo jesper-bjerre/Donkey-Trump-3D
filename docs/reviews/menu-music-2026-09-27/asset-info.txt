@@ -1,0 +1,49 @@
+File:           docs/design/music/Donkey Trump 2.m4a
+File type ID:   mp4f
+Num Tracks:     1
+----
+Data format:     2 ch,  48000 Hz, opus (0x00000000) 0 bits/channel, 0 bytes/packet, 0 frames/packet, 0 bytes/frame
+Channel layout: Stereo (L R)
+estimated duration: 0.000000 sec
+audio bytes: 1255679
+audio packets: 3581
+packet size upper bound: 639
+maximum packet size: 639
+audio data file offset: 29246
+optimized
+audio 0 valid frames + 0 priming + 0 remainder = 0
+----
+
+File:           docs/design/music/Donkey Trump 2.wav
+File type ID:   WAVE
+Num Tracks:     1
+----
+Data format:     2 ch,  48000 Hz, Int16, interleaved
+                no channel layout.
+estimated duration: 71.600000 sec
+audio bytes: 13747200
+audio packets: 3436800
+bit rate: 1536000 bits per second
+packet size upper bound: 4
+maximum packet size: 4
+audio data file offset: 172
+not optimized
+source bit depth: I16
+----
+
+File:           docs/design/music/Donkey Trump 2.mp3
+File type ID:   MPG3
+Num Tracks:     1
+----
+Data format:     2 ch,  48000 Hz, .mp3 (0x00000000) 0 bits/channel, 0 bytes/packet, 1152 frames/packet, 0 bytes/frame
+                no channel layout.
+estimated duration: 71.640000 sec
+audio bytes: 1770336
+audio packets: 2985
+bit rate: 197692 bits per second
+packet size upper bound: 968
+maximum packet size: 960
+audio data file offset: 44466
+optimized
+audio 3436800 valid frames + 576 priming + 1344 remainder = 3438720
+----

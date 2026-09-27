@@ -1,0 +1,31 @@
+Command line invocation:
+    /Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild -project src/DonkeyTrump3D.xcodeproj -scheme DonkeyTrump3D -destination "platform=iOS Simulator,id=31C13DEB-E27B-46F9-8598-BB36342D54A6" -derivedDataPath /tmp/dt3d-launch-build -resultBundlePath /tmp/dt3d-menu-music-20260927/final-tests.xcresult "-only-testing:DonkeyTrump3DTests/IntroAudioTests" "-only-testing:DonkeyTrump3DUITests/HighscoreBrowsingUITests" -collect-test-diagnostics never test
+Test Suite 'DonkeyTrump3DTests.xctest' passed at 2026-09-27 15:24:30.840.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.000) seconds
+Test Suite 'Selected tests' passed at 2026-09-27 15:24:30.840.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.007) seconds
+✔ Test everyCuePlaysOnceAcrossFrameRatesAndStalls() passed after 0.026 seconds.
+✔ Test footstepsStopForSigningAndImpactsMatchLandings() passed after 0.001 seconds.
+✔ Test reducedMotionAndSeekingDoNotReplayEarlierSounds() passed after 0.001 seconds.
+✔ Test bundledIntroEffectsDecodeAndFitTheirAnimation() passed after 0.234 seconds.
+✔ Test delayedPreparationDoesNotBlockControlsOrReplayStoppedAudio() passed after 0.434 seconds.
+✔ Test currentLoopAndPausedMusicSurvivePreparation() passed after 0.306 seconds.
+✔ Test bundledMenuTrackDecodesAsStereoMP3() passed after 0.009 seconds.
+✔ Test menuDoesNotStartAfterLeavingWhileAudioIsLoading() passed after 0.277 seconds.
+✔ Test menuWaitsForForegroundEvenWhenLoadingOrReturningToTitle() passed after 0.352 seconds.
+✔ Test menuRespectsSoundSettingAndGameplayTransition() passed after 0.330 seconds.
+✔ Test gameAudioUsesPlaybackWithMixing() passed after 0.001 seconds.
+✔ Suite "Intro and menu audio" passed after 1.973 seconds.
+✔ Test run with 11 tests in 1 suite passed after 1.973 seconds.
+Test Case '-[DonkeyTrump3DUITests.HighscoreBrowsingUITests testLaunchCanStartWithoutOpeningUnavailableHighscores]' passed (7.816 seconds).
+Test Case '-[DonkeyTrump3DUITests.HighscoreBrowsingUITests testStaleErrorAndLargeLandscapeNavigation]' passed (10.746 seconds).
+Test Case '-[DonkeyTrump3DUITests.HighscoreBrowsingUITests testStartDuringHungFetchAndNoLateReopening]' passed (6.973 seconds).
+Test Case '-[DonkeyTrump3DUITests.HighscoreBrowsingUITests testStartupProgressDisappearsWhenSceneIsReady]' passed (14.335 seconds).
+Test Case '-[DonkeyTrump3DUITests.HighscoreBrowsingUITests testTitleListAndEmptyReadOnlyRefresh]' passed (17.385 seconds).
+Test Suite 'HighscoreBrowsingUITests' passed at 2026-09-27 15:25:33.551.
+	 Executed 5 tests, with 0 failures (0 unexpected) in 57.256 (57.259) seconds
+Test Suite 'DonkeyTrump3DUITests.xctest' passed at 2026-09-27 15:25:33.552.
+	 Executed 5 tests, with 0 failures (0 unexpected) in 57.256 (57.259) seconds
+Test Suite 'Selected tests' passed at 2026-09-27 15:25:33.552.
+	 Executed 5 tests, with 0 failures (0 unexpected) in 57.256 (57.260) seconds
+** TEST SUCCEEDED **

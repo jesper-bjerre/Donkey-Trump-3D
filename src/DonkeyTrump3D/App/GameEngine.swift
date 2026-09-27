@@ -50,6 +50,9 @@ final class GameEngine: NSObject, SCNSceneRendererDelegate {
     let scene = SCNScene()
     let inputHub = InputHub()
     var hudSink: ((HUDState) -> Void)?
+    // Set before attaching the renderer; the callback is delivered on main.
+    var firstFrameSink: (() -> Void)?
+    private var reportedFirstFrame = false
 
     private let session: GameSession
     private let options = LaunchOptions.current
@@ -126,6 +129,9 @@ final class GameEngine: NSObject, SCNSceneRendererDelegate {
         }
         #endif
         super.init()
+        if session.phase == .title && !options.autostart && options.introAt == nil {
+            AudioSystem.shared.startMenuMusic()
+        }
         buildScene()
         buildLevel(session.level, tilt: 1)
         if options.autostart {
@@ -298,6 +304,22 @@ final class GameEngine: NSObject, SCNSceneRendererDelegate {
 
     // MARK: - Frame loop
 
+    func renderer(_ renderer: SCNSceneRenderer, didRenderScene scene: SCNScene, atTime time: TimeInterval) {
+        guard !reportedFirstFrame else { return }
+        reportedFirstFrame = true
+        let sink = firstFrameSink
+        #if DEBUG
+        // A bounded, isolated UI-test hold makes this transient screen inspectable.
+        let args = ProcessInfo.processInfo.arguments
+        if args.contains("-startupProgressTest"), args.contains("-highscoreUITest"),
+           case .fixture = HighscoreFixtureLaunch.parse(args) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 8) { sink?() }
+            return
+        }
+        #endif
+        DispatchQueue.main.async { sink?() }
+    }
+
     func renderer(_ renderer: SCNSceneRenderer, updateAtTime time: TimeInterval) {
         let dt = lastTime.map { min(max(time - $0, 0), 1.0 / 20) } ?? 1.0 / 60
         lastTime = time
@@ -370,6 +392,7 @@ final class GameEngine: NSObject, SCNSceneRendererDelegate {
                 intro = nil
                 introSoundtrack = nil
                 session.showTitle()
+                AudioSystem.shared.startMenuMusic()
                 buildLevel(session.level, tilt: 1)
             default:
                 break
@@ -418,6 +441,7 @@ final class GameEngine: NSObject, SCNSceneRendererDelegate {
     // MARK: Intro
 
     private func startIntro(at time: Double = 0) {
+        AudioSystem.shared.stopMenuMusic()
         buildLevel(session.level, tilt: 0)
         let timeline = IntroTimeline(level: session.level)
         intro = timeline

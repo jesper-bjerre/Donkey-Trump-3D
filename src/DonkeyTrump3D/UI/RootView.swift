@@ -18,7 +18,7 @@ struct RootView: View {
     private var hud: HUDState { model.hud }
     private var inGame: Bool { ![.title, .intro].contains(hud.phase) }
 
-    var body: some View {
+    private var gameContent: some View {
         ZStack {
             GameSceneView(engine: model.engine)
                 .ignoresSafeArea()
@@ -45,6 +45,15 @@ struct RootView: View {
             if model.highscores.state.isPresented && (hud.phase == .title || hud.phase == .gameOver) {
                 HighscorePanel(model: model)
             }
+        }
+    }
+
+    var body: some View {
+        ZStack {
+            gameContent
+                .allowsHitTesting(model.isSceneReady)
+                .accessibilityHidden(!model.isSceneReady)
+            if !model.isSceneReady { LoadingScreenView() }
         }
         #if DEBUG
         .background {

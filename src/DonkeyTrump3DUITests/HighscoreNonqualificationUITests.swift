@@ -7,7 +7,7 @@ final class HighscoreNonqualificationUITests: HighscoreUITestCase {
     func testCutoffChangesDuringNameEntry() {
         launch("cutoff-race", completed: true)
         let field = app.textFields["highscoreName"]; XCTAssertTrue(field.waitForExistence(timeout: 5))
-        field.tap(); field.typeText("Løkke"); app.buttons["highscoreSubmit"].tap()
+        field.tap(); field.typeText("Løkke"); tapSubmit()
         let bottom = app.otherElements["highscoreRow100"]
         XCTAssertTrue(bottom.waitForExistence(timeout: 5)); XCTAssertTrue(bottom.isHittable)
         XCTAssertTrue(app.staticTexts["The list changed while you entered your name. Try again to reach the top 100."].exists)

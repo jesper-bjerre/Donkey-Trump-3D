@@ -21,7 +21,6 @@ enum Copy {
     static let privacy = "No accounts or tracking. Your personal best and settings stay on this iPhone. If you choose to submit a highscore, your chosen name and score are public. Failed submissions are not queued or sent later."
     static let highscoreUnconfirmed = "We couldn't confirm whether your score was saved."
     static let highscoreUnavailable = "Highscores are unavailable. Your personal best is saved on this iPhone."
-    static let publicScoreNotice = "Your name and score will be public. You do not need to use your real name."
 
     static let objective = "Rescue Motzfeldt!"
     static let ladderHint = "Use the ladders — you can't jump between floors"

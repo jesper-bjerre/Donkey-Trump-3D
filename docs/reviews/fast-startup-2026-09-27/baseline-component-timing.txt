@@ -1,0 +1,2 @@
+2026-09-27 13:40:37.557 DonkeyTrump3D[56993:1311996] DTLaunch audio init 0.369 s
+2026-09-27 13:40:37.696 DonkeyTrump3D[56993:1311996] DTLaunch engine init 0.062 s

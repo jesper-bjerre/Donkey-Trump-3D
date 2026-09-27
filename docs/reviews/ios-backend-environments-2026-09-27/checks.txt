@@ -1,0 +1,56 @@
+Executed 2026-09-27, Xcode 27.0 (27A266a). All checks refer to the frozen candidate below.
+1. plutil -lint src/DonkeyTrump3D.xcodeproj/project.pbxproj: OK. xcodebuild -list sees all four schemes and all four configurations.
+2. For each table row below, ran xcodebuild -project src/DonkeyTrump3D.xcodeproj -scheme <scheme> -configuration <configuration> -destination 'generic/platform=iOS Simulator' -derivedDataPath TEMP/DerivedData CODE_SIGNING_ALLOWED=NO -showBuildSettings -json and then build. Exit 0 for each. Python asserted resolved HIGHSCORE_API_BASE_URL, then read the actual built app Info.plist and asserted the expected URL, compilation conditions, Release ATS absence. Observed evidence:
+[
+  {
+    "scheme": "DonkeyTrump3D Local",
+    "configuration": "Debug Local",
+    "url": "http://127.0.0.1:5281",
+    "build": "PASS",
+    "ATS": {
+      "NSAllowsLocalNetworking": true
+    },
+    "swiftConditions": "DEBUG "
+  },
+  {
+    "scheme": "DonkeyTrump3D DEV",
+    "configuration": "Debug",
+    "url": "https://donkeytrump-api-d.azurewebsites.net",
+    "build": "PASS",
+    "ATS": {
+      "NSAllowsLocalNetworking": true
+    },
+    "swiftConditions": "DEBUG "
+  },
+  {
+    "scheme": "DonkeyTrump3D PROD",
+    "configuration": "Debug PROD",
+    "url": "https://donkeytrump-api-p.azurewebsites.net",
+    "build": "PASS",
+    "ATS": {
+      "NSAllowsLocalNetworking": true
+    },
+    "swiftConditions": "DEBUG "
+  },
+  {
+    "scheme": "DonkeyTrump3D PROD",
+    "configuration": "Release",
+    "url": "https://donkeytrump-api-p.azurewebsites.net",
+    "build": "PASS",
+    "ATS": null,
+    "swiftConditions": ""
+  }
+]
+3. xcodebuild -project src/DonkeyTrump3D.xcodeproj -scheme 'DonkeyTrump3D Local' -configuration 'Debug Local' -destination 'platform=iOS Simulator,id=31C13DEB-E27B-46F9-8598-BB36342D54A6' -derivedDataPath TEMP/DerivedData -resultBundlePath TEMP/unit-tests.xcresult -only-testing:DonkeyTrump3DTests CODE_SIGNING_ALLOWED=NO test: exit0, ** TEST SUCCEEDED **, 40 tests in 11 suites passed. iPhone13 iOS27.0. Includes productionAndLocalOverridesAreSeparate, existing transport/timeout/publication/gameplay tests. This explicitly overrides TestAction config to verify the newly cloned Debug Local test targets; normal TestAction remains Debug.
+4. Ran npx --yes --package azurite@3.37.0 azurite-blob --blobHost 127.0.0.1 --blobPort 10000 --location TEMP/azurite --silent --disableTelemetry after verifying no listener. Started python3 src/tests/support/local-highscores.py --port 5281 --state-file TEMP/local-api.json; verified state origin and GET /health/live=200, /api/v1/highscores=200 with entries[]. SIGINT helper exited0; persisted emulator container collection confirmed its owned container deleted. Stopped only owned Azurite process group. Evidence:
+{
+  "fixedPort": 5281,
+  "health": 200,
+  "highscores": 200,
+  "emptyList": true,
+  "ownedContainerDeleted": true
+}
+5. XML assertions for all shared scheme Run/Test/Profile/Archive mappings; Python syntax compile; relative Markdown link targets in changed docs exist; git diff --check: all PASS.
+Limitations: no physical iPhone, no signed archive/distribution, no real Azure submissions or new deployment, no full UI interaction suite or normal UI-to-local API end-to-end check this turn. This is scoped build/configuration work; unchanged runtime routing and service code supplied for inspection. No release readiness claim. Local intended for simulator with loopback per existing security policy; optional early physical-device question received no answer, so default remains simulator Local and physical-device DEV/PROD. Same bundle identity retained deliberately.
+
+6. Focused F1 follow-up: unchanged candidate, xcodebuild -project src/DonkeyTrump3D.xcodeproj -scheme DonkeyTrump3D -destination 'platform=iOS Simulator,id=31C13DEB-E27B-46F9-8598-BB36342D54A6' -derivedDataPath TEMP/DerivedData -resultBundlePath TEMP/default-tests.xcresult CODE_SIGNING_ALLOWED=NO test (NO configuration override, default TestAction Debug). Exit0, ** TEST SUCCEEDED **. 40 Swift tests in 11 suites passed. UI suite: 17 cases, 14 passed, 3 explicitly skipped, 0 failures. Skips: continuous-stream deadline fixture, hundred paired starts/real-storage performance, save redirect fixture; their required loopback test servers/environment variables were not supplied. Default tests ran 2026-09-27 on iPhone13/iOS27.0. No Azure request telemetry captured: isolation established by the complete source-path inspection supplied in F1 response. Full UI fixture suite is now verified; normal UI-to-local backend routing and physical-device/signed distribution remain outside executed evidence. No source change was needed.

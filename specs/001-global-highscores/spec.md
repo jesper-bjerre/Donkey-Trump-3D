@@ -23,7 +23,7 @@ After losing my last life, I want to enter a name for a qualifying score and see
 **Acceptance Scenarios**:
 
 1. **Given** fewer than 100 saved results, **When** a run ends with a valid score, **Then** the player is invited to enter a name, including when the score is zero.
-2. **Given** a full list, **When** a completed run scores more than rank 100, **Then** the player is invited to enter a name and sees that the name and score will be public.
+2. **Given** a full list, **When** a completed run scores more than rank 100, **Then** the player sees a clear name-entry dialog with Submit and Cancel.
 3. **Given** a qualifying run and a valid name, **When** submission succeeds, **Then** the player sees the saved list with their entry highlighted and vertically centred. Near either end, use the nearest available position keeping the whole row visible.
 4. **Given** a name prompt, **When** the player cancels, **Then** nothing is submitted and Play Again and Return to Title remain available.
 5. **Given** an empty, whitespace-only, multiline, control-character or over-20-character name, **When** submission is attempted, **Then** an inline explanation appears and nothing is published until the name is valid.
@@ -114,7 +114,7 @@ If the service cannot be reached after Game Over, I want an error and my local p
 - **FR-005**: Check current qualification after Game Over without blocking Play Again or Return to Title. Fewer than 100 entries accepts any valid non-negative score; a full list requires beating its current cutoff.
 - **FR-006**: Request a name only after a successful qualification check; allow cancellation without publication.
 - **FR-007**: Accept a single-line name of 1–20 visible characters after trimming surrounding spaces; reject control characters and explain validation failures. Display names as plain text.
-- **FR-008**: Explain before submission that the name and score are public and require an explicit submit action. No account, email or real name is required.
+- **FR-008**: Require an explicit Submit action in a clearly bounded name-entry dialog, with a visible name field and Cancel. Owner update 2026-09-27: omit the in-form public-name/real-name explanation. No account, email or real name is required; existing privacy/help data-flow information remains accurate.
 - **FR-009**: Re-evaluate qualification when saving. Concurrent submissions must not cause lost updates, duplicate run entries or more than 100 ranked entries.
 - **FR-010**: Following a confirmed save, highlight that exact run and centre it vertically where content permits. Keep the whole highlighted row visible at list boundaries.
 - **FR-011**: Following confirmed non-qualification, show the bottom with the lowest rank visible, retain the player's final score, and offer another game. Do not request a name.

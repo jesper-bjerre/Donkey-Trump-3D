@@ -1,0 +1,2 @@
+// DEV highscore backend. The empty $() keeps // from starting an xcconfig comment.
+HIGHSCORE_API_BASE_URL = https:/$()/donkeytrump-api-d.azurewebsites.net

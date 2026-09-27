@@ -191,4 +191,4 @@ bill. Review the budget before its September 2036 expiry.
 
 The deployment [evidence and independent review](reviews/backend-deployment-2026-09-26.md)
 records the executed checks and observed resources. App Store moderation, physical
-iPhone acceptance and the iOS production endpoint are separate release work.
+iPhone acceptance remain separate release work. The [iOS Xcode schemes](ios-backend-environments.md) select Local/DEV/PROD for Run and PROD for Archive.

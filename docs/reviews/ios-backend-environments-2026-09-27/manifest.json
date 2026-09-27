@@ -1,0 +1,15 @@
+{
+  "README.md": "5c3e8a58bb488a033c6bd927b3a6afa65b7aa3aee213c7f21f6912b38d481de9",
+  "docs/backend-deployment.md": "a1935282a05025b0426a63c3a9ac2c334566b0250510638ffb8392746c7c8d77",
+  "docs/ios-backend-environments.md": "02377168f283531a237abf9eb6d7db693c8575b52a1fcc3cc34fc652990877db",
+  "docs/production-smoke-and-rollback.md": "5f3b5f3a5b49fb395c416a6d7d9be2d179d0c4ddfccb3c972945b587c5a6a9a8",
+  "specs/001-global-highscores/quickstart.md": "afe267ac6314d43a70d4c71c1110f2ba2e3da766468f070e0a455d83d372b76e",
+  "src/Configuration/Backend-DEV.xcconfig": "b2a13ffe3d3051f964e9aeb80e32a4c1f759f398f6982a4627bcaf97ab9cf6ec",
+  "src/Configuration/Backend-Local.xcconfig": "16928e6fddae4a7f333d65bc194fc097eb7d0179787adfec7c74b17e9cde14c0",
+  "src/Configuration/Backend-PROD.xcconfig": "e422d1fba294bd559ecc09138aa96481b372e46882f9efcafc724f70d0fbae64",
+  "src/DonkeyTrump3D.xcodeproj/project.pbxproj": "8b0ce9546299d856c4386a12620d185f324320d8671e8b3ee842ac10fa0156cd",
+  "src/DonkeyTrump3D.xcodeproj/xcshareddata/xcschemes/DonkeyTrump3D DEV.xcscheme": "2f7ecb58cd3183a7e6ffbab71a99369020debec1b108ad51fe70ec1ecd12e986",
+  "src/DonkeyTrump3D.xcodeproj/xcshareddata/xcschemes/DonkeyTrump3D Local.xcscheme": "8a7c35ebd7eae8f8ee80ab497a76dd740c868cd41f4b0a1c6662362322c73a3b",
+  "src/DonkeyTrump3D.xcodeproj/xcshareddata/xcschemes/DonkeyTrump3D PROD.xcscheme": "eec1865c143456331070cddc97932bb1b9d962bce84a0df940811fc1ab88f5ad",
+  "src/tests/support/local-highscores.py": "c51319165beb8511d4e2d87f25f5d2537a663b119b5899426fc6db6ff075b913"
+}

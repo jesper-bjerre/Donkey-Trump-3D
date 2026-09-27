@@ -1,0 +1,13 @@
+Lead-executed checks, 2026-09-27
+
+xcodebuild -project src/DonkeyTrump3D.xcodeproj -scheme DonkeyTrump3D -destination platform=iOS\ Simulator,id=31C13DEB-E27B-46F9-8598-BB36342D54A6 -derivedDataPath /tmp/dt3d-launch-build -resultBundlePath /tmp/dt3d-menu-music-20260927/tests.xcresult -only-testing:DonkeyTrump3DTests/IntroAudioTests -only-testing:DonkeyTrump3DUITests/HighscoreBrowsingUITests -collect-test-diagnostics never test
+Exit 0, TEST SUCCEEDED. 11 Swift Testing audio tests and 5 XCTest UI tests passed on iPhone 13 / iOS 27.0 simulator. Debug app/test build passed. Unit tests cover decoded bundled MP3, late loading after start/exit, background/foreground including late title intent, persisted mute before preparation, toggling mute during playback, gameplay transition, intro timing and existing playback category. UI checks cover progress dismissal, unavailable/slow backend startup, Start/Skip, title navigation and large text. They do not assert audio acoustically or directly measure menu continuity.
+
+Asset: bundled MP3 is byte-identical to owner source, SHA256 55f763b5e79c4c7ffef3c37726d873164240901c9180cef67b6dade79d110d58. AVAudioPlayer prepareToPlay=true, stereo, duration between 71 and 72 seconds. No transcoding. Xcode synchronized resource group automatically includes resource.
+
+No physical-device sound/silent-switch/headphone testing, no full launch timing benchmark, no listening/loop-seam assessment, no distribution archive/deployment. Existing static native launch screen cannot run app audio code. Runtime loading has no artificial delay or audio readiness gate.
+
+xcodebuild -project src/DonkeyTrump3D.xcodeproj -scheme DonkeyTrump3D -configuration Release -destination generic/platform=iOS\ Simulator -derivedDataPath /tmp/dt3d-menu-music-release build
+Exit 0, BUILD SUCCEEDED (arm64 and x86_64). Bundled MP3 SHA256 matches source in Release app. codesign --verify --deep --strict passed. git diff --check passed.
+
+After MM-01 lifecycle isolation: reran the same complete 11 audio + 5 browsing UI test command, with result bundle final-tests.xcresult (exit 0, TEST SUCCEEDED). Reran the same Release build command (exit 0, BUILD SUCCEEDED); Release codesign, bundled MP3 hash and git diff --check passed again. Final source hashes unchanged after these checks.

@@ -1,0 +1,30 @@
+{
+  "tool": "Claude Code 2.1.283",
+  "vendor": "Anthropic",
+  "model": "claude-opus-5-5",
+  "effortArgument": "high",
+  "CLAUDE_CODE_EFFORT_LEVEL": "high",
+  "probeText": "REVIEW_ROUTE_OK",
+  "probeStderr": "empty; no effort-cap warning",
+  "probeSessionId": "0b33d250-ae4c-4465-8071-3c8570fec8ae",
+  "probeModelUsage": {
+    "claude-opus-5-5": {
+      "inputTokens": 2,
+      "outputTokens": 16,
+      "cacheReadInputTokens": 1889,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.0007057999999999999,
+      "contextWindow": 1000000,
+      "maxOutputTokens": 128000,
+      "thinkingTokens": 0,
+      "canonicalModel": "claude-opus-5-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    }
+  },
+  "actualAssistantModels": [
+    "claude-opus-5-5"
+  ],
+  "limitations": "Provider does not separately attest effective effort. Explicit settings plus uncapped text probe used."
+}

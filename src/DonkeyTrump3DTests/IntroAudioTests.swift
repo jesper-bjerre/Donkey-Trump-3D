@@ -2,7 +2,7 @@ import AVFoundation
 import Testing
 @testable import DonkeyTrump3D
 
-@Suite("Intro audio timing")
+@Suite("Intro and menu audio", .serialized)
 struct IntroAudioTests {
     @Test func everyCuePlaysOnceAcrossFrameRatesAndStalls() {
         for level in LevelLibrary.layouts {
@@ -71,8 +71,125 @@ struct IntroAudioTests {
         }
     }
 
-    @Test func gameAudioUsesPlaybackWithMixing() {
-        _ = AudioSystem.shared
+    @Test func delayedPreparationDoesNotBlockControlsOrReplayStoppedAudio() async {
+        let queue = DispatchQueue(label: "test.delayed-audio")
+        queue.suspend()
+        let audio = AudioSystem(preparationQueue: queue)
+        #expect(!audio.isPrepared)
+        audio.play("intro", looping: true)
+        audio.play("introStamp")
+        audio.startMusic(level: 2)
+        audio.stopIntro(); audio.stopMusic()
+        let muted = audio.muted
+        audio.muted = !muted; audio.muted = muted
+        #expect(!audio.isPrepared)
+        queue.resume()
+        await waitForPreparation(audio)
+        #expect(!audio.isPlaying("intro"))
+        #expect(!audio.isPlaying("introStamp"))
+        #expect(!audio.isPlaying("music"))
+    }
+
+    @Test func currentLoopAndPausedMusicSurvivePreparation() async {
+        let queue = DispatchQueue(label: "test.paused-audio")
+        queue.suspend()
+        let audio = AudioSystem(preparationQueue: queue)
+        audio.play("intro", looping: true)
+        audio.startMusic(level: 1); audio.pauseMusic()
+        queue.resume()
+        await waitForPreparation(audio)
+        #expect(audio.isPlaying("intro"))
+        audio.stopIntro()
+        #expect(!audio.isPlaying("music"))
+        audio.resumeMusic()
+        #expect(audio.isPlaying("music"))
+        audio.stopMusic()
+    }
+
+    @Test func bundledMenuTrackDecodesAsStereoMP3() throws {
+        let url = try #require(Bundle.main.url(forResource: "menu-music", withExtension: "mp3"))
+        let player = try AVAudioPlayer(contentsOf: url)
+        #expect(player.duration > 71 && player.duration < 72)
+        #expect(player.numberOfChannels == 2)
+        #expect(player.prepareToPlay())
+    }
+
+    @Test func menuDoesNotStartAfterLeavingWhileAudioIsLoading() async {
+        let queue = DispatchQueue(label: "test.menu-skip")
+        queue.suspend()
+        let audio = AudioSystem(preparationQueue: queue)
+        audio.setMenuMusicActive(true)
+        audio.startMenuMusic()
+        audio.stopMenuMusic() // Start takes us into the intro before decoding finishes.
+        audio.play("intro", looping: true)
+        #expect(!audio.isPrepared)
+        queue.resume()
+        await waitForPreparation(audio)
+        #expect(!audio.isPlaying("menuMusic"))
+        #expect(audio.isPlaying("intro"))
+        audio.stopIntro()
+    }
+
+    @Test func menuWaitsForForegroundEvenWhenLoadingOrReturningToTitle() async {
+        let queue = DispatchQueue(label: "test.menu-background")
+        queue.suspend()
+        let audio = AudioSystem(preparationQueue: queue)
+        audio.setMenuMusicActive(true)
+        audio.startMenuMusic()
+        audio.setMenuMusicActive(false)
+        queue.resume()
+        await waitForPreparation(audio)
+        #expect(!audio.isPlaying("menuMusic"))
+        audio.setMenuMusicActive(true)
+        #expect(audio.isPlaying("menuMusic"))
+        audio.setMenuMusicActive(false)
+        #expect(!audio.isPlaying("menuMusic"))
+        audio.stopMenuMusic()
+        audio.startMenuMusic() // A late render-thread title command while inactive.
+        #expect(!audio.isPlaying("menuMusic"))
+        audio.setMenuMusicActive(true)
+        #expect(audio.isPlaying("menuMusic"))
+        audio.stopMenuMusic()
+        audio.setMenuMusicActive(false); audio.setMenuMusicActive(true)
+        #expect(!audio.isPlaying("menuMusic"))
+    }
+
+    @Test func menuRespectsSoundSettingAndGameplayTransition() async {
+        let queue = DispatchQueue(label: "test.menu-mute")
+        queue.suspend()
+        let audio = AudioSystem(preparationQueue: queue)
+        let originalMute = audio.muted
+        defer { audio.stopMenuMusic(); audio.stopMusic(); audio.muted = originalMute }
+        audio.muted = true
+        audio.setMenuMusicActive(true)
+        audio.startMenuMusic()
+        queue.resume()
+        await waitForPreparation(audio)
+        #expect(audio.isPlaying("menuMusic"))
+        #expect(audio.menuMusicVolume == 0)
+        audio.muted = false
+        #expect(audio.menuMusicVolume == 0.35)
+        audio.muted = true
+        #expect(audio.menuMusicVolume == 0)
+        audio.startMusic(level: 0)
+        #expect(!audio.isPlaying("menuMusic"))
+        #expect(audio.isPlaying("music"))
+        audio.stopMusic()
+        audio.startMenuMusic()
+        #expect(audio.isPlaying("menuMusic"))
+        #expect(!audio.isPlaying("music"))
+    }
+
+    private func waitForPreparation(_ audio: AudioSystem) async {
+        for _ in 0..<1_000 {
+            if audio.isPrepared { return }
+            try? await Task.sleep(for: .milliseconds(10))
+        }
+        #expect(audio.isPrepared)
+    }
+
+    @Test func gameAudioUsesPlaybackWithMixing() async {
+        await waitForPreparation(AudioSystem.shared)
         let session = AVAudioSession.sharedInstance()
         #expect(session.category == .playback)
         #expect(session.categoryOptions.contains(.mixWithOthers))

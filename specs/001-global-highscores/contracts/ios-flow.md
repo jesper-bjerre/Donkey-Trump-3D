@@ -9,7 +9,7 @@ Status: implemented; see [validation evidence](../validation.md) for executed an
 | Title appears | Start, help, sound and haptics work immediately; an independent refresh may begin |
 | Title Highscores action | Open at rank 1; loading/empty/error states can be closed |
 | Final-life Game Over | Preserve current final score and local best; begin one fresh qualification read |
-| Fresh qualifying result | Open name form with publication notice, Submit and Cancel |
+| Fresh qualifying result | Open a distinct name-entry dialog with a clear input, Submit and Cancel |
 | Successful ranked submission | Dismiss keyboard; show returned snapshot and highlight exact entry UUID; scroll to centre, clamped at edges |
 | Fresh non-qualification | Show bottom/last real rank and final score, without requesting a name |
 | Qualification lost while entering name | POST returns `notQualified`; explain the changed list and show its bottom |
@@ -19,7 +19,7 @@ Keep game-over navigation outside scrolling or loading content so it remains rea
 
 ## Name and submission behaviour
 
-Use the name rules from the data model. Display literal user text, never interpreted markup. The form states in English that the chosen name and score will be visible publicly, with no requirement for a real name. Local validation is advisory; backend validation remains authoritative.
+Use the name rules from the data model. Display literal user text, never interpreted markup. Owner update 2026-09-27: omit the explanatory public-name/real-name notice from the form. Use a bounded dark dialog, a high-contrast light name field and a prominent Submit action. Compact the layout when the keyboard reduces landscape space, while retaining Cancel and game-over navigation. Existing privacy/help copy still describes actual data flows. Local validation is advisory; backend validation remains authoritative.
 
 A name-only validation error keeps the form editable; the next explicit Submit is a corrected request after a confirmed validation rejection. Disable Submit while one request is pending. A score/run validation error is terminal. This distinction does not authorize retries after an unknown save outcome. Do not persist unfinished names or payloads for later upload.
 

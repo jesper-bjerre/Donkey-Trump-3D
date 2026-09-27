@@ -1,0 +1,204 @@
+--- before/src/DonkeyTrump3D/App/DonkeyTrump3DApp.swift
++++ after/src/DonkeyTrump3D/App/DonkeyTrump3DApp.swift
+@@ -25,6 +25,7 @@
+ final class GameModel {
+     var hud = HUDState()
+     var showHowTo = false
++    private(set) var isSceneReady = false
+     var muted = AudioSystem.shared.muted {
+         didSet { AudioSystem.shared.muted = muted }
+     }
+@@ -67,6 +68,9 @@
+         highscores = HighscoreCoordinator(service: selected)
+         #endif
+         engine = GameEngine()
++        engine.firstFrameSink = { [weak self] in
++            MainActor.assumeIsolated { self?.isSceneReady = true }
++        }
+         engine.hudSink = { [weak self] snapshot in
+             MainActor.assumeIsolated { self?.receive(snapshot) }
+         }
+--- before/src/DonkeyTrump3D/App/GameEngine.swift
++++ after/src/DonkeyTrump3D/App/GameEngine.swift
+@@ -50,6 +50,9 @@
+     let scene = SCNScene()
+     let inputHub = InputHub()
+     var hudSink: ((HUDState) -> Void)?
++    // Set before attaching the renderer; the callback is delivered on main.
++    var firstFrameSink: (() -> Void)?
++    private var reportedFirstFrame = false
+ 
+     private let session: GameSession
+     private let options = LaunchOptions.current
+@@ -297,6 +300,22 @@
+     }
+ 
+     // MARK: - Frame loop
++
++    func renderer(_ renderer: SCNSceneRenderer, didRenderScene scene: SCNScene, atTime time: TimeInterval) {
++        guard !reportedFirstFrame else { return }
++        reportedFirstFrame = true
++        let sink = firstFrameSink
++        #if DEBUG
++        // A bounded, isolated UI-test hold makes this transient screen inspectable.
++        let args = ProcessInfo.processInfo.arguments
++        if args.contains("-startupProgressTest"), args.contains("-highscoreUITest"),
++           case .fixture = HighscoreFixtureLaunch.parse(args) {
++            DispatchQueue.main.asyncAfter(deadline: .now() + 8) { sink?() }
++            return
++        }
++        #endif
++        DispatchQueue.main.async { sink?() }
++    }
+ 
+     func renderer(_ renderer: SCNSceneRenderer, updateAtTime time: TimeInterval) {
+         let dt = lastTime.map { min(max(time - $0, 0), 1.0 / 20) } ?? 1.0 / 60
+--- before/src/DonkeyTrump3D/UI/RootView.swift
++++ after/src/DonkeyTrump3D/UI/RootView.swift
+@@ -18,7 +18,7 @@
+     private var hud: HUDState { model.hud }
+     private var inGame: Bool { ![.title, .intro].contains(hud.phase) }
+ 
+-    var body: some View {
++    private var gameContent: some View {
+         ZStack {
+             GameSceneView(engine: model.engine)
+                 .ignoresSafeArea()
+@@ -45,6 +45,15 @@
+             if model.highscores.state.isPresented && (hud.phase == .title || hud.phase == .gameOver) {
+                 HighscorePanel(model: model)
+             }
++        }
++    }
++
++    var body: some View {
++        ZStack {
++            gameContent
++                .allowsHitTesting(model.isSceneReady)
++                .accessibilityHidden(!model.isSceneReady)
++            if !model.isSceneReady { LoadingScreenView() }
+         }
+         #if DEBUG
+         .background {
+--- before/src/DonkeyTrump3D/UI/LoadingScreenView.swift
++++ after/src/DonkeyTrump3D/UI/LoadingScreenView.swift
+@@ -0,0 +1,42 @@
++import SwiftUI
++
++/// Approximate activity feedback, never a timer that delays game readiness.
++struct LoadingScreenView: View {
++    @State private var progress = 0.15
++    @Environment(\.accessibilityReduceMotion) private var reduceMotion
++
++    var body: some View {
++        ZStack(alignment: .bottom) {
++            Color(red: 6 / 255, green: 16 / 255, blue: 39 / 255).ignoresSafeArea()
++            Image("LaunchCover")
++                .resizable().scaledToFit()
++                .frame(maxWidth: .infinity, maxHeight: .infinity)
++                .accessibilityHidden(true)
++            VStack(spacing: 10) {
++                Text("Loading…").font(.headline).foregroundStyle(.white)
++                ProgressView(value: progress)
++                    .progressViewStyle(.linear).tint(.yellow)
++                    .accessibilityLabel("Loading game")
++                    .accessibilityValue("Please wait")
++                    .accessibilityIdentifier("startupProgress")
++            }
++            .padding(16)
++            .frame(maxWidth: 340)
++            .background(Color(red: 6 / 255, green: 16 / 255, blue: 39 / 255).opacity(0.95), in: RoundedRectangle(cornerRadius: 12))
++            .padding(.horizontal, 20).padding(.bottom, 12)
++        }
++        .accessibilityElement(children: .contain)
++        .accessibilityIdentifier("startupLoadingScreen")
++        .task {
++            while !Task.isCancelled {
++                do { try await Task.sleep(for: .milliseconds(150)) }
++                catch { return }
++                // Approach 90% while rendering starts; readiness removes the
++                // view immediately, without waiting for a completed animation.
++                withAnimation(reduceMotion ? nil : .linear(duration: 0.15)) {
++                    progress += (0.9 - progress) * 0.08
++                }
++            }
++        }
++    }
++}
+--- before/src/DonkeyTrump3D/Resources/LaunchScreen.storyboard
++++ after/src/DonkeyTrump3D/Resources/LaunchScreen.storyboard
+@@ -20,10 +20,38 @@
+                                     <bool key="isElement" value="NO"/>
+                                 </accessibility>
+                             </imageView>
++                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="loading-panel">
++                                <rect key="frame" x="252" y="285" width="340" height="72"/>
++                                <subviews>
++                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" text="Loading…" textAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="loading-label">
++                                        <rect key="frame" x="16" y="12" width="308" height="22"/>
++                                        <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
++                                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
++                                    </label>
++                                    <progressView opaque="NO" contentMode="scaleToFill" progress="0.15" translatesAutoresizingMaskIntoConstraints="NO" id="loading-progress">
++                                        <rect key="frame" x="16" y="46" width="308" height="4"/>
++                                        <color key="progressTintColor" red="1" green="0.84" blue="0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
++                                        <color key="trackTintColor" white="0.35" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
++                                    </progressView>
++                                </subviews>
++                                <color key="backgroundColor" red="0.02352941176" green="0.06274509804" blue="0.1529411765" alpha="0.95" colorSpace="custom" customColorSpace="sRGB"/>
++                                <constraints>
++                                    <constraint firstAttribute="width" constant="340" id="panel-width"/>
++                                    <constraint firstAttribute="height" constant="72" id="panel-height"/>
++                                    <constraint firstItem="loading-label" firstAttribute="top" secondItem="loading-panel" secondAttribute="top" constant="12" id="label-top"/>
++                                    <constraint firstItem="loading-label" firstAttribute="leading" secondItem="loading-panel" secondAttribute="leading" constant="16" id="label-leading"/>
++                                    <constraint firstAttribute="trailing" secondItem="loading-label" secondAttribute="trailing" constant="16" id="label-trailing"/>
++                                    <constraint firstItem="loading-progress" firstAttribute="top" secondItem="loading-label" secondAttribute="bottom" constant="12" id="progress-top"/>
++                                    <constraint firstItem="loading-progress" firstAttribute="leading" secondItem="loading-panel" secondAttribute="leading" constant="16" id="progress-leading"/>
++                                    <constraint firstAttribute="trailing" secondItem="loading-progress" secondAttribute="trailing" constant="16" id="progress-trailing"/>
++                                </constraints>
++                            </view>
+                         </subviews>
+                         <viewLayoutGuide key="safeArea" id="launch-safe-area"/>
+                         <color key="backgroundColor" red="0.02352941176" green="0.06274509804" blue="0.1529411765" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                         <constraints>
++                            <constraint firstItem="loading-panel" firstAttribute="centerX" secondItem="launch-safe-area" secondAttribute="centerX" id="panel-center"/>
++                            <constraint firstItem="launch-safe-area" firstAttribute="bottom" secondItem="loading-panel" secondAttribute="bottom" constant="12" id="panel-bottom"/>
+                             <constraint firstItem="launch-cover" firstAttribute="leading" secondItem="launch-safe-area" secondAttribute="leading" id="cover-leading"/>
+                             <constraint firstItem="launch-cover" firstAttribute="trailing" secondItem="launch-safe-area" secondAttribute="trailing" id="cover-trailing"/>
+                             <constraint firstItem="launch-cover" firstAttribute="top" secondItem="launch-safe-area" secondAttribute="top" id="cover-top"/>
+--- before/src/DonkeyTrump3DUITests/HighscoreBrowsingUITests.swift
++++ after/src/DonkeyTrump3DUITests/HighscoreBrowsingUITests.swift
+@@ -2,6 +2,22 @@
+ 
+ @MainActor
+ final class HighscoreBrowsingUITests: HighscoreUITestCase {
++    func testStartupProgressDisappearsWhenSceneIsReady() {
++        app.launchArguments = ["-highscoreFixture", "hang", "-highscoreUITest", "-startupProgressTest"]
++        app.launch()
++        let progress = app.progressIndicators["startupProgress"]
++        XCTAssertTrue(progress.waitForExistence(timeout: 3))
++        XCTAssertFalse(app.buttons["Start Game"].isHittable)
++        let capture = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
++        capture.name = "startup-progress"; capture.lifetime = .keepAlways; add(capture)
++        XCTAssertTrue(progress.waitForNonExistence(timeout: 12))
++        XCTAssertTrue(app.buttons["Start Game"].isHittable)
++        app.buttons["highscoreOpen"].tap()
++        XCTAssertTrue(app.descendants(matching: .any)["highscoreLoading"].exists)
++        app.buttons["Start Game"].tap()
++        XCTAssertTrue(app.buttons["Skip"].waitForExistence(timeout: 3))
++        XCTAssertFalse(progress.exists)
++    }
+     func testTitleListAndEmptyReadOnlyRefresh() {
+         for fixture in ["rank-1", "empty"] {
+             launch(fixture); app.buttons["highscoreOpen"].tap()
+--- before/docs/design/cover-art.md
++++ after/docs/design/cover-art.md
+@@ -11,7 +11,7 @@
+ 
+ ## App behavior
+ 
+-The asset catalog bundles a byte-identical copy as `LaunchCover`. [LaunchScreen.storyboard](../../src/DonkeyTrump3D/Resources/LaunchScreen.storyboard) shows the complete illustration proportionally inside the safe area over a dark navy background. Both Debug and Release use that system launch screen while the app starts. There is no artificial minimum display time, download, progress counter or tap-to-continue gate. Audio-player preparation runs on a background queue and does not delay the first screen. One-shot sounds that occur before audio is ready are skipped; active loops/music follow the latest requested state, including stop, skip and pause. Highscores are fetched asynchronously when the list is opened; a slow or unavailable backend does not delay startup or Start Game. The system dismisses it when the app is ready; returning from the background may show the app's own saved snapshot instead.
++The asset catalog bundles a byte-identical copy as `LaunchCover`. [LaunchScreen.storyboard](../../src/DonkeyTrump3D/Resources/LaunchScreen.storyboard) shows the complete illustration proportionally inside the safe area over a dark navy background. Both Debug and Release use that system launch screen while the app starts. A visible “Loading…” label and a partially filled progress bar appear on the native launch screen. After the app takes over, the same artwork has a moving, approximate progress bar until SceneKit reports its first rendered frame. The bar indicates activity rather than a measured percentage. There is no artificial minimum display time, download or tap-to-continue gate; readiness removes the cover immediately without waiting for the bar to finish. Audio-player preparation runs on a background queue and does not delay the first screen. One-shot sounds that occur before audio is ready are skipped; active loops/music follow the latest requested state, including stop, skip and pause. Highscores are fetched asynchronously when the list is opened; a slow or unavailable backend does not delay startup or Start Game. The system dismisses it when the app is ready; returning from the background may show the app's own saved snapshot instead.
+ 
+ The title menu, interactive 3D scene and intro remain the game's normal next screens. The illustrated cover is a distinct piece of key art and does not claim to depict the rendered 3D gameplay.
+ 
