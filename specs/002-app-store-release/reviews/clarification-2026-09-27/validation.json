@@ -1,0 +1,38 @@
+{
+  "questions_asked": 0,
+  "questions_answered": 0,
+  "prior_qa_bullets_preserved": 3,
+  "quality_checklist_before": "16/16",
+  "quality_checklist_after": "16/16",
+  "newly_passing": [],
+  "regressions": [],
+  "unchecked": [],
+  "coverage": {
+    "Functional Scope & Behavior": "Clear",
+    "Domain & Data Model": "Clear",
+    "Interaction & UX Flow": "Clear",
+    "Non-Functional Quality Attributes": "Clear",
+    "Integration & External Dependencies": "Clear",
+    "Edge Cases & Failure Handling": "Clear",
+    "Constraints & Tradeoffs": "Clear",
+    "Terminology & Consistency": "Clear",
+    "Completion Signals": "Clear",
+    "Misc / Placeholders": "Clear"
+  },
+  "planning_inputs": "Detailed retention/operator tooling, actual account/contact/declaration facts and candidate-specific device/media checks remain planning or execution inputs under explicit requirements; not missing product scope decisions.",
+  "checks": [
+    "26 unique FR and 10 unique SC identifiers",
+    "No unresolved markers",
+    "All local spec links resolve",
+    "Same heading structure and prior Q/A bullets",
+    "Checklist byte-identical; all 16 items manually reassessed as passing",
+    "git diff --check passes"
+  ],
+  "hooks": "No .specify/extensions.yml; no before/after hooks",
+  "base_commit": "05238815a11e55650f459cd469856afcd5d99094",
+  "review_fixes": {
+    "R-01": "Existing in-app privacy/help explanation and explicit submission are now accepted explicitly, with no reminder restored to dialog.",
+    "R-02": "Existing deployments have cost assumptions/estimate and committed baseline verified before draft readiness; further provisioning still requires prior estimate. Dated cost notes linked.",
+    "R-03": "List counts ranked entries, not distinct players or simultaneously visible rows."
+  }
+}

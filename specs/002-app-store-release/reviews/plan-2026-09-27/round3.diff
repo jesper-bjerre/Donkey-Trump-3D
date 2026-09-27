@@ -1,0 +1,92 @@
+--- round2/specs/002-app-store-release/plan.md
++++ specs/002-app-store-release/plan.md
+@@ -53,7 +53,7 @@
+ | I — Native iPhone/offline | Preserve app/sound/accessibility and optional async backend. | iOS contract keeps loading/play independent; report/score deadlines and navigation; physical both-landscape/VoiceOver/audio checks gate readiness. |
+ | II — Simple ownership | Existing UI/main actor, engine/render loop and API/store boundaries. | Protected credential and report coordinator; one API/aggregate; same executable operator mode, no admin web service. |
+ | III — Data integrity | Existing ETag design; removal/block requires atomic extension. | Single conditional mutation rechecks bans/tombstones; bounded failure, no score replay; migration and schema-aware rollback preserve guards. |
+-| IV — Content/data | Originality and truthful privacy remain gates; owner removed dialog reminder only. | Existing help explanation retained/tested, real privacy link, provenance/rights and actual data inventory before declarations; credentials private, MI/scoped operator auth. |
++| IV — Content/data | Originality and truthful privacy remain gates; owner removed dialog reminder only. | Existing help explanation retained/tested, real privacy link, provenance/rights and actual data inventory before declarations; credentials private; operator Blob access via app MI inside App Service, human Entra only for control-plane SSH. |
+ | V — Evidence | Simulator and dated deployment records are baselines only. | Exact processed build physical checks, media/readback identity, source/check records and independent review before completion. |
+ 
+ Post-design gate: PASS for the planned approach. Runtime/store gates remain UNEXECUTED;
+@@ -114,7 +114,10 @@
+ 
+ 1. **Inventory and private input register:** actual account/app/history/signing,
+    rights/contact/trader facts, physical device, Azure inventory/cost baseline. Resolve
+-   missing owner facts together after discovery. Independent code/copy work continues.
++   missing owner facts together after discovery. Probe DEV SSH and harmless aggregate
++   metadata read via app MI early; a missing supported MI context blocks operator-dependent
++   work, never permits token/environment extraction or human Blob credential fallback.
++   Independent code/copy work continues.
+ 2. **Backend safety foundation:** schema2, canonical credential ownership, filtering,
+    ETag-atomic reports/removal/block, bounded capacities/retention and shared operator
+    mode. Add migrations and explicit v1 writer retirement; establish rollback floor.
+--- round2/specs/002-app-store-release/data-model.md
++++ specs/002-app-store-release/data-model.md
+@@ -55,6 +55,13 @@
+   producer block. By default a block removes/tombstones all currently ranked rows of
+   that attributed installation, without affecting other rows. Legacy/starter reports
+   can remove but cannot invent an installation identity to block.
++- Every tombstoning mutation atomically resolves all unresolved reports for all entry
++  IDs it removes, with the same resolvedOperationId/time. Derive truthful dispositions
++  per snapshot: legacyRemoved/starterRemoved, or removedAndBlocked only if that snapshot
++  producer is blocked in the final state, otherwise removed. Do not alter previously
++  closed receipts or invent acknowledgedAtUtc; resolved without prior acknowledgement
++  is allowed. Duplicate tombstones are idempotent; an already-removed target still permits
++  closing an unresolved report. No-action/spam disposition affects only selected reports.
+ - Unblock is an explicit owner operation requiring the currently expected blockId before removing the block hash; existing tombstones
+   remain. It never republishes a removed row. A stale unblock for an earlier blockId must fail
+   after a re-block, even if its old operator-audit receipt has expired.
+--- round2/specs/002-app-store-release/quickstart.md
++++ specs/002-app-store-release/quickstart.md
+@@ -76,6 +76,10 @@
+ - prohibited name422 allows current-run correction; benign names accepted;
+ - report → owner acknowledge → remove/block/resolve → same reporter status succeeds;
+   other credential cannot read receipt, report snapshot survives rank eviction;
++- multiple reporters on one entry and on a producer's other rows: direct removal or
++  remove-and-block closes all affected unresolved reports atomically with truthful
++  per-reporter disposition; preserves closed receipts and actual acknowledgement times,
++  frees pending capacity, and survives ETag conflicts/already-tombstoned targets;
+ - blocked credential with a changed name/new run gets403; unblocked credential and
+   local gameplay still work; removed ID remains rejected even under another credential;
+ - submit/delete/block races across independent store instances preserve bans, unrelated
+--- round2/specs/002-app-store-release/contracts/moderation-api.md
++++ specs/002-app-store-release/contracts/moderation-api.md
+@@ -41,6 +41,7 @@
+ | 404 `entry_not_found` / `report_not_found` | Target no longer available, receipt not owned or expired; no false success. |
+ | 426 `update_required` | Older writer unsupported; local gameplay remains available. |
+ | 429 `rate_limited` | Bounded failure; Retry-After is not authority to schedule an upload. |
++| 503 `service_maintenance` | Rejected before writes during maintenance or before schema migration; definite no-write, no deferred retry. |
+ | 503 `moderation_capacity` / `storage_invalid` / `operation_timed_out` | Honest unavailability. If a write may have committed, map instead to the operation's unconfirmed result. |
+ | 503 `submission_unconfirmed` / `report_unconfirmed` | Possible committed write; never assert “not saved.” Scores are not replayed. A report can be checked read-only using its preallocated ID. |
+ 
+@@ -85,7 +86,8 @@
+ SSH session blocks cloud operator work; no human Blob credential fallback.
+ 
+ Commands:
+-- `list`: report IDs/status/reason/deadline and counts only; `show --report-id UUID`
++- `list`: report IDs/status/reason/deadline grouped by entry ID with counts, for private
++  owner console only (not CI/application logs); `show --report-id UUID`
+   reveals necessary private snapshot to the owner, not to CI logs or repository evidence.
+ - `acknowledge --report-id UUID --operation-id UUID`: record actual owner receipt.
+ - `resolve --report-id UUID --decision remove|remove-and-block|no-action --operation-id UUID`:
+@@ -105,6 +107,19 @@
+   After receipt expiry a stale command finds no report and cannot affect a new report
+   with another UUID; all current ownership/state checks rerun on conflict.
+ - `remove --entry-id UUID --operation-id UUID`: owner-initiated removal with tombstone.
++  Every tombstoning transaction (direct remove, resolve/remove or remove-and-block)
++  also closes ALL unresolved reports whose entry IDs were tombstoned, including other
++  ranked rows removed by that block. This is one conditional write, never a later
++  best-effort loop. Each receipt receives the same operation ID/server resolution time,
++  and disposition from its snapshot origin: legacyRemoved/starterRemoved; installation
++  reports get removedAndBlocked only if their snapshot producer is blocked in the final
++  state, otherwise removed. No-action/spam operations do not close other reports.
++  Preserve actual acknowledgedAtUtc; do not invent an acknowledgement for an unread
++  report. A resolved receipt may therefore have no acknowledgement time. Existing
++  closed receipts remain immutable. Existing tombstones are idempotent and a still-open
++  matching report can be closed as removed without requiring its row to be ranked.
++  Capacity checks must allow this transition for all100 unresolved reports: it changes
++  existing records, allocates no extra ordinary report slots and uses the byte reserve.
+ - `show-block --installation-hash HASH`: private read of the current blockId for a fresh preview.
+ - `unblock --installation-hash HASH --expected-block-id UUID --operation-id UUID`: explicit unblock, never
+   removes tombstones; hash is private moderation identity, not a raw credential.

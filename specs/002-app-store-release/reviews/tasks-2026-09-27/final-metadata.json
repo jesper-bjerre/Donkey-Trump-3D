@@ -1,0 +1,28 @@
+{
+  "exit_code": 0,
+  "actual_models": [
+    "claude-opus-5-5",
+    "claude-opus-5-5"
+  ],
+  "session_id": "d53c3db9-2167-403f-a392-b5b1a5a0aeca",
+  "is_error": false,
+  "model_usage": {
+    "claude-opus-5-5": {
+      "inputTokens": 2,
+      "outputTokens": 4555,
+      "cacheReadInputTokens": 1459,
+      "cacheCreationInputTokens": 71864,
+      "webSearchRequests": 0,
+      "costUSD": 0.6663118,
+      "contextWindow": 1000000,
+      "maxOutputTokens": 128000,
+      "thinkingTokens": 2131,
+      "canonicalModel": "claude-opus-5-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    }
+  },
+  "stderr": "",
+  "explicit_effort": "high",
+  "environment_effort": "high"
+}

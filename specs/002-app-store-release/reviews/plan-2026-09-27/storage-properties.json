@@ -1,0 +1,32 @@
+{
+  "observed_date": "2026-09-27",
+  "access": "Read-only Azure management plane; az storage account blob-service-properties show; no Blob data access or settings mutation",
+  "dev": {
+    "account": "donkeytrumpd",
+    "properties": {
+      "blobDelete": {
+        "allowPermanentDelete": false,
+        "days": null,
+        "enabled": false
+      },
+      "changeFeed": null,
+      "containerDelete": null,
+      "restore": null,
+      "versioning": null
+    }
+  },
+  "prod": {
+    "account": "donkeytrumpp",
+    "properties": {
+      "blobDelete": {
+        "allowPermanentDelete": false,
+        "days": null,
+        "enabled": false
+      },
+      "changeFeed": null,
+      "containerDelete": null,
+      "restore": null,
+      "versioning": null
+    }
+  }
+}

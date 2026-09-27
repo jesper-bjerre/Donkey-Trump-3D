@@ -1,0 +1,9 @@
+{
+  "specs/002-app-store-release/plan.md": "101738558425e2117a266486aef445159156da9e84b50d59636a7ebca6b068e6",
+  "specs/002-app-store-release/research.md": "128c77ca6d19ad1de44c71d3ccaa159a19296c84848a217fb1217ca724c70a16",
+  "specs/002-app-store-release/data-model.md": "e0d178e092146063896b5c11339e342b3d9af84cd250e56b574064bd8c9913ee",
+  "specs/002-app-store-release/quickstart.md": "c96653c8c2d45d28638784c27c072033eba68e148966d1a7d2036d0d6fa2848e",
+  "specs/002-app-store-release/contracts/moderation-api.md": "53b3b668dd709f699838a95c34624883206e5a87ed93e35b95a6fcd09199ead6",
+  "specs/002-app-store-release/contracts/ios-release-flow.md": "6e38a6ef8d93545cdc6782f3a6f59732c4847160e605b6e3532e65e0ff778665",
+  "specs/002-app-store-release/contracts/store-release.md": "892cd01aceffeca076e29872a46a7b2636125a66baeb6ddc4520378d579323b8"
+}

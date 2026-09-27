@@ -1,0 +1,14 @@
+{
+  "AGENTS.md": "24f26a7f9d82431caa9f9de0863d92341c72c9a48c6e94e6f26d12d052fff192",
+  ".specify/memory/constitution.md": "48aad1c55de956264342aa88070cb3d9a21a3f0985f684f19ce77cc095b73129",
+  ".agents/skills/speckit-tasks/SKILL.md": "1086d7885df1188d00e7d5eb4715e678b4340b893e8f24ae748d823b13599a56",
+  "specs/002-app-store-release/spec.md": "4c0c832442163669c82262946d8392cd79d8205b24349eb95089323c2ed8d8e5",
+  "specs/002-app-store-release/plan.md": "692ff36b61b91eac39d9012d2a2047a9b6552fdfa81965fa892699d812a9e3dd",
+  "specs/002-app-store-release/research.md": "ff6fab55edd0123108e0e000026f83fa099b23aea5b8ca4123d668898bb12f7b",
+  "specs/002-app-store-release/data-model.md": "ae8426d40bf028de37189c549904f1667f0e25306fdeeb6891a804d207bce66c",
+  "specs/002-app-store-release/quickstart.md": "f673d83055323b17393d9e49dc5c4109eccb8e11dd71f49becf829799a5efec6",
+  "specs/002-app-store-release/contracts/moderation-api.md": "31e6b485778e89e819b1458adefe1d3d97ddd0c3e41a8af65b34b4cca38d4497",
+  "specs/002-app-store-release/contracts/ios-release-flow.md": "f2bb80760e344a0ca8e64ce27bfdf930293db34305945039d311157d613bafef",
+  "specs/002-app-store-release/contracts/store-release.md": "bf09d406802d4709168043cc43fa68d3ffdc8a922bd3d5a162f1e49ad5cde81c",
+  "specs/002-app-store-release/review-plan-2026-09-27.md": "f4a572e329ee7923d3350c36fb348d9e4371a549f5fa7d6c5dd15c0efd9b7d27"
+}

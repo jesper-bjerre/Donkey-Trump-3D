@@ -1,0 +1,33 @@
+{
+  "base_commit": "05238815a11e55650f459cd469856afcd5d99094",
+  "actual_branch": "main",
+  "feature_pointer": "002-app-store-release",
+  "phase0_research": "complete, two skill-authorized research helpers",
+  "phase1_artifacts": [
+    "specs/002-app-store-release/plan.md",
+    "specs/002-app-store-release/research.md",
+    "specs/002-app-store-release/data-model.md",
+    "specs/002-app-store-release/quickstart.md",
+    "specs/002-app-store-release/contracts/moderation-api.md",
+    "specs/002-app-store-release/contracts/ios-release-flow.md",
+    "specs/002-app-store-release/contracts/store-release.md"
+  ],
+  "technical_unknown_markers": 0,
+  "constitution_pre": "PASS design; execution not claimed",
+  "constitution_post": "PASS design; execution not claimed",
+  "checks": [
+    "Seven generated Markdown artifacts: headings, local links, balanced fences, no template/unknown markers",
+    "Current four-field highscore request verified against source; v1 POST retirement is explicit",
+    "26 FR and 10 SC coverage mapped to contracts/acceptance; prior spec unchanged by planning",
+    "Deadlines/retention/guard caps consistent; off-list report snapshots included in moderation reserve",
+    "Quickstart distinguishes current commands from planned commands; no future check claimed executed",
+    "git diff --check passed",
+    "Bound stale unblock to unique blockId; audit retention does not imply indefinite operation deduplication. Documented boundary test."
+  ],
+  "hooks_file_exists": false,
+  "execution_limits": [
+    "Chrome bootstrap failed twice before selection, including after owner confirmed sign-in; no Connect page or saved state verified",
+    "No implementation, API change, device test, deployment, publication, review submission, commit or push performed",
+    "Owner/account/contact/licence/signing/hardware and current Azure billing facts are explicit execution gates, not invented design answers"
+  ]
+}

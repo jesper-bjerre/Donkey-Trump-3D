@@ -1,0 +1,7 @@
+{
+  "status": "aborted_no_verdict",
+  "reason": "No result beyond bounded review interval; observed process elapsed32minutes, only system initialization/no reviewer text, stderr empty; lead sent SIGTERM to verified own review PID66173",
+  "model_requested": "claude-opus-5-5",
+  "effort_requested": "high",
+  "review_evidence": false
+}

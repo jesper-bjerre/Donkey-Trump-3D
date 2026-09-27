@@ -1,0 +1,10 @@
+{
+  "specs/002-app-store-release/spec.md": {
+    "before": "fa51f192e4831ee6f623df685fc53c4e4ac0855a34d9e8c853db34c6a2f697dd",
+    "after": "5831a63b87fd539a4723a51e93fdf4c82166e347125988a3d9d37dec72f590f9"
+  },
+  "specs/002-app-store-release/checklists/requirements.md": {
+    "before": "112e887c83db5f79550d218f00381741da88d7834960bbe68901b283f23b6695",
+    "after": "112e887c83db5f79550d218f00381741da88d7834960bbe68901b283f23b6695"
+  }
+}

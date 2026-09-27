@@ -1,0 +1,11 @@
+{
+  "AGENTS.md": "24f26a7f9d82431caa9f9de0863d92341c72c9a48c6e94e6f26d12d052fff192",
+  ".specify/memory/constitution.md": "48aad1c55de956264342aa88070cb3d9a21a3f0985f684f19ce77cc095b73129",
+  "specs/002-app-store-release/spec.md": "4c0c832442163669c82262946d8392cd79d8205b24349eb95089323c2ed8d8e5",
+  "global.json": "ce61f5ae207d33d00594c77c5999c7f0dc66434e85a85f38090335d588438974",
+  "src/backend/Highscores/HighscoreValidation.cs": "42f529a1ad7b8ab4e636a1d9aa966296805e7489da22f6ee2967243b03611890",
+  "src/backend/Highscores/HighscoreDocument.cs": "ee13446d00521d4e96e53b997d8520574a7c6997719152e6d8848070c1a246a2",
+  "src/backend/Highscores/HighscoreOptions.cs": "f2732f9bed6e112e1e64890ff7eb64d4fc41d96c07dc3023a2f7e1fec42baabb",
+  "src/backend/Highscores/HighscoreContracts.cs": "0d21ebb59134d342b37dc5f8c847a002cd85a2a9060cb058622abbbe8b37c56d",
+  "infra/backend-environments.json": "56b1a9be16db3c9ea5f68c889fcd1998169caf04b8e27e45ca6953a0c9c404cf"
+}

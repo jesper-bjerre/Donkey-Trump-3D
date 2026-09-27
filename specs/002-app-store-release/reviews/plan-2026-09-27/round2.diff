@@ -1,0 +1,429 @@
+--- round1/specs/002-app-store-release/plan.md
++++ specs/002-app-store-release/plan.md
+@@ -27,7 +27,7 @@
+ Azure.Identity1.21.0; existing GitHub Actions OIDC deployment tooling. No new hosted
+ service, database, account system, tracking SDK, frontend framework or mail provider.
+ **Storage:** device local best/settings and protected installation secret/receipt IDs;
+-one private versioned Blob aggregate with ETags; static HTML bundled with API;
++one private schema-versioned Blob aggregate with ETags (Azure version history disabled); static HTML bundled with API;
+ local versioned release artifacts and private owner evidence where sensitive.
+ **Testing:** Swift Testing, XCTest/XCUITest, xUnit/Azurite, Python pipeline/asset/contract
+ checks, physical iPhone13 via internal TestFlight, labelled iPad simulator compatibility.
+@@ -95,7 +95,8 @@
+ docs/releases/app-store/    # future release packages, non-secret evidence only
+ ```
+ 
+-**Structure decision:** extend existing targets; operator CLI is a mode of the same
++**Structure decision:** extend existing targets; a DEV-only capture container and isolated
++route group reuse the DEV service to isolate synthetic media data without touching real rows; operator CLI is a mode of the same
+ backend executable sharing its validated mutation code. No additional deployable API
+ or operator authentication endpoint. Sensitive owner documents stay outside Git.
+ 
+--- round1/specs/002-app-store-release/research.md
++++ specs/002-app-store-release/research.md
+@@ -61,7 +61,7 @@
+ **Decision:** retain only removed submission IDs until service retirement, and active
+ blocked fingerprints until explicit unblock or service retirement. Keep pending
+ reports until disposition; retain closed report content/receipt and operator audit
+-for 30 days, then purge daily through the operator command. No indefinite offensive
++for 30 days of logical access, then automatically purge as specified below. No indefinite offensive
+ name retention merely to enforce a block. Aggregate max 1 MiB, max 100 ranked entries,
+ 4,096 tombstones, 1,024 blocks, 100 pending reports, 1,000 total report records and
+ 500 audit records. At 3,800 tombstones or 800 blocks stop accepting NEW score runs;
+@@ -71,12 +71,43 @@
+ At report/audit capacity, reject new report/optional audit-growing actions honestly;
+ mandatory remove/block/resolve can compact expired audit and omit nonessential audit
+ history if necessary, with the guard/state change itself retained. Do not erase a
+-pending report or an unexpired report receipt just to admit more traffic.
++genuine pending report or an unexpired ordinary receipt just to admit more traffic.
++Explicit owner classification of spam permits immediate private-snapshot removal and
++a 24-hour minimal dismissedSpam receipt, then automatic purge; bounded bulk handling
++restores admission without waiting 30 days.
+ **Rationale:** reusable random submission UUIDs make finite tombstone expiry unsafe.
+ This bounded small-service choice fails honestly before growth damages integrity.
+ **Alternatives:** expiring run identities require a different public protocol;
+ unbounded guard history or silent expiry is not acceptable. Future sharding/epoch
+ migration is an explicit capacity project, not a fallback during a write.
++
++Automatic expiry is enforced on receipt reads (expired records return404, without
++writing) and by purge-before-mutation plus an hourly/startup ASP.NET background worker
++in this existing service. Physical removal is due within one hour of expiry while
++service/storage are available; outages delay deletion until recovery. PROD Always On
++and observed cleanup lag gate readiness; DEV sleeping behavior is recorded honestly.
++The worker uses managed identity and the same ETag/deadline rules, never removes guards
++or unresolved genuine reports, and pauses during migration maintenance.
++
++Read-only management-plane inspection on 2026-09-27 found both donkeytrumpd/donkeytrumpp:
++blob soft delete enabled=false; versioning, container delete, restore and change feed
++unset. Keep versioning, soft delete and App Service content backups of player data
++disabled; recheck actual policy/history/backup destinations before release. Do not
++change shared/unrelated settings silently. No application response/body logs or local
++persistent copies of the aggregate. One private pre-migration Blob backup is allowed
++per target under `release-backups/`, with UTC expiry 24 hours after creation. Operator
++migration mode creates/verifies it with MI, and deletes it after successful validation;
++the worker also deletes expired backups hourly/on startup. No general daily data
++backup is introduced. Set a prefix-scoped Azure lifecycle delete rule after one day
++as a secondary cleanup safeguard, not a precise deletion clock. Backup age/cleanup
++lag is monitored; outage exceptions and this extra recovery-copy period appear in
++privacy/cost evidence. Inspect any historical versions/deleted copies/exported backups
++before claiming the policy; unknown old copies block that claim. Never restore an old
++snapshot over current moderation guards. Hard instantaneous physical erasure cannot
++be promised during a cloud outage.
++[Soft-delete retention](https://learn.microsoft.com/en-us/azure/storage/blobs/soft-delete-blob-overview)
++and [lifecycle management](https://learn.microsoft.com/en-us/azure/storage/blobs/lifecycle-management-overview)
++explain the storage-side behavior; lifecycle execution is asynchronous.
+ 
+ ## 5. Reports, filtering and owner operations
+ 
+@@ -91,9 +122,11 @@
+ row later falls out of the top 100. A private status receipt lets the reporter read
+ the owner's disposition, without a public report feed or player account.
+ 
+-The same backend executable gets an operator-only command mode using Azure CLI's
+-signed-in Entra identity and scoped Blob data permissions. It reuses the same domain
+-validation/ETag store and does not start a web server. No public admin API. The owner
++The same backend executable gets an operator-only command mode run inside the target
++App Service container, using that app's scoped managed identity for all Azure Blob
++access. The owner enters via Azure control-plane-authenticated SSH; human Azure CLI
++credentials never access the Blob data plane. It reuses domain validation/ETag code
++and does not start another web server. No public admin API or additional credential. The owner
+ checks the queue each working day, acknowledges and resolves reports within one
+ working day; demonstrate actual receipt and disposition before readiness. Define a
+ working day as Monday–Friday in Europe/Copenhagen, with deadline at the same local clock time on the next
+@@ -101,7 +134,7 @@
+ **Alternatives:** email-only reporting depends on mail setup and loses atomic entry
+ context; a new admin website and notification service are unnecessary. A stored
+ report alone is not proof of owner delivery or timely response.
+-[Azure CLI data authorization](https://learn.microsoft.com/en-us/azure/storage/blobs/authorize-data-operations-cli) and
++[App Service authenticated SSH](https://learn.microsoft.com/en-us/azure/app-service/configure-linux-open-ssh-session) and
+ [ASP.NET rate limiting](https://learn.microsoft.com/en-us/aspnet/core/performance/rate-limit?view=aspnetcore-10.0)
+ support existing identity/traffic controls; per-process limiting is not a billing cap.
+ 
+@@ -130,7 +163,9 @@
+ [Apple screenshot specifications](https://developer.apple.com/help/app-store-connect/reference/app-information/screenshot-specifications/).
+ Use actual gameplay, control/intro variety and an approved synthetic DEV leaderboard;
+ store images never include other players' data. Build capture code from the same
+-source/settings as Release, changing only service origin to isolated DEV data; no
++source/features and Release optimizations using the explicit non-distributable
++AppStoreCapture simulator configuration and isolated DEV capture route/container
++defined in the store contract; no
+ fake game scenes, debug overlays or screenshot-only product features. Document this
+ configuration difference. Cover art may frame captures, not replace gameplay.
+ 
+--- round1/specs/002-app-store-release/data-model.md
++++ specs/002-app-store-release/data-model.md
+@@ -47,7 +47,7 @@
+   while ranked; changed payload conflicts. The prior scope does not gain indefinite
+   deduplication for merely evicted, never-moderated runs.
+ - Report: new → pending → acknowledged → resolved (`removed`, `removedAndBlocked`,
+-  `noAction`, `legacyRemoved`, `starterRemoved`). Acknowledge records owner receipt;
++  `noAction`, `legacyRemoved`, `starterRemoved`, `dismissedSpam`). Acknowledge records owner receipt;
+   resolve contains a fixed explanatory disposition visible only to the reporter.
+   A report about a no-longer-ranked unknown entry returns not-found; an already
+   accepted snapshot remains actionable if its row subsequently drops out.
+@@ -67,9 +67,20 @@
+ | Removed ID | Until service retirement or a separately designed epoch cutover rejecting every earlier ID. |
+ | Active block hash | Until explicit unblock or service retirement. |
+ | Pending/acknowledged report | Until resolution; max 100 unresolved. Owner checks every working day. |
+-| Resolved report including private snapshot and receipt | 30 days after resolution; daily operator purge. Total unresolved + closed records max 1,000. Full capacity rejects NEW reports without deleting accepted ones. |
++| Resolved report including private snapshot and receipt | 30 days after resolution, then logically absent and automatically purged. Total unresolved + closed records max 1,000. Full capacity rejects NEW reports without deleting genuine accepted ones. |
++| Owner-classified spam | Remove snapshot/producer identity/reason immediately; keep only report ID/reporter hash/status/resolved time/operation ID for 24 hours, then expire/purge. Max 100 minimal spam receipts separately, oldest may expire early; 404 is honest expiry. This exception frees ordinary queue capacity immediately. |
++| Pre-migration backup | One private Blob per target, expires after 24 hours; deleted earlier after successful migration verification. No versioning/soft delete; no restore over live guards. |
+ | Operator audit | Up to 30 days, max 500. Expired/oldest audit may be compacted for safety mutations; state/guards themselves are authoritative. |
+ | Operational application diagnostics | Configure max 7 days, route/status/timing/count only; audit actual App Service/storage diagnostics and disclose provider retention separately before release. |
++
++Expiry is checked on every receipt read without a write. Every mutation purges expired
++closed reports/audit/spam receipts before recomputing; an hourly/startup worker handles
++idle periods and expired backup Blobs using MI/ETags. Deletion due within one hour while
++service/storage are available; outages defer to recovery and are recorded as retention
++exceptions. No report content in App Service backup/logs. Version history and soft delete
++stay disabled; inventory old versions/deleted copies/exported backups, confirm cleanup
++and capture actual retention/cost before release. Backup lifecycle rule is secondary,
++not a timing guarantee. See research for current management-plane observations.
+ 
+ Max aggregate serialized UTF-8 size 1 MiB; max 4,096 tombstones/1,024 blocks. At 3,800
+ removed IDs or 800 blocks, reject new score runs with a capacity error, keeping
+@@ -85,6 +96,12 @@
+ starters cannot maintain ten returned entries, removal still succeeds and the read
+ fails honestly until the owner deploys a vetted replacement catalog; it must never
+ resurrect removed content or silently return a successful undersized list.
++
++The disposable DEV capture aggregate uses the same schema in a separate
++`highscores-capture` container; it is never the authoritative DEV/PROD ranking. Explicit
++seed/reset is permitted only for that owned fixture; delete after media acceptance.
++Normal datasets cannot be selected through capture route/config overrides. The store
++contract defines all isolation and non-distribution gates.
+ 
+ ## ReleaseCandidate and evidence
+ 
+--- round1/specs/002-app-store-release/quickstart.md
++++ specs/002-app-store-release/quickstart.md
+@@ -55,13 +55,10 @@
+ ```
+ 
+ Use localhost:5281 only after confirming that port is free or belongs to this test
+-instance. Do not stop someone else's process. In a second shell with the same local
+-container settings, the **planned** command initializes/migrates only a deliberately
+-created fixture, not a missing production Blob:
+-
+-```sh
+-dotnet run --project src/backend --no-launch-profile -- moderation list --target local
+-```
++instance. Do not stop someone else's process. The planned smoke helper explicitly
++creates an owned schema-1 fixture in this dedicated container, invokes conditional
++migration and validates the result. `moderation list` is read-only and never initializes
++or migrates state. A missing live Blob is not permission to seed one.
+ 
+ The implementation adds `src/scripts/release-moderation-smoke.py` for the following
+ contract checks. It generates throwaway credentials internally, keeps them out of
+@@ -90,7 +87,13 @@
+ - stale unblock cannot lift a later re-block after audit expiry/compaction; matching
+   block instance unblocks without reviving tombstoned rows;
+ - max field sizes, serialized-byte reserve and count boundaries retain ability to
+-  remove/block/resolve every current row; daily purge leaves guards/pending reports;
++  remove/block/resolve every current row; fake-clock30d expiry is invisible on reads,
++  startup/hourly/opportunistic cleanup removes content while preserving guards/pending
++  genuine reports; storage outage defers cleanup honestly and recovery removes it;
++- fill pending/closed queues with controlled spam, bulk-dismiss only selected spam,
++  prove admission recovers, minimal receipts expire24h, guards/genuine reports survive;
++- migration backup expires24h, early success deletion works, maintenance pauses workers,
++  Azure policy checks detect unexpected versions/soft-delete/backup copies;
+ - logs/public DTOs contain no credentials, producer hashes, names/bodies or report data
+   outside their explicitly intended public-name/owner interfaces.
+ 
+@@ -110,14 +113,22 @@
+ No synthetic automated POSTs to PROD: production publication evidence uses an explicitly
+ identified human-controlled test run and owner moderation of that test-owned result.
+ 
+-Operator checks use actual Azure CLI authentication, not copied access tokens:
++Operator session uses Azure CLI only for control-plane SSH authentication:
+ 
+ ```sh
+ az account show --query '{subscription:id,tenant:tenantId}' -o json
+-dotnet run --project src/backend --no-launch-profile -- moderation list --target dev
++az webapp ssh --resource-group Gulvet --name donkeytrump-api-d --subscription 6b6dcc04-7490-42ed-bedf-68f60946485e
+ ```
+ 
+-Both are read-only. Mutation command previews and explicit `--apply` follow the
++Inside that verified DEV container, the **planned** read-only command is:
++
++```sh
++dotnet /home/site/wwwroot/DonkeyTrump.Highscores.Api.dll moderation list --target dev
++```
++
++Verify managed identity is the only Blob credential; cloud target execution outside
++that app must fail. No printenv/token extraction. Repeat through the PROD app only
++when appropriate; do not transfer DEV target flags. These checks make no data writes. Mutation command previews and explicit `--apply` follow the
+ contract. For actual production reports, only authorized owner operations apply;
+ never bulk-delete/reset the ranking as validation setup.
+ 
+@@ -135,8 +146,12 @@
+ Record archive checksum/source/config/version/build. Run archive validation through
+ Xcode; no simulator build or ad-hoc code signature substitutes for this.
+ 
+-Prepare five native larger-iPhone captures per required display set, with controlled
+-DEV data only. The planned `src/scripts/validate-app-store-assets.py` validates final
++Prepare five native larger-iPhone captures per required display set with the planned
++`AppStoreCapture` simulator scheme/configuration. Enable the isolated DEV `/capture`
++route group and seed only its `highscores-capture` container using the store contract;
++never reset normal DEV rows. Verify all visible names against the fixture before capture.
++Record source/config/dataset hashes. Test capture archive rejection, PROD route404 and
++unchanged normal DEV data; disable capture routes/delete its dataset after the session. The planned `src/scripts/validate-app-store-assets.py` validates final
+ format/dimensions/opacity/order and prints a manifest; run it against the actual
+ package directory after implementation. Inspect actual image legibility separately.
+ Compare every caption/claim with the candidate and record rights provenance.
+--- round1/specs/002-app-store-release/contracts/moderation-api.md
++++ specs/002-app-store-release/contracts/moderation-api.md
+@@ -26,7 +26,8 @@
+ and body <=4096 bytes. Datetimes retain UTC millisecond formatting. Report reason is
+ one of the four enums in the data model. Entry must exist in the freshly read ranking
+ projection when accepting the report; snapshot that exact entry under the same ETag.
+-Blocked installations may read/report; only score publication is blocked.
++Blocked installations may read/report; only score publication is blocked. Private
++receipt responses use Cache-Control: no-store, including errors/expiry.
+ 
+ New errors supplement existing ProblemDetails `code`, `status`, title and traceId:
+ 
+@@ -60,19 +61,28 @@
+ per-secret buckets. Global report capacity and queue limits remain authoritative
+ under multiple workers. API rate limits are not spend or comprehensive abuse guarantees.
+ 
++DEV capture routes reuse these handlers with a separately configured capture store;
++see [store isolation contract](store-release.md#concrete-screenshot-isolation). No capture
++routes exist on PROD. Capture seed/delete commands are DEV-container-only, not a general
++reset or public administration interface.
++
+ ## Operator command interface (new mode of existing backend executable)
+ 
+ `dotnet run --project src/backend --no-launch-profile -- moderation <command> --target local|dev|prod ...`
+ 
+-This planned command mode initializes the shared validated storage/domain code and
+-exits without starting HTTP hosting. Targets map to checked-in environment inventory;
+-production rejects connection strings/shared keys. Azure targets use AzureCliCredential
+-with a signed-in owner Entra account and narrowly scoped Blob data permissions;
+-local explicitly uses Test validation with the loopback emulator and the same
+-`Highscores__ContainerName` override as its isolated API. Azure targets take storage
+-identity from the checked-in inventory and reject local container/endpoint overrides.
+-No public admin route or shared admin password.
+-Never print Azure access tokens. Permissions are checked with a harmless read first.
++Local invocation above uses Test validation and an explicit loopback emulator/container.
++For DEV/PROD the operator MUST execute the published DLL INSIDE the running target
++App Service via authenticated `az webapp ssh`. Human Entra authorization opens only
++the control-plane session; Blob access uses the app's ManagedIdentityCredential with
++its existing narrowly scoped container role. No AzureCliCredential/default credential
++chain, shared key, local cloud operator execution or raw-token extraction. Verify
++WEBSITE_SITE_NAME against target inventory and the configured storage account/container;
++reject mismatches or external overrides. Execute `/home/site/wwwroot/DonkeyTrump.Highscores.Api.dll`
++with `dotnet ... moderation <command> --target dev|prod`. The mode initializes shared
++storage/domain code and exits without HTTP hosting. Check harmless aggregate metadata
++first. Do not dump environment/MI endpoint tokens, snapshots or private names into logs.
++No public admin route or additional hosted service. Failure to obtain a supported
++SSH session blocks cloud operator work; no human Blob credential fallback.
+ 
+ Commands:
+ - `list`: report IDs/status/reason/deadline and counts only; `show --report-id UUID`
+@@ -86,14 +96,27 @@
+   an identical operation replay returns the prior receipt, another decision gets409
+   `report_resolved`. Reserve accounts for 100 current rows plus 100 unresolved snapshots
+   and the 32-entry starter catalog, including off-list offenders.
++- `dismiss-spam --report-ids UUID,... --operation-id UUID`: preview up to 100 explicitly
++  selected unresolved reports; owner confirms spam classification. One ETag transaction
++  immediately removes snapshots and ordinary report records, adding only bounded minimal
++  `dismissedSpam` receipts (24 hours, max100, oldest may expire early). No ranking/block
++  mutation and no deletion of genuine reports to make room. Already-dismissed IDs are
++  idempotent, mixed invalid/resolved IDs reject the whole operation before mutation.
++  After receipt expiry a stale command finds no report and cannot affect a new report
++  with another UUID; all current ownership/state checks rerun on conflict.
+ - `remove --entry-id UUID --operation-id UUID`: owner-initiated removal with tombstone.
+ - `show-block --installation-hash HASH`: private read of the current blockId for a fresh preview.
+ - `unblock --installation-hash HASH --expected-block-id UUID --operation-id UUID`: explicit unblock, never
+   removes tombstones; hash is private moderation identity, not a raw credential.
+   Mismatched blockId fails409 `block_changed` without mutation, preventing an old
+   unblock replay from lifting a newer block. Missing block is already-unblocked.
+-- `purge-expired`: delete closed reports after 30 days and expired audit; never
+-  purge pending reports, active blocks or removal guards.
++- `purge-expired`: same purge logic as the hourly/startup worker and pre-mutation
++  cleanup: ordinary closed reports30d, spam receipts24h, audit30d, backups24h. Never
++  purge genuine pending reports, active blocks or removal guards. Receipt GET treats
++  expired records as absent without writing. Record oldest overdue age as a count/time
++  metric with no content. Worker uses MI/ETags, pauses for migration maintenance;
++  verify PROD Always On and recover missed cleanup on startup. Outages delay physical
++  deletion beyond the normal one-hour bound, explicitly disclosed in privacy/evidence.
+ - `migrate --expected-etag ETAG`: validate/convert schema 1 using conditional replace,
+   or verify already-migrated schema 2 and exit without rewriting it.
+ 
+@@ -108,7 +131,10 @@
+ storing raw snapshots or report content in ordinary command logs.
+ 
+ Owner routine: inspect/acknowledge every working day, resolve by the same local clock time on the next
+-Monday–Friday day in Europe/Copenhagen; purge and check guard/byte counts. A rehearsal
++Monday–Friday day in Europe/Copenhagen; check automatic cleanup lag and guard/byte counts.
++Bulk-dismiss confirmed spam to restore admission when the queue is full; support contact
++remains available during a flood. Anonymous attackers can mint credentials: this remedy
++is bounded owner recovery, not guaranteed resistance to sustained Sybil denial of service. A rehearsal
+ must show a real owner queue read/acknowledgement, a disposition within that target,
+ and the reporting installation's status read. Saving a report without owner receipt
+ is not successful delivery. Public contact remains available when reports fail.
+@@ -122,19 +148,26 @@
+    migration; v1 POST is already 426. Record supported storage schema in the release
+    manifest and enforce it in PROD promotion/rollback checks.
+ 3. Before each migration, record target resource identity, current schema/ETag,
+-   count and sequence evidence privately; inspect a validated recoverable backup.
++   count and sequence evidence privately; verify versioning/soft delete/backups policy.
++   Create/inspect one MI-owned private pre-migration copy with 24-hour expiry, after
++   writers are quiescent in step4 and before conversion. Worker deletes on expiry;
++   delete immediately after verified success. Never export to workstation/CI logs.
+    Keep the same Blob key and existing workload resources. Never use a missing or
+    invalid live Blob as permission to replace it with an empty list.
+-4. Deploy the verified schema-aware artifact, then stop ONLY the target game's API
+-   app to quiesce all old/in-flight writers. Do not stop/resize the shared plan or its
+-   neighboring app. Verify stopped state and allow the existing <=6s operations to
+-   finish/cancel before the migration command. Short API downtime is explicit; local
+-   gameplay must remain usable. Do not deploy to a stopped app or assume slot support.
++4. Enable `Moderation__Maintenance=true` only on this game's app, deploy the verified
++   schema-aware artifact and restart this app to terminate old workers. This mode
++   keeps HTTP validated reads/SSH running but rejects every public write with503 and
++   pauses background mutations; v1 POST remains426. Verify running artifact/config
++   on every configured instance, no old workers, and wait for the <=6s in-flight
++   deadline before backup/migration. Operator migration alone may mutate during this
++   gate. Never stop/resize the shared plan/neighbor; no deployment slot assumption.
++   Missing proof of quiescence blocks migration. Local gameplay remains usable.
+ 5. Owner-authorized operator mode conditionally converts the current schema-1 Blob
+    to schema 2, preserving IDs/name/score/timestamps/sequence and marking old real
+    rows `legacy` (no installation hash). Starter IDs remain reserved/unclaimable.
+    Lost acknowledgement: inspect current schema/data before retrying; no reset.
+-6. Restart this API and verify current artifact/schema, GET and new credentialed
++6. Verify schema/migration and remove the backup, then clear maintenance/restart only
++   this API and verify current artifact/schema, GET and new credentialed
+    publication using only test-owned results. Rehearse in DEV before PROD. Existing
+    byensgaader apps must pass before/after availability checks; update cost/capacity
+    evidence and immutable DEV-to-PROD artifact identity.
+--- round1/specs/002-app-store-release/contracts/ios-release-flow.md
++++ specs/002-app-store-release/contracts/ios-release-flow.md
+@@ -58,9 +58,14 @@
+ 
+ 1. Check existing store device-support history before changing app target to device
+    family 1. Do not silently expand native iPad scope if narrowing is disallowed.
+-2. Release always resolves the PROD HTTPS backend; preserve Local/DEV/PROD schemes
+-   for development, loopback exception in Debug only, and compile out fixture origins,
+-   synthetic run controls and development launch arguments.
++2. Distributable `Release` always resolves the PROD HTTPS backend; preserve existing
++   Local/DEV/PROD development schemes. Add non-distributable `AppStoreCapture` simulator
++   configuration/scheme with Release optimizations and no DEBUG, test flags, synthetic
++   run controls or development launch arguments. Its sole product-setting difference
++   is HTTPS base URL `https://donkeytrump-api-d.azurewebsites.net/capture` (isolated
++   dataset defined in store contract). Enforce simulator-only build and archive/export
++   rejection for AppStoreCapture; distribution validation requires Release + exact
++   PROD URL and no capture host/path. HTTP loopback exceptions stay Debug-only.
+ 3. Add privacy/support URL configuration and validate HTTPS/live anonymous access.
+    Keep both links reachable from title/help and Game Over/report error paths.
+ 4. Audit required-reason APIs/dependencies, include a correct app privacy manifest
+--- round1/specs/002-app-store-release/contracts/store-release.md
++++ specs/002-app-store-release/contracts/store-release.md
+@@ -52,12 +52,44 @@
+ Capture at an accepted native larger-iPhone landscape resolution (research baseline
+ 2868×1320, 2796×1290 or 2736×1260 for 6.9-inch). Record exact simulator/model/OS/source.
+ No stretching iPhone 13 captures, fake gameplay, debug controls or real-user names.
+-Media source build must match release source/features/settings except a documented
+-isolated DEV origin for controlled data. Final image pipeline validates dimension,
++Media source build must match release source/features/optimizations except the explicit
++AppStoreCapture HTTPS base URL and simulator platform. See isolation procedure below. Final image pipeline validates dimension,
+ orientation, opaque JPG/PNG, order and caption legibility, retains unedited captures
+ and outputs a checksum manifest. Review actual pixels at intended size. Icon must
+ match candidate asset catalog, current format requirements and truthful branding.
+ Optional video and native iPad assets remain outside scope.
++
++## Concrete screenshot isolation
++
++Create `AppStoreCapture` configuration/scheme based on Release compiler/optimization
++settings, no DEBUG/test launch parsers or injected UI/game state. Set base URL to
++`https://donkeytrump-api-d.azurewebsites.net/capture`; normal `/api/v2/...` path composition
++then uses `/capture/api/v2/...`. A build-phase check requires iphonesimulator SDK for
++this configuration; archive/export validation additionally requires configuration
++Release, exact PROD origin and no capture path. CI tests both valid capture build and
++rejected device/archive capture configuration. The upload manifest records only the
++separately validated Release archive. Capture is not a distribution exception.
++
++The existing DEV API conditionally maps the same v2 handlers under `/capture`, with a
++separate store bound to `highscores-capture` container on donkeytrumpd. It must never
++fallback to the normal DEV/PROD container. Enable only when deployment inventory,
++WEBSITE_SITE_NAME=donkeytrump-api-d and storage account all match DEV; enabling in PROD
++fails startup and PROD contract tests require capture routes404. Ordinary DEV routes
++and data remain untouched. Give only DEV MI the additional container-scoped permission;
++no account-wide role/new compute service. Same validation/ranking/moderation/ETags apply.
++
++Operator `capture-seed --target dev --dataset capture --apply` inside DEV App Service
++initializes or replaces only this disposable capture dataset with approved synthetic
++names/low scores and schema2 state. It refuses other targets/containers and records
++fixture checksum, not secrets. This explicit owned-fixture command is the sole reset
++exception; all normal/live missing-state rules stay unchanged. Any capture test scores
++are synthetic and never promoted or copied to live stores. Preserve snapshot/content
++identity for the capture session, inspect every visible row, and reseed if unapproved
++entries arrive (route remains publicly reachable). Image acceptance requires the actual
++pixels contain only approved synthetic names, regardless of fixture seed evidence.
++After capture, disable the DEV-only route and delete the capture dataset using MI;
++include this small additional storage/operation cost in estimates. Tests assert route,
++container and credential separation, no fallback and no ordinary DEV data changes.
+ 
+ ## Public pages, privacy and territory declarations
+ 

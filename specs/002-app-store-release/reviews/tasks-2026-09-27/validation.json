@@ -1,0 +1,30 @@
+{
+  "base_commit": "05238815a11e55650f459cd469856afcd5d99094",
+  "actual_branch": "main",
+  "feature_pointer": "002-app-store-release",
+  "task_count": 65,
+  "per_story": {
+    "US1": 6,
+    "US2": 36,
+    "US3": 4,
+    "US4": 3,
+    "US5": 4
+  },
+  "shared": 12,
+  "parallel": 12,
+  "checks": [
+    "All65 lines match checkbox/ID/optional P/story/path format",
+    "IDs consecutive unique, all task references resolve, phase/story labels correct",
+    "Local markdown links and fences valid; no extension hooks file",
+    "Source inventory confirms existing paths and identifies planned new files",
+    "26FR/10SC and all5 story scenario coverage; phase2 shared evidence before stories",
+    "No dependency cycle: rights shared foundation, capture source before freeze, US2 owns upload+physical, US3 reuses tested build",
+    "git diff --check PASS",
+    "After TR01-TR06 remediation: IDs/references/local links/context hashes unchanged; git diff --check PASS; explicit pre-draft gates and authorization, early presence-only MI probe, pre-PROD runbook, test unblock cleanup, unperformed physical lost-ack stays blocked."
+  ],
+  "limitations": [
+    "No implementation/build/device/cloud/browser/store operation performed in task generation",
+    "No task marked complete; existing source spec/plan/review evidence preserved",
+    "External owner/account/rights/signing/hardware/cost facts are implementation gates"
+  ]
+}

@@ -1,0 +1,1222 @@
+--- /dev/null
++++ specs/002-app-store-release/plan.md
+@@ -0,0 +1,180 @@
++# Implementation Plan: App Store Release Preparation
++
++**Branch:** `main` (existing Git branch; feature pointer `002-app-store-release`)
++**Date:** 2026-09-27 | **Spec:** [spec.md](spec.md)
++**Input:** `specs/002-app-store-release/spec.md`
++**Status:** Phase 0 research and Phase 1 design. No implementation/deployment/store
++submission is performed by this plan. Task generation is the next command.
++
++## Summary
++
++Prepare a complete iPhone-only, free English App Store version with truthful artwork,
++a tested signed candidate, working privacy/support and public-name safeguards. Save
++and validate it in the owner's Chrome App Store Connect session, leaving an unsent
++draft and manual release. The owner submits to Apple and releases after approval.
++
++Reuse the native 3D app, existing .NET API, DEV/PROD pipelines and shared Azure plans.
++Extend the single private Blob with conditional moderation transactions, installation
++credentials, reports and operator CLI mode. Preserve startup/progress/music, clear
++name entry, minimum-ten/top-100 rankings and offline play already implemented under
++separate authorizations. Historical evidence is a baseline, not release acceptance.
++
++## Technical Context
++
++**Language/Version:** Swift 5 language mode, Xcode 27/iOS 26+; C#/.NET 10 (SDK10.0.401).
++**Primary Dependencies:** SwiftUI, SceneKit, AVFoundation, URLSession, Security random
++bytes/file protection; ASP.NET Core built-ins, Azure.Storage.Blobs12.29.2,
++Azure.Identity1.21.0; existing GitHub Actions OIDC deployment tooling. No new hosted
++service, database, account system, tracking SDK, frontend framework or mail provider.
++**Storage:** device local best/settings and protected installation secret/receipt IDs;
++one private schema-versioned Blob aggregate with ETags (Azure version history disabled); static HTML bundled with API;
++local versioned release artifacts and private owner evidence where sensitive.
++**Testing:** Swift Testing, XCTest/XCUITest, xUnit/Azurite, Python pipeline/asset/contract
++checks, physical iPhone13 via internal TestFlight, labelled iPad simulator compatibility.
++**Target Platform:** native landscape iPhone iOS26+, existing Linux App Services/Blob,
++owner's Chrome Connect session. No native iPad/Mac/Vision Pro release scope.
++**Project Type:** native mobile app + small API + documentation/static support pages.
++**Performance Goals:** no backend/audio startup gate; preserve fixed120Hz simulation and up-to120fps requested presentation, profile actual
++iPhone13 pacing, and retain <100ms added latency across 100 start/restart attempts; app network deadlines <=8s, backend
++operation<=6s/network<=2s, <=5 conditional attempts, no SDK/application upload retries.
++**Constraints:** DKK100/month including VAT incremental operation; keep shared plan
++tier/scale and unrelated apps; no login, no deferred uploads, no agent Apple submission.
++**Scale/Scope:** top100, minimum10 successful-list entries, bounded 1MiB moderation
++aggregate and caps in the data model; small-launch costing baseline 1,000 GET/100
++POST per day across environments, refreshed for new report traffic and diagnostics.
++
++## Constitution Check
++
++Constitution v1.0.0. Pre-research gate: PASS at design boundary; no exception needed.
++Existing implementation gaps are explicit work, not claims of current compliance.
++
++| Principle | Before research | Post-design evidence/gate |
++|---|---|---|
++| I — Native iPhone/offline | Preserve app/sound/accessibility and optional async backend. | iOS contract keeps loading/play independent; report/score deadlines and navigation; physical both-landscape/VoiceOver/audio checks gate readiness. |
++| II — Simple ownership | Existing UI/main actor, engine/render loop and API/store boundaries. | Protected credential and report coordinator; one API/aggregate; same executable operator mode, no admin web service. |
++| III — Data integrity | Existing ETag design; removal/block requires atomic extension. | Single conditional mutation rechecks bans/tombstones; bounded failure, no score replay; migration and schema-aware rollback preserve guards. |
++| IV — Content/data | Originality and truthful privacy remain gates; owner removed dialog reminder only. | Existing help explanation retained/tested, real privacy link, provenance/rights and actual data inventory before declarations; credentials private; operator Blob access via app MI inside App Service, human Entra only for control-plane SSH. |
++| V — Evidence | Simulator and dated deployment records are baselines only. | Exact processed build physical checks, media/readback identity, source/check records and independent review before completion. |
++
++Post-design gate: PASS for the planned approach. Runtime/store gates remain UNEXECUTED;
++no physical acceptance, signed archive, account declaration or Connect state is asserted.
++Any discovered constitutional or unresolved material product conflict blocks dependent
++implementation until a compliant design or explicit amendment exists. No waiver here.
++
++## Project Structure
++
++```text
++specs/002-app-store-release/
++├── spec.md
++├── plan.md
++├── research.md
++├── data-model.md
++├── quickstart.md
++├── contracts/
++│   ├── moderation-api.md
++│   ├── ios-release-flow.md
++│   └── store-release.md
++└── tasks.md                  # future speckit-tasks output, not created here
++
++src/DonkeyTrump3D/
++├── App/                     # Release launch flags, existing lifecycle
++├── Highscores/              # v2 credential/report service and coordinator
++├── UI/                      # report/status/support/privacy flows
++└── Resources/               # privacy manifest, existing cover/music/icon
++src/DonkeyTrump3DTests/       # existing Swift targets, new credential/report cases
++src/DonkeyTrump3DUITests/     # existing UI targets, report/accessibility/regressions
++src/Configuration/           # existing environment configs + public page URLs
++src/backend/
++├── Highscores/              # schema2 ranking/store/validation
++├── Moderation/              # planned policy, report/domain and operator command mode
++└── wwwroot/                 # planned accessible support/privacy HTML
++src/backend.tests/           # schema/race/migration/operator/API tests
++src/scripts/                 # existing release tools + planned local smoke/media checks
++infra/                       # existing resource inventory/budget, no new App Service Plan
++.github/workflows/           # extend existing backend CI/DEV/PROD artifact promotion
++docs/releases/app-store/    # future release packages, non-secret evidence only
++```
++
++**Structure decision:** extend existing targets; a DEV-only capture container and isolated
++route group reuse the DEV service to isolate synthetic media data without touching real rows; operator CLI is a mode of the same
++backend executable sharing its validated mutation code. No additional deployable API
++or operator authentication endpoint. Sensitive owner documents stay outside Git.
++
++## Phase 0 — Research decisions
++
++[research.md](research.md) records decisions/rationale/alternatives, current official
++Apple/Microsoft references, code gaps, bounded storage/retention and unknown account
++facts as execution gates. Required skill research agents examined backend moderation
++and iOS/Apple requirements independently; their findings were consolidated by lead.
++No unresolved design clarification remains. Supported Chrome bootstrap failed before
++browser selection; actual account state was not read. This is an execution prerequisite,
++not a missing product choice or permission to fabricate facts.
++
++## Phase 1 — Design and dependency order
++
++1. **Inventory and private input register:** actual account/app/history/signing,
++   rights/contact/trader facts, physical device, Azure inventory/cost baseline. Resolve
++   missing owner facts together after discovery. Probe DEV SSH and harmless aggregate
++   metadata read via app MI early; a missing supported MI context blocks operator-dependent
++   work, never permits token/environment extraction or human Blob credential fallback.
++   Independent code/copy work continues.
++2. **Backend safety foundation:** schema2, canonical credential ownership, filtering,
++   ETag-atomic reports/removal/block, bounded capacities/retention and shared operator
++   mode. Add migrations and explicit v1 writer retirement; establish rollback floor.
++3. **iOS and public pages:** v2 publication/report/status flows, protected credential,
++   privacy/support links and pages; release argument/fixture isolation, manifest,
++   iPhone-only configuration after history check. Preserve reviewed UX/audio behavior.
++4. **Integration and operator rehearsal:** deterministic local tests, DEV migration
++   and concurrency/lost-ack cases, real owner daily report workflow. Extend existing
++   pipelines/manifest/schema checks, then authorized PROD promotion with neighboring
++   app health/cost/capacity evidence. Never reset a live ranking for a test.
++5. **Release package:** truthful editable listing/media and rights/declaration matrix;
++   signed archive/normal upload/internal TestFlight, exact-build physical checks,
++   iPad compatibility smoke. Refresh affected package parts when candidate changes.
++6. **Connect completion:** save/read back fields/images/build, eligible free territories,
++   manual release, validated unsent draft. Stop before owner's submission/release.
++   Independent review applies after completed scoped implementation/checks.
++
++Detailed decisions/contracts: [data model](data-model.md),
++[moderation/API/migration](contracts/moderation-api.md),
++[iOS flows](contracts/ios-release-flow.md), [store/handoff](contracts/store-release.md).
++Validation instructions: [quickstart.md](quickstart.md).
++
++## Requirement-to-design coverage
++
++| Spec requirements | Design / acceptance owner |
++|---|---|
++| FR001,018–023 | Store contract identity, Chrome readback, unsent state/resumption and independent review. |
++| FR002,011,016 | iOS release boundaries, signing/internal TestFlight identity, physical/iPad compatibility matrix. |
++| FR003–006 | Store copy/media provenance, native captures and rights/territory research. |
++| FR007–010,017 | Public pages/data inventory, genuine contact, truthful declarations and eligible free territories. |
++| FR012–013 | Shared-resource/cost gate, existing CI/DEV/PROD artifacts, live/race/failure checks. |
++| FR014–015 | Credential, filter/report/operator, bounded aggregate/retention/migration contract. |
++| FR024–026 | iOS contract startup/music/name-entry/min-ten regression gates; retain earlier accepted choices. |
++| SC001–010 | Quickstart scenarios plus per-candidate store/iOS/operator evidence; not satisfied by plan existence. |
++
++## Risks and execution gates
++
++- Browser connection currently fails during supported bootstrap; retry without session
++  extraction or changing browsers. Missing organization/history/role/agreements/signing
++  blocks related external actions. No repeated permission for already authorized work.
++- Real rights/trader/contact facts and moderation privacy answers need actual evidence;
++  do not silently rename/disable advertised features or claim legal clearance.
++- Single-Blob growth is bounded with moderation reserve; capacity exhaustion is an
++  honest service limitation needing operator action, never guard eviction/data reset.
++- Anonymous secrets are not hardware attestation. Legacy rows cannot gain retrospective
++  attribution; credential-free writes retire before new release. Describe both limits.
++- Schema2 requires migration-aware recovery. Old schema1 builds/data snapshots cannot
++  safely be restored after moderation starts. Quiesce only this game's API.
++- Shared plan/cost evidence must be refreshed; no extra tier/scale/budget without the
++  already specified separate owner decision. Public report storage/rate controls are
++  not guarantees against malicious cost or all offensive names.
++- Physical iPhone13 and genuine owner moderation participation cannot be fabricated.
++  Missing gates block readiness but not remaining independent preparation.
++
++## Complexity Tracking
++
++No constitution exception. The extra protocol version and operator mode are justified
++by installation blocking, atomic removal and anonymous owner-operated reports. Their
++simpler alternatives (credential-free writes or raw ad-hoc Blob editing) cannot retain
++these guarantees. Future task decomposition belongs to `speckit-tasks`.
+--- /dev/null
++++ specs/002-app-store-release/research.md
+@@ -0,0 +1,236 @@
++# Release planning research — 2026-09-27
++
++This is design research, not executed release evidence. Repository inspection and
++official Apple/Microsoft documentation informed these decisions. The plan skill's
++research helpers inspected backend and iOS/store concerns independently; the lead
++owns the consolidated design and cross-vendor review.
++
++## 1. Extend the existing native app and service
++
++**Decision:** retain Swift/SceneKit/SwiftUI, iOS 26+, the existing .NET 10 Minimal API,
++Azure SDKs and private Blob Storage. Serve `/support` and `/privacy` as static HTML
++from the existing PROD API origin, without cookies, analytics or another hosting bill.
++Use the deployed DEV/PROD resources in `infra/backend-environments.json`.
++**Rationale:** current source already implements ranking, deadlines, conditional
++writes and deployment promotion. The missing release scope is moderation, public
++pages, candidate hardening, evidence and Connect preparation.
++**Alternatives:** another database, admin web app, mail service or new App Service
++Plan add operation/cost without being necessary for this first release.
++
++Current source: .NET SDK 10.0.401 (`global.json`), net10.0, Azure.Storage.Blobs
++12.29.2 and Azure.Identity 1.21.0. Swift 5 language mode under the installed Xcode
++27 toolchain. These are repository baselines, not claims that patch releases never
++change; restore and check supported servicing before implementation.
++
++## 2. Anonymous installation credential
++
++**Decision:** the official app generates one 256-bit cryptographic random secret,
++stored atomically in protected Application Support, excluded from backup. Reuse it
++across runs, upgrades and relaunches; uninstall may clear it. A corrupt existing file
++fails publication closed rather than silently minting another identity. No account,
++registration request, hardware ID, IDFA or tracking service. The server fingerprints
++the secret with SHA-256 and stores only the fingerprint alongside attributed rows,
++reports and blocks. The raw secret is sent only in the HTTPS Authorization header
++for v2 publication/report routes, never URLs, public responses, logs or screenshots.
++**Rationale:** the blocked official installation cannot change its name or run ID to
++bypass a block. Startup/local play need not wait for registration or connectivity.
++**Alternatives:** a client-chosen public UUID is not a possession credential; a
++server-issued token adds issuance/key management but alone does not prevent a
++modified client requesting a new identity. Keychain persistence across uninstall
++is unnecessary for the agreed scope.
++**Limit:** modified clients can mint new secrets without reinstalling. This is
++installation-scoped abuse friction, not hardware identity or proof of genuine play.
++
++## 3. Atomic moderation in the existing Blob
++
++**Decision:** schema 2 of the existing `highscores/global-v1.json` Blob contains the
++ranking, removed-ID tombstones, blocked fingerprints and bounded reports. The old
++filename is retained intentionally to avoid two divergent authoritative stores.
++Every mutation reads, validates, computes and writes with the same ETag; a conflict
++rereads and recomputes all ranking/block/removal checks. GETs never write. Keep the
++existing six-second operation deadline, two-second network timeout, at most five
++conditional attempts and disabled SDK retries.
++**Rationale:** a separate ban Blob permits a submit already reading an old ban state
++to commit after a block. Removal without a tombstone permits replay resurrection.
++Microsoft documents [ETag conditional writes and conflict rereads](https://learn.microsoft.com/en-us/azure/storage/blobs/concurrency-manage).
++**Alternatives:** leases or a transactional database can serialize the work but add
++unnecessary coordination for this small list. Unconditional writes are rejected.
++
++## 4. Retention and capacity are explicit
++
++**Decision:** retain only removed submission IDs until service retirement, and active
++blocked fingerprints until explicit unblock or service retirement. Keep pending
++reports until disposition; retain closed report content/receipt and operator audit
++for 30 days of logical access, then automatically purge as specified below. No indefinite offensive
++name retention merely to enforce a block. Aggregate max 1 MiB, max 100 ranked entries,
++4,096 tombstones, 1,024 blocks, 100 pending reports, 1,000 total report records and
++500 audit records. At 3,800 tombstones or 800 blocks stop accepting NEW score runs;
++keep enough reserve to moderate every remaining row, unresolved report snapshot and the finite starter catalog.
++Admission must also reserve 64 KiB below the byte cap for safety mutations. Tests
++must prove the reserve against maximum validated field sizes. Never evict guards.
++At report/audit capacity, reject new report/optional audit-growing actions honestly;
++mandatory remove/block/resolve can compact expired audit and omit nonessential audit
++history if necessary, with the guard/state change itself retained. Do not erase a
++genuine pending report or an unexpired ordinary receipt just to admit more traffic.
++Explicit owner classification of spam permits immediate private-snapshot removal and
++a 24-hour minimal dismissedSpam receipt, then automatic purge; bounded bulk handling
++restores admission without waiting 30 days.
++**Rationale:** reusable random submission UUIDs make finite tombstone expiry unsafe.
++This bounded small-service choice fails honestly before growth damages integrity.
++**Alternatives:** expiring run identities require a different public protocol;
++unbounded guard history or silent expiry is not acceptable. Future sharding/epoch
++migration is an explicit capacity project, not a fallback during a write.
++
++Automatic expiry is enforced on receipt reads (expired records return404, without
++writing) and by purge-before-mutation plus an hourly/startup ASP.NET background worker
++in this existing service. Physical removal is due within one hour of expiry while
++service/storage are available; outages delay deletion until recovery. PROD Always On
++and observed cleanup lag gate readiness; DEV sleeping behavior is recorded honestly.
++The worker uses managed identity and the same ETag/deadline rules, never removes guards
++or unresolved genuine reports, and pauses during migration maintenance.
++
++Read-only management-plane inspection on 2026-09-27 found both donkeytrumpd/donkeytrumpp:
++blob soft delete enabled=false; versioning, container delete, restore and change feed
++unset. Keep versioning, soft delete and App Service content backups of player data
++disabled; recheck actual policy/history/backup destinations before release. Do not
++change shared/unrelated settings silently. No application response/body logs or local
++persistent copies of the aggregate. One private pre-migration Blob backup is allowed
++per target under `release-backups/`, with UTC expiry 24 hours after creation. Operator
++migration mode creates/verifies it with MI, and deletes it after successful validation;
++the worker also deletes expired backups hourly/on startup. No general daily data
++backup is introduced. Set a prefix-scoped Azure lifecycle delete rule after one day
++as a secondary cleanup safeguard, not a precise deletion clock. Backup age/cleanup
++lag is monitored; outage exceptions and this extra recovery-copy period appear in
++privacy/cost evidence. Inspect any historical versions/deleted copies/exported backups
++before claiming the policy; unknown old copies block that claim. Never restore an old
++snapshot over current moderation guards. Hard instantaneous physical erasure cannot
++be promised during a cloud outage.
++[Soft-delete retention](https://learn.microsoft.com/en-us/azure/storage/blobs/soft-delete-blob-overview)
++and [lifecycle management](https://learn.microsoft.com/en-us/azure/storage/blobs/lifecycle-management-overview)
++explain the storage-side behavior; lifecycle execution is asynchronous.
++
++## 5. Reports, filtering and owner operations
++
++**Decision:** a bundled server-side moderation policy normalizes a comparison copy
++of names (Unicode normalization, case folding, common separator/leet evasions) and
++rejects prohibited slurs/sexual/violent harassment terms in English and Danish.
++Keep the existing canonical stored display-name and scoring rules. Include regression
++examples for prohibited inputs, evasions and benign names; operator removal covers
++content automated filtering misses. Policy changes review existing rows explicitly.
++Players report an entry using a reason enum, no free text or contact collection.
++Reports snapshot the offending name and producer fingerprint for triage even if the
++row later falls out of the top 100. A private status receipt lets the reporter read
++the owner's disposition, without a public report feed or player account.
++
++The same backend executable gets an operator-only command mode run inside the target
++App Service container, using that app's scoped managed identity for all Azure Blob
++access. The owner enters via Azure control-plane-authenticated SSH; human Azure CLI
++credentials never access the Blob data plane. It reuses domain validation/ETag code
++and does not start another web server. No public admin API or additional credential. The owner
++checks the queue each working day, acknowledges and resolves reports within one
++working day; demonstrate actual receipt and disposition before readiness. Define a
++working day as Monday–Friday in Europe/Copenhagen, with deadline at the same local clock time on the next
++working day. A genuine support contact is the fallback during service/report failure.
++**Alternatives:** email-only reporting depends on mail setup and loses atomic entry
++context; a new admin website and notification service are unnecessary. A stored
++report alone is not proof of owner delivery or timely response.
++[App Service authenticated SSH](https://learn.microsoft.com/en-us/azure/app-service/configure-linux-open-ssh-session) and
++[ASP.NET rate limiting](https://learn.microsoft.com/en-us/aspnet/core/performance/rate-limit?view=aspnetcore-10.0)
++support existing identity/traffic controls; per-process limiting is not a billing cap.
++
++## 6. Explicit migration and compatibility floor
++
++**Decision:** keep GET `/api/v1/highscores` compatible, add credentialed v2 routes,
++retire v1 POST with 426. New code reads schema 1 only for migration/read compatibility
++and rejects v2 writes until schema 2 is installed. Deploy schema-aware code first,
++quiesce only this game's API, conditionally migrate the current Blob, then resume.
++Preserve every existing row and sequence; legacy rows have no fabricated producer
++identity. They remain removable, but cannot be retrospectively attributed/blocked.
++The old unauthenticated writer route is disabled, and new release submissions are
++attributed. Never allow a new credential to claim an existing legacy run.
++Rollback after migration requires a schema-2-aware build; never restore an old Blob
++snapshot that removes moderation decisions. Migration/rollback rehearsal in DEV
++precedes PROD. Exact procedure is in the moderation contract.
++**Alternatives:** opportunistic per-request migration and permanently dual writers
++increase race and rollback risk. Silent reset loses real scores and is forbidden.
++
++## 7. Store media and candidate identity
++
++**Decision:** five truthful English landscape screenshots for the currently required
++6.9-inch set; capture native 2868×1320, 2796×1290 or 2736×1260 using a matching simulator.
++The project's five-image choice is within Apple's 1–10 JPG/PNG, no-alpha limits.
++Recheck actual Connect slots; iPhone 13 alone is not the larger-set substitute.
++[Apple screenshot specifications](https://developer.apple.com/help/app-store-connect/reference/app-information/screenshot-specifications/).
++Use actual gameplay, control/intro variety and an approved synthetic DEV leaderboard;
++store images never include other players' data. Build capture code from the same
++source/features and Release optimizations using the explicit non-distributable
++AppStoreCapture simulator configuration and isolated DEV capture route/container
++defined in the store contract; no
++fake game scenes, debug overlays or screenshot-only product features. Document this
++configuration difference. Cover art may frame captures, not replace gameplay.
++
++**Decision:** upload a normal App Store-eligible signed archive, then use internal
++TestFlight on the owner's existing tester account for physical iPhone 13 acceptance
++of that processed version/build. Record source, archive checksum and Connect build
++ID, not an impossible byte identity for Apple's thinned device installation. Select
++that same build in Connect. Do not choose TestFlight Internal Only and do not use
++external beta groups (which may submit for beta review).
++[Distribution](https://developer.apple.com/documentation/xcode/distributing-your-app-for-beta-testing-and-releases),
++[internal testing](https://developer.apple.com/help/app-store-connect/test-a-beta-version/add-internal-testers).
++
++## 8. Platform hardening, privacy and truthful declarations
++
++**Decision:** after checking existing distribution history, target app device family
++1 only, retain iOS 26 minimum and both landscapes, disable optional Mac/Vision Pro
++availability. Add accessible privacy/support links and reporting UI. Guard the
++currently unconditional `-autopilot/-autostart/-iconShot/-introAt` parser from Release.
++Add `PrivacyInfo.xcprivacy` after auditing app/dependencies; UserDefaults currently
++needs the app-private-use reason CA92.1. Confirm archive inclusion and privacy report.
++[Required-reason API guidance](https://developer.apple.com/documentation/technotes/tn3183-adding-required-reason-api-entries-to-your-privacy-manifest).
++
++Inventory public handles/scores, installation fingerprints, reports, retention and
++actual platform diagnostics. Determine linked-data/privacy answers from those real
++relationships; no-login is not no-data. Explain public publication in existing help
++copy without restoring the removed dialog reminder. Audit export/encryption based
++on shipped code and actual questionnaire, then set the correct declaration; do not
++pre-fill a legal answer here. Assess original assets, public-figure depictions,
++reference-game resemblance and starter-character names, including owner-supplied
++cover/music provenance. A parody label or owner-provided file alone does not establish
++third-party permission. Concrete unresolved issues block the affected release gate.
++[App Review Guidelines](https://developer.apple.com/app-store/review/guidelines/),
++[privacy details](https://developer.apple.com/app-store/app-privacy-details/),
++[encryption](https://developer.apple.com/help/app-store-connect/manage-app-information/determine-and-upload-app-encryption-documentation/).
++These are release assessments, not legal conclusions or an Apple approval guarantee.
++
++## 9. Saved, validated and unsent Connect state
++
++**Decision:** complete required fields and eligible territories, select manual release,
++verify saved content by fresh read and create only an unsent draft. Stop before Submit
++for Review or any equivalent action. Do not wait for Pending Developer Release, which
++would require the owner's later submission/Apple approval.
++[Submission workflow](https://developer.apple.com/help/app-store-connect/manage-submissions-to-app-review/submit-an-app/).
++Check text limits against [version fields](https://developer.apple.com/help/app-store-connect/reference/app-information/platform-version-information/)
++(description 4,000 characters, promotional text 170, keywords 100 bytes). Do not invent
++owner identity, contact, copyright, trader status or licences. Record territory
++exclusions for unmet requirements (notably current China/Vietnam game documentation)
++and determine EU trader status from actual facts, not the free price.
++[App information](https://developer.apple.com/help/app-store-connect/reference/app-information/app-information/),
++[EU trader requirements](https://developer.apple.com/help/app-store-connect/manage-compliance-information/manage-european-union-digital-services-act-trader-requirements/).
++
++## 10. Resolved design choices vs execution prerequisites
++
++No unresolved architecture/product-choice marker remains. Actual Connect organization,
++app history, internal tester eligibility, signing, owner contact/legal facts, asset
++rights evidence, committed Azure baseline and hardware availability are explicit
++execution gates in the store contract. Discover available account/project facts first,
++then bundle only missing owner facts into one request; continue independent work.
++
++A Chrome-skill read-only connection attempt during planning failed before browser
++selection with `Importing module "node:process" is not allowed in node_repl`. It
++establishes neither a missing extension nor expired login. No account page was read,
++no session secret extracted and no alternate browser used. Retry the supported
++Chrome connection during execution; this blocks Connect verification, not this design.
++
++The owner subsequently confirmed being signed into Connect in Chrome. A fresh retry
++returned the same pre-selection runtime error. Login is owner-reported; organization,
++app and permissions remain unverified by the agent. Repeated sign-in is not requested.
+--- /dev/null
++++ specs/002-app-store-release/data-model.md
+@@ -0,0 +1,134 @@
++# Release and moderation data model
++
++Design only; new schema and fields are not implemented by this planning command.
++Existing ranking/name/score/tie validation remains defined by
++[001 specification](../001-global-highscores/spec.md) and its contracts.
++
++## Installation credential (device only)
++
++- `secret`: 32 random bytes, base64url without padding on the wire (43 characters).
++- Protected atomic file in Application Support, excluded from backup; never UserDefaults,
++  screenshots, diagnostics, URLs or source control. Create once when missing, keep through
++  app upgrades, fail online writes if an existing file is unreadable/corrupt. Local play
++  and public GET remain available. No silent rotation to bypass a block.
++- Server `installationHash = lowercaseHex(SHA256(decodedSecret))` (64 hex characters).
++  Possession scopes own reports; it is neither a player account nor hardware attestation.
++- Local report receipts contain only report IDs/time/status, max 20, removed after
++  expiry/404 and on uninstall. They enable explicit read-only status checks, never an
++  upload queue. Pending score/name payloads are never persisted for later publication.
++
++## HighscoreDocument schema 2 (one private aggregate)
++
++Same `highscores/global-v1.json` Blob key, `schemaVersion = 2`.
++
++| Field/entity | Required content and invariants |
++|---|---|
++| Existing ranking metadata | Existing monotonic sequence, schema and validation; preserve v1 tie order and IDs on migration. |
++| `entries` | At most 100 stored rows. Existing run/name/score/level/timestamp/sequence plus `origin` (`installation`, `legacy`, `starter`) and nullable `installationHash`. Only installation rows require a hash. None of this extra metadata enters public ranking DTOs. |
++| `removedSubmissionIds` | Unique UUID tombstones; never appear in ranking or generated starter projection. Removed IDs cannot be resubmitted, even with another credential. |
++| `blockedInstallations` | Unique hash, blocked UTC timestamp and random `blockId` identifying this block instance. Keep that ID if already blocked; generate a fresh one on a later re-block. Blocks publication under every chosen name/run on that official installation; public read, reporting and local gameplay remain available. |
++| `reports` | Stable report ID, reporter hash, entry ID, reason enum, server-created time, snapshot of offending display name and nullable producer hash/origin, status, acknowledgement time, resolved time, disposition code and resolvedOperationId. Snapshot supports triage after rank eviction. |
++| `operatorAudit` | Operation ID, action enum, server time, affected counts; no secret, offending name or raw body. Kept only for short operational trace. |
++
++Report reason: `offensiveName`, `impersonation`, `personalInformation`, `other`.
++No free-text report or email/phone field. Display-name snapshot has the same validated
++bound as a ranked name. Report ID is nonzero UUID; duplicate same-ID same-reporter
++same-entry/reason returns the original receipt, never changes the snapshot/timestamp.
++Conflicting reuse fails. Private reports are never returned in public highscore GET.
++
++## State transitions and authority
++
++- Publication: credential → validate/filter → read → check block/tombstone/ownership →
++  rank → conditional commit → ranked/notQualified. A conflict repeats ALL checks on
++  fresh state. A block committed first prevents that installation's later conditional
++  submission; a submitted row committed first can then be removed by moderation.
++- A run already ranked under a different hash (or legacy/starter origin) cannot be
++  claimed by a new credential. Same run/hash and unchanged payload is idempotent
++  while ranked; changed payload conflicts. The prior scope does not gain indefinite
++  deduplication for merely evicted, never-moderated runs.
++- Report: new → pending → acknowledged → resolved (`removed`, `removedAndBlocked`,
++  `noAction`, `legacyRemoved`, `starterRemoved`, `dismissedSpam`). Acknowledge records owner receipt;
++  resolve contains a fixed explanatory disposition visible only to the reporter.
++  A report about a no-longer-ranked unknown entry returns not-found; an already
++  accepted snapshot remains actionable if its row subsequently drops out.
++- Removal/block/resolve use one ETag transaction, including ID tombstone and optional
++  producer block. By default a block removes/tombstones all currently ranked rows of
++  that attributed installation, without affecting other rows. Legacy/starter reports
++  can remove but cannot invent an installation identity to block.
++- Every tombstoning mutation atomically resolves all unresolved reports for all entry
++  IDs it removes, with the same resolvedOperationId/time. Derive truthful dispositions
++  per snapshot: legacyRemoved/starterRemoved, or removedAndBlocked only if that snapshot
++  producer is blocked in the final state, otherwise removed. Do not alter previously
++  closed receipts or invent acknowledgedAtUtc; resolved without prior acknowledgement
++  is allowed. Duplicate tombstones are idempotent; an already-removed target still permits
++  closing an unresolved report. No-action/spam disposition affects only selected reports.
++- Unblock is an explicit owner operation requiring the currently expected blockId before removing the block hash; existing tombstones
++  remain. It never republishes a removed row. A stale unblock for an earlier blockId must fail
++  after a re-block, even if its old operator-audit receipt has expired.
++
++## Retention, limits and reserve
++
++| Data | Retention / maximum |
++|---|---|
++| Ranked name/result and producer hash | While ranked; snapshots in reports follow report retention. |
++| Removed ID | Until service retirement or a separately designed epoch cutover rejecting every earlier ID. |
++| Active block hash | Until explicit unblock or service retirement. |
++| Pending/acknowledged report | Until resolution; max 100 unresolved. Owner checks every working day. |
++| Resolved report including private snapshot and receipt | 30 days after resolution, then logically absent and automatically purged. Total unresolved + closed records max 1,000. Full capacity rejects NEW reports without deleting genuine accepted ones. |
++| Owner-classified spam | Remove snapshot/producer identity/reason immediately; keep only report ID/reporter hash/status/resolved time/operation ID for 24 hours, then expire/purge. Max 100 minimal spam receipts separately, oldest may expire early; 404 is honest expiry. This exception frees ordinary queue capacity immediately. |
++| Pre-migration backup | One private Blob per target, expires after 24 hours; deleted earlier after successful migration verification. No versioning/soft delete; no restore over live guards. |
++| Operator audit | Up to 30 days, max 500. Expired/oldest audit may be compacted for safety mutations; state/guards themselves are authoritative. |
++| Operational application diagnostics | Configure max 7 days, route/status/timing/count only; audit actual App Service/storage diagnostics and disclose provider retention separately before release. |
++
++Expiry is checked on every receipt read without a write. Every mutation purges expired
++closed reports/audit/spam receipts before recomputing; an hourly/startup worker handles
++idle periods and expired backup Blobs using MI/ETags. Deletion due within one hour while
++service/storage are available; outages defer to recovery and are recorded as retention
++exceptions. No report content in App Service backup/logs. Version history and soft delete
++stay disabled; inventory old versions/deleted copies/exported backups, confirm cleanup
++and capture actual retention/cost before release. Backup lifecycle rule is secondary,
++not a timing guarantee. See research for current management-plane observations.
++
++Max aggregate serialized UTF-8 size 1 MiB; max 4,096 tombstones/1,024 blocks. At 3,800
++removed IDs or 800 blocks, reject new score runs with a capacity error, keeping
++headroom for all current 100 rows, 100 unresolved report snapshots and a 32-entry starter catalog. Reserve 64 KiB
++below byte maximum for remove/block/resolve; byte admission tests use maximum allowed
++field sizes, not average rows. If guard capacity is reached, never evict guards or
++report a false success. Operator prioritizes safe removal/compaction and records a
++capacity blocker; read/local play remain usable whenever the ranking can be safely
++projected. No unbounded credential-partitioned rate limiter is introduced.
++
++Starter projection extends the reviewed low-score catalog to 32 vetted entries.
++It skips removed IDs and names rejected by current moderation policy. If eligible
++starters cannot maintain ten returned entries, removal still succeeds and the read
++fails honestly until the owner deploys a vetted replacement catalog; it must never
++resurrect removed content or silently return a successful undersized list.
++
++The disposable DEV capture aggregate uses the same schema in a separate
++`highscores-capture` container; it is never the authoritative DEV/PROD ranking. Explicit
++seed/reset is permitted only for that owned fixture; delete after media acceptance.
++Normal datasets cannot be selected through capture route/config overrides. The store
++contract defines all isolation and non-distribution gates.
++
++## ReleaseCandidate and evidence
++
++`candidateId`, Git revision plus dirty-content manifest if relevant, dependency locks,
++configuration fingerprint, version/build, bundle/team identity, archive checksum,
++Connect app/build IDs, deployment artifact SHA, actual supported devices and evidence
++references. Phases: sourceReady → automatedChecked → uploaded/processed →
++physicalValidated → draftValidated. Failure records the affected phase; it does not
++fabricate later transitions. Physical TestFlight installation maps to Connect build
++identity; Apple's thinned install need not match archive bytes.
++
++## Listing, media, declarations and readiness record
++
++- `StoreListing`: actual app/version/language, saved metadata, categories, free-price
++  schedule, territories/exclusions and verified public URLs.
++- `MediaAsset`: source capture checksum, candidate/configuration, native dimensions,
++  opaque output checksum, language/order/caption, provenance and observed remote slot.
++- `DeclarationEvidence`: field/question, answer, factual source, observation date,
++  owner-only fact/confirmation reference if required, expiry/recheck condition. Private
++  contact/legal documents stay in owner-controlled private evidence, not Git.
++- `ReleaseRecord`: phase status, check command/result/device/build, Chrome readback,
++  manual-release proof, unsent draft link, concrete blockers and safe next action.
++  No password/cookie/token/private name-report snapshot belongs in this record.
+--- /dev/null
++++ specs/002-app-store-release/quickstart.md
+@@ -0,0 +1,192 @@
++# Validation quickstart for App Store preparation
++
++This guide defines checks to run during implementation. Planning has not executed
++these release scenarios. Existing commands below work against today's baseline;
++new moderation commands/routes/scripts are explicitly **planned**, to be implemented
++from the contracts before use. No example authorizes resetting production data.
++
++## 1. Prerequisites and scope
++
++From repository root, use the pinned .NET SDK, Xcode 27 with iOS 26+ simulators,
++Azurite and the existing Local/DEV/PROD schemes. Check:
++
++```sh
++git status --short
++dotnet --version
++xcodebuild -version
++xcrun simctl list devices available
++```
++
++Preserve unrelated work. Select an actual installed iPhone 13 simulator UDID and a
++larger iPhone matching an accepted store resolution; do not assume a device exists
++from an old record. Physical iPhone 13, valid signing/account and internal TestFlight
++access are required later. New owner facts follow the store contract's input matrix.
++
++## 2. Existing baseline checks
++
++```sh
++python3 src/scripts/backend-release-tests.py -v
++HighscoresTests__UseAzurite=true dotnet test src/backend.tests -c Release
++xcodebuild -project src/DonkeyTrump3D.xcodeproj -scheme DonkeyTrump3D -showdestinations
++```
++
++Run Azurite first, as documented in `src/backend/README.md`; tests must use isolated
++containers and never PROD. Run iOS tests using the chosen UDID:
++
++```sh
++xcodebuild -project src/DonkeyTrump3D.xcodeproj -scheme 'DonkeyTrump3D Local'   -destination 'platform=iOS Simulator,id=ACTUAL_SIMULATOR_UDID'   -resultBundlePath /tmp/dt3d-release-validation.xcresult test
++```
++
++Replace the clearly marked device value; choose a fresh result path if it exists.
++Expected: affected Swift/backend/UI suites pass with actual counts recorded, not
++copied from historical review records. Include the planned moderation tests in
++these same targets; no separate pretend test harness is sufficient.
++
++## 3. Isolated local moderation integration (planned feature)
++
++Run the API and operator mode against one dedicated local container, never the
++ordinary local/dev ranking. `Highscores__ContainerName` is the shared local override
++for both processes; Azure target overrides are not allowed by operator mode.
++
++```sh
++export Highscores__UseAzurite=true
++export Highscores__ContainerName=highscores-release-validation
++ASPNETCORE_ENVIRONMENT=Development dotnet run --project src/backend --launch-profile http
++```
++
++Use localhost:5281 only after confirming that port is free or belongs to this test
++instance. Do not stop someone else's process. The planned smoke helper explicitly
++creates an owned schema-1 fixture in this dedicated container, invokes conditional
++migration and validates the result. `moderation list` is read-only and never initializes
++or migrates state. A missing live Blob is not permission to seed one.
++
++The implementation adds `src/scripts/release-moderation-smoke.py` for the following
++contract checks. It generates throwaway credentials internally, keeps them out of
++argv/logs, uses only an explicit loopback origin/container, and refuses Azure targets:
++
++```sh
++python3 src/scripts/release-moderation-smoke.py   --origin http://127.0.0.1:5281 --container highscores-release-validation
++```
++
++Expected assertions:
++- migrate a populated schema-1 fixture conditionally, preserve all real rows/ties;
++  corrupt/missing state is not replaced; repeated/lost-ack migration is safe;
++- v1 GET public shape unchanged, v1 POST426, v2 missing/malformed secret401;
++- two installation credentials publish independent scores; wrong-owner replay409;
++- prohibited name422 allows current-run correction; benign names accepted;
++- report → owner acknowledge → remove/block/resolve → same reporter status succeeds;
++  other credential cannot read receipt, report snapshot survives rank eviction;
++- multiple reporters on one entry and on a producer's other rows: direct removal or
++  remove-and-block closes all affected unresolved reports atomically with truthful
++  per-reporter disposition; preserves closed receipts and actual acknowledgement times,
++  frees pending capacity, and survives ETag conflicts/already-tombstoned targets;
++- blocked credential with a changed name/new run gets403; unblocked credential and
++  local gameplay still work; removed ID remains rejected even under another credential;
++- submit/delete/block races across independent store instances preserve bans, unrelated
++  ranking, order and guards; retry recomputes after ETag conflicts;
++- removed starter never reappears, approved replacement maintains ten returned entries;
++  depleted catalog causes honest unavailable response, never resurrection;
++- report/canonical-ID duplicates, lost acknowledgements, deadlines and stale responses
++  preserve honest state and never schedule a deferred POST;
++- stale unblock cannot lift a later re-block after audit expiry/compaction; matching
++  block instance unblocks without reviving tombstoned rows;
++- max field sizes, serialized-byte reserve and count boundaries retain ability to
++  remove/block/resolve every current row; fake-clock30d expiry is invisible on reads,
++  startup/hourly/opportunistic cleanup removes content while preserving guards/pending
++  genuine reports; storage outage defers cleanup honestly and recovery removes it;
++- fill pending/closed queues with controlled spam, bulk-dismiss only selected spam,
++  prove admission recovers, minimal receipts expire24h, guards/genuine reports survive;
++- migration backup expires24h, early success deletion works, maintenance pauses workers,
++  Azure policy checks detect unexpected versions/soft-delete/backup copies;
++- logs/public DTOs contain no credentials, producer hashes, names/bodies or report data
++  outside their explicitly intended public-name/owner interfaces.
++
++## 4. DEV → PROD rehearsal and deployment (implementation only)
++
++Use the existing backend CI, DEV deploy and PROD promotion workflows. Run the DEV
++checks/migration first with test-owned rows and the [migration contract](contracts/moderation-api.md).
++Record exact run IDs, artifact SHA, supported schema and rollback floor. Refresh
++`infra/backend-environments.json` against actual account state, scoped identity/RBAC,
++plan/tier/scale, storage and neighboring-app health. Only this game's API may be
++quiesced; preserve shared plan settings and other apps.
++
++Verify both public pages and current PROD configuration after deployment. Compare
++incremental cost assumptions (including moderation/report retention and bandwidth)
++against DKK100/month including VAT; record existing committed plan charges separately.
++Do not treat budget alerts as a hard cap. Retain before/after health/capacity evidence.
++No synthetic automated POSTs to PROD: production publication evidence uses an explicitly
++identified human-controlled test run and owner moderation of that test-owned result.
++
++Operator session uses Azure CLI only for control-plane SSH authentication:
++
++```sh
++az account show --query '{subscription:id,tenant:tenantId}' -o json
++az webapp ssh --resource-group Gulvet --name donkeytrump-api-d --subscription 6b6dcc04-7490-42ed-bedf-68f60946485e
++```
++
++Inside that verified DEV container, the **planned** read-only command is:
++
++```sh
++dotnet /home/site/wwwroot/DonkeyTrump.Highscores.Api.dll moderation list --target dev
++```
++
++Verify managed identity is the only Blob credential; cloud target execution outside
++that app must fail. No printenv/token extraction. Repeat through the PROD app only
++when appropriate; do not transfer DEV target flags. These checks make no data writes. Mutation command previews and explicit `--apply` follow the
++contract. For actual production reports, only authorized owner operations apply;
++never bulk-delete/reset the ranking as validation setup.
++
++## 5. Candidate, screenshots and distribution
++
++Build Release with the PROD scheme and inspect the archive before uploading:
++
++```sh
++xcodebuild -project src/DonkeyTrump3D.xcodeproj -scheme 'DonkeyTrump3D PROD'   -configuration Release -destination 'generic/platform=iOS'   -archivePath /tmp/DonkeyTrump3D-release.xcarchive archive
++```
++
++Requires actual signing access. Inspect embedded Info.plist (family1, iOS minimum,
++PROD HTTPS URL, truthful export metadata), icon, PrivacyInfo.xcprivacy and Xcode
++privacy report. Verify development arguments and fixture origins are absent/inert.
++Record archive checksum/source/config/version/build. Run archive validation through
++Xcode; no simulator build or ad-hoc code signature substitutes for this.
++
++Prepare five native larger-iPhone captures per required display set with the planned
++`AppStoreCapture` simulator scheme/configuration. Enable the isolated DEV `/capture`
++route group and seed only its `highscores-capture` container using the store contract;
++never reset normal DEV rows. Verify all visible names against the fixture before capture.
++Record source/config/dataset hashes. Test capture archive rejection, PROD route404 and
++unchanged normal DEV data; disable capture routes/delete its dataset after the session. The planned `src/scripts/validate-app-store-assets.py` validates final
++format/dimensions/opacity/order and prints a manifest; run it against the actual
++package directory after implementation. Inspect actual image legibility separately.
++Compare every caption/claim with the candidate and record rights provenance.
++
++Upload the App Store-eligible archive once through Xcode/authorized Apple tooling;
++check Connect before retrying interrupted uploads. Wait for processing, install that
++build through internal TestFlight and perform [iOS acceptance](contracts/ios-release-flow.md).
++No external beta group or review submission. Screenshots may use a release-equivalent
++simulator build; physical acceptance must reference the processed Connect build.
++
++## 6. Physical and operator acceptance
++
++Record device/OS/build/date for every journey in the iOS contract, including 15-minute
++play, both landscapes, large text/VoiceOver, silent switch/music/mute, offline start,
++actual online publication, failure/no replay, reports and support/privacy. For the
++one-working-day report target, the actual owner reads/acknowledges and dispositions
++an identified test report; the reporting installation retrieves the answer. Do not
++simulate owner participation by silently operating both roles and label it delivery.
++Run the labelled iPad compatibility-mode simulator smoke check separately.
++
++## 7. Connect readback and handoff
++
++Through supported Chrome access, reopen each saved area and compare all required
++metadata/declarations/territories, processed image order, selected tested build and
++manual release with the local package. Make an unsent draft only after all gates
++pass. Record zero validation errors and direct app/version/draft link.
++
++STOP before Submit for Review, equivalent sending actions or public release.
++The final owner action is submitting the complete version, later handling Apple's
++feedback and manually releasing. If a gate is missing, report its exact state and
++continue independent preparation; do not label the draft ready.
++
++Finish authorized implementation with passing checks and independent cross-vendor
++review/focused fixes per AGENTS.md. Planning approval is not that future code review.
+--- /dev/null
++++ specs/002-app-store-release/contracts/moderation-api.md
+@@ -0,0 +1,199 @@
++# Highscore moderation API, operator and migration contract
++
++Planned change. Public compatibility is deliberately bounded; existing 001 contracts
++still govern ranking, tie order, input validation and no deferred score uploads.
++See [data model](../data-model.md) for storage fields/retention.
++
++## Public routes
++
++| Route | Authentication | Request / successful result |
++|---|---|---|
++| `GET /api/v1/highscores` | Public | Existing snapshot unchanged: entries(entryId, rank, displayName, score), revision, fetchedAtUtc. No private fields. Read-only. |
++| `GET /api/v2/highscores` | Public | Same public snapshot schema and top-100/min-ten rules. |
++| `POST /api/v1/highscores` | None accepted | Always 426 `update_required`; no parsing/storage mutation that can bypass v2 safeguards. |
++| `POST /api/v2/highscores` | Installation secret | Existing strict submission body (`submissionId`, `displayName`, `score`, `levelReached`) and existing `ranked`/`notQualified` result shape. Enforce moderation before every conditional write. |
++| `POST /api/v2/highscore-reports` | Installation secret | `{reportId, entryId, reason}`. 201 newly accepted / 200 identical replay with `{reportId, status, createdAtUtc, acknowledgedAtUtc?, resolvedAtUtc?, disposition?}`. |
++| `GET /api/v2/highscore-reports/{reportId}` | Same reporter secret | Same receipt. Other reporter, unknown or expired ID returns 404. Never returns producer identity or offending name. |
++| `GET /support`, `GET /privacy` | Public | Accessible English HTML, correct contact/app/data practices, no login/cookies/analytics. |
++
++Authorization: `Bearer <43-character unpadded base64url encoding of 32 random bytes>`.
++Decode canonically; wrong length/encoding/duplicate Authorization values fail 401
++`installation_credential_invalid`. Never treat it as Entra JWT or trust a public UUID
++as credential. Limit header size; do not log headers/body. No redirects carrying
++credentials to another origin. Local HTTP remains Debug loopback-only.
++
++Requests use application/json, strict field names/unknown-field rejection, depth <=16
++and body <=4096 bytes. Datetimes retain UTC millisecond formatting. Report reason is
++one of the four enums in the data model. Entry must exist in the freshly read ranking
++projection when accepting the report; snapshot that exact entry under the same ETag.
++Blocked installations may read/report; only score publication is blocked. Private
++receipt responses use Cache-Control: no-store, including errors/expiry.
++
++New errors supplement existing ProblemDetails `code`, `status`, title and traceId:
++
++| HTTP/code | Meaning and client response |
++|---|---|
++| 401 `installation_credential_invalid` | No write; online publication unavailable, do not regenerate an existing credential to bypass. |
++| 403 `publication_blocked` | No new score write; terminal result for this run. Keep Play Again, local best and contact route. |
++| 422 `name_rejected` | No score write; permit editing the name for the current still-active run. Clear actionable validation copy, no repeated public-name warning. |
++| 409 `submission_removed` | Removed-ID guard; no publication/retry opportunity for that run. |
++| 409 `submission_conflict` / `report_conflict` | Conflicting identity/payload; do not silently change IDs and resend. |
++| 404 `entry_not_found` / `report_not_found` | Target no longer available, receipt not owned or expired; no false success. |
++| 426 `update_required` | Older writer unsupported; local gameplay remains available. |
++| 429 `rate_limited` | Bounded failure; Retry-After is not authority to schedule an upload. |
++| 503 `service_maintenance` | Rejected before writes during maintenance or before schema migration; definite no-write, no deferred retry. |
++| 503 `moderation_capacity` / `storage_invalid` / `operation_timed_out` | Honest unavailability. If a write may have committed, map instead to the operation's unconfirmed result. |
++| 503 `submission_unconfirmed` / `report_unconfirmed` | Possible committed write; never assert “not saved.” Scores are not replayed. A report can be checked read-only using its preallocated ID. |
++
++Server deadlines: <=6 seconds for every store operation including GET/status;
++network <=2 seconds, <=5 conditional attempts, SDK retries off. iOS uses <=8-second
++foreground deadlines plus generation invalidation on navigation/background. No
++background uploads, deferred report/score queue or automatic POST retry. A report
++may be explicitly retried with the identical ID/body while its form is still active;
++status checking is preferable after ambiguity. Close/start/new run drops active work.
++
++Keep current bounded global read/score limiters; add a separate report bucket of
++capacity 5, replenishment 1/second per instance, plus one unresolved report per
++(reporter hash, entry ID) returning the existing canonical receipt with `alreadyPending: true` (its reportId
++may differ from this request). The client stores the returned canonical ID and does
++not claim a new report/reason was recorded. A lost response followed by 404 for the
++newly requested ID does not prove no pending report exists; show unconfirmed/contact,
++never infer failure or retry automatically. Do not allocate unbounded
++per-secret buckets. Global report capacity and queue limits remain authoritative
++under multiple workers. API rate limits are not spend or comprehensive abuse guarantees.
++
++DEV capture routes reuse these handlers with a separately configured capture store;
++see [store isolation contract](store-release.md#concrete-screenshot-isolation). No capture
++routes exist on PROD. Capture seed/delete commands are DEV-container-only, not a general
++reset or public administration interface.
++
++## Operator command interface (new mode of existing backend executable)
++
++`dotnet run --project src/backend --no-launch-profile -- moderation <command> --target local|dev|prod ...`
++
++Local invocation above uses Test validation and an explicit loopback emulator/container.
++For DEV/PROD the operator MUST execute the published DLL INSIDE the running target
++App Service via authenticated `az webapp ssh`. Human Entra authorization opens only
++the control-plane session; Blob access uses the app's ManagedIdentityCredential with
++its existing narrowly scoped container role. No AzureCliCredential/default credential
++chain, shared key, local cloud operator execution or raw-token extraction. Verify
++WEBSITE_SITE_NAME against target inventory and the configured storage account/container;
++reject mismatches or external overrides. Execute `/home/site/wwwroot/DonkeyTrump.Highscores.Api.dll`
++with `dotnet ... moderation <command> --target dev|prod`. The mode initializes shared
++storage/domain code and exits without HTTP hosting. Check harmless aggregate metadata
++first. Do not dump environment/MI endpoint tokens, snapshots or private names into logs.
++No public admin route or additional hosted service. Failure to obtain a supported
++SSH session blocks cloud operator work; no human Blob credential fallback.
++
++Commands:
++- `list`: report IDs/status/reason/deadline grouped by entry ID with counts, for private
++  owner console only (not CI/application logs); `show --report-id UUID`
++  reveals necessary private snapshot to the owner, not to CI logs or repository evidence.
++- `acknowledge --report-id UUID --operation-id UUID`: record actual owner receipt.
++- `resolve --report-id UUID --decision remove|remove-and-block|no-action --operation-id UUID`:
++  one ETag mutation removes/tombstones and optionally blocks the snapshot producer,
++  removes their currently ranked rows, and records the reporter-visible disposition.
++  Legacy/starter origin supports remove/no-action only; never fabricate attribution.
++  Only unresolved reports can be resolved. A closed report is immutable except purge;
++  an identical operation replay returns the prior receipt, another decision gets409
++  `report_resolved`. Reserve accounts for 100 current rows plus 100 unresolved snapshots
++  and the 32-entry starter catalog, including off-list offenders.
++- `dismiss-spam --report-ids UUID,... --operation-id UUID`: preview up to 100 explicitly
++  selected unresolved reports; owner confirms spam classification. One ETag transaction
++  immediately removes snapshots and ordinary report records, adding only bounded minimal
++  `dismissedSpam` receipts (24 hours, max100, oldest may expire early). No ranking/block
++  mutation and no deletion of genuine reports to make room. Already-dismissed IDs are
++  idempotent, mixed invalid/resolved IDs reject the whole operation before mutation.
++  After receipt expiry a stale command finds no report and cannot affect a new report
++  with another UUID; all current ownership/state checks rerun on conflict.
++- `remove --entry-id UUID --operation-id UUID`: owner-initiated removal with tombstone.
++  Every tombstoning transaction (direct remove, resolve/remove or remove-and-block)
++  also closes ALL unresolved reports whose entry IDs were tombstoned, including other
++  ranked rows removed by that block. This is one conditional write, never a later
++  best-effort loop. Each receipt receives the same operation ID/server resolution time,
++  and disposition from its snapshot origin: legacyRemoved/starterRemoved; installation
++  reports get removedAndBlocked only if their snapshot producer is blocked in the final
++  state, otherwise removed. No-action/spam operations do not close other reports.
++  Preserve actual acknowledgedAtUtc; do not invent an acknowledgement for an unread
++  report. A resolved receipt may therefore have no acknowledgement time. Existing
++  closed receipts remain immutable. Existing tombstones are idempotent and a still-open
++  matching report can be closed as removed without requiring its row to be ranked.
++  Capacity checks must allow this transition for all100 unresolved reports: it changes
++  existing records, allocates no extra ordinary report slots and uses the byte reserve.
++- `show-block --installation-hash HASH`: private read of the current blockId for a fresh preview.
++- `unblock --installation-hash HASH --expected-block-id UUID --operation-id UUID`: explicit unblock, never
++  removes tombstones; hash is private moderation identity, not a raw credential.
++  Mismatched blockId fails409 `block_changed` without mutation, preventing an old
++  unblock replay from lifting a newer block. Missing block is already-unblocked.
++- `purge-expired`: same purge logic as the hourly/startup worker and pre-mutation
++  cleanup: ordinary closed reports30d, spam receipts24h, audit30d, backups24h. Never
++  purge genuine pending reports, active blocks or removal guards. Receipt GET treats
++  expired records as absent without writing. Record oldest overdue age as a count/time
++  metric with no content. Worker uses MI/ETags, pauses for migration maintenance;
++  verify PROD Always On and recover missed cleanup on startup. Outages delay physical
++  deletion beyond the normal one-hour bound, explicitly disclosed in privacy/evidence.
++- `migrate --expected-etag ETAG`: validate/convert schema 1 using conditional replace,
++  or verify already-migrated schema 2 and exit without rewriting it.
++
++Preview mutation summary then require explicit `--apply` for write commands. This is
++an operator safeguard, not a new owner-approval handoff for agent work already
++explicitly authorized. Mutations use stable operation IDs; ambiguous results require
++readback, never blind duplicate writes. ID-based deduplication lasts only while its
++audit receipt is retained; it is not indefinite. After audit eviction, tombstones,
++immutable resolved reports (including resolvedOperationId) and expected blockId
++provide operation-specific stale/replay protection. No old command may mutate a new
++block instance. Every retry reapplies current rules. Avoid
++storing raw snapshots or report content in ordinary command logs.
++
++Owner routine: inspect/acknowledge every working day, resolve by the same local clock time on the next
++Monday–Friday day in Europe/Copenhagen; check automatic cleanup lag and guard/byte counts.
++Bulk-dismiss confirmed spam to restore admission when the queue is full; support contact
++remains available during a flood. Anonymous attackers can mint credentials: this remedy
++is bounded owner recovery, not guaranteed resistance to sustained Sybil denial of service. A rehearsal
++must show a real owner queue read/acknowledgement, a disposition within that target,
++and the reporting installation's status read. Saving a report without owner receipt
++is not successful delivery. Public contact remains available when reports fail.
++
++## Safe rollout and rollback
++
++1. Test migration/removal/block/report/ambiguous-ack cases against isolated Azurite,
++   then DEV, preserving unrelated rows and minimum-ten projection.
++2. Produce the schema-2-aware backend artifact through the existing DEV pipeline.
++   This code can serve validated schema-1 reads but returns 503 for v2 writes until
++   migration; v1 POST is already 426. Record supported storage schema in the release
++   manifest and enforce it in PROD promotion/rollback checks.
++3. Before each migration, record target resource identity, current schema/ETag,
++   count and sequence evidence privately; verify versioning/soft delete/backups policy.
++   Create/inspect one MI-owned private pre-migration copy with 24-hour expiry, after
++   writers are quiescent in step4 and before conversion. Worker deletes on expiry;
++   delete immediately after verified success. Never export to workstation/CI logs.
++   Keep the same Blob key and existing workload resources. Never use a missing or
++   invalid live Blob as permission to replace it with an empty list.
++4. Enable `Moderation__Maintenance=true` only on this game's app, deploy the verified
++   schema-aware artifact and restart this app to terminate old workers. This mode
++   keeps HTTP validated reads/SSH running but rejects every public write with503 and
++   pauses background mutations; v1 POST remains426. Verify running artifact/config
++   on every configured instance, no old workers, and wait for the <=6s in-flight
++   deadline before backup/migration. Operator migration alone may mutate during this
++   gate. Never stop/resize the shared plan/neighbor; no deployment slot assumption.
++   Missing proof of quiescence blocks migration. Local gameplay remains usable.
++5. Owner-authorized operator mode conditionally converts the current schema-1 Blob
++   to schema 2, preserving IDs/name/score/timestamps/sequence and marking old real
++   rows `legacy` (no installation hash). Starter IDs remain reserved/unclaimable.
++   Lost acknowledgement: inspect current schema/data before retrying; no reset.
++6. Verify schema/migration and remove the backup, then clear maintenance/restart only
++   this API and verify current artifact/schema, GET and new credentialed
++   publication using only test-owned results. Rehearse in DEV before PROD. Existing
++   byensgaader apps must pass before/after availability checks; update cost/capacity
++   evidence and immutable DEV-to-PROD artifact identity.
++7. After migration, rollback ONLY to a tested schema-2-aware artifact. The first
++   migrated release must retain its schema-aware read/maintenance mode as recovery
++   baseline. If healthy writes cannot be restored, preserve the Blob and serve
++   validated reads/503 writes or keep this API unavailable; never resurrect deleted
++   data by restoring a pre-moderation Blob. Future data recovery must replay current
++   moderation guards and is a separate controlled operation.
++
++Legacy entries remain removable but retrospectively blocking their original
++installation is impossible: v1 never recorded identity. Document this limitation;
++credential-free v1 writes are retired, and all new release publications have identity.
++Do not claim that migrated rows acquired enforceable original-device attribution.
+--- /dev/null
++++ specs/002-app-store-release/contracts/ios-release-flow.md
+@@ -0,0 +1,101 @@
++# iPhone release behavior and validation contract
++
++## Preserve existing play and startup
++
++- Retain native 3D gameplay, iOS 26 minimum, landscape left/right, local personal
++  best, Reduce Motion, sound and haptics. iPhone 13 is the physical acceptance target.
++- Cover keeps its full motif/proportions. Approximate progress exists only while
++  required local startup is incomplete. No minimum timer; optional audio/highscore
++  work never gates Start or first-frame readiness. Static system launch art cannot
++  execute music. Supplied MP3 loops when ready across runtime loading/title/overlays,
++  respects mute/activity and stops before intro/game, including late preparation.
++- Retain clear name dialog/input/Submit/Cancel and no public-name/real-name reminder.
++  The accessible help/privacy view explains public name/score publication and links
++  to the actual published policy. Keep explicit Submit and current local-best/no
++  deferred-upload semantics. Do not let a blocked publication disable gameplay.
++- Global list remains top 100 with low-scoring starters keeping at least ten entries
++  in a successful response. This is not ten rows simultaneously visible. Existing
++  centering/bottom positioning, stale/error states and large text/VoiceOver remain.
++
++## Reporting UI
++
++Each list entry has an accessible Report action reachable without relying on a tiny
++icon/swipe-only gesture. Label it with that row's displayed name/rank. An action
++opens a compact landscape form with reason picker, Send, Cancel and support link.
++No login/contact/free-text field. Keyboard is unnecessary. VoiceOver focus moves to
++form heading, then completion/error message; all controls remain reachable at large
++text sizes and both orientations. Do not alter ranking after merely reporting.
++
++The app allocates a report ID before sending, uses the stable installation credential
++and a foreground <=8-second deadline. Immediate navigation and Play Again remain
++available. Success shows receipt/status; uncertain write says it could not confirm
++and offers explicit read-only Check Status with the same ID. Closing/backgrounding
++invalidates the request generation. Never convert uncertain failure into “not sent”.
++A late response cannot present over gameplay or a different report.
++
++A small Reports section in the help view lists up to 20 locally held receipt IDs
++with generic time/status, without retaining reported names. Opening/checking fetches
++only that credential's receipt. It is not a background queue or public report feed.
++Expired/not-found receipts are removed locally with an honest expiry message. A
++pending report and one already acknowledged/resolved remain distinguishable. Owner
++responses are fixed disposition text, not an unmoderated message channel.
++
++## Publication with v2
++
++Use v2 routes and canonical secret header. If secret storage fails, keep public
++browsing and offline play working and report publication unavailable. Never rotate
++an existing credential because the API returned blocked/invalid. A generated secret
++is reused across name corrections and all later runs on that installation.
++
++`name_rejected` leaves only the active run's name form editable; another chosen name
++can be explicitly submitted. `publication_blocked`, removed/conflicting run IDs and
++transport/unconfirmed failures retire publication for that run, preserving local
++best. Refresh/reconnect/relaunch never sends a retired score. Headers must not leak
++through redirected requests or diagnostics. Existing URLSession/coordinator deadline,
++explicit generation and immutable-run boundaries apply equally to the new report flow.
++
++## Release-only boundaries
++
++1. Check existing store device-support history before changing app target to device
++   family 1. Do not silently expand native iPad scope if narrowing is disallowed.
++2. Distributable `Release` always resolves the PROD HTTPS backend; preserve existing
++   Local/DEV/PROD development schemes. Add non-distributable `AppStoreCapture` simulator
++   configuration/scheme with Release optimizations and no DEBUG, test flags, synthetic
++   run controls or development launch arguments. Its sole product-setting difference
++   is HTTPS base URL `https://donkeytrump-api-d.azurewebsites.net/capture` (isolated
++   dataset defined in store contract). Enforce simulator-only build and archive/export
++   rejection for AppStoreCapture; distribution validation requires Release + exact
++   PROD URL and no capture host/path. HTTP loopback exceptions stay Debug-only.
++3. Add privacy/support URL configuration and validate HTTPS/live anonymous access.
++   Keep both links reachable from title/help and Game Over/report error paths.
++4. Audit required-reason APIs/dependencies, include a correct app privacy manifest
++   and inspect archive/privacy report. UserDefaults reason CA92.1 covers only actual
++   app-private preferences; enumerate any additional required-reason access.
++5. Perform actual encryption questionnaire before setting export-compliance metadata.
++   No invented accessibility support flags; declare only the interactions tested.
++
++## Required evidence
++
++Automated Swift/URLProtocol tests: credential stable across runs/upgrades and atomic
++storage, corruption fails closed, canonical header/no cross-origin redirect, payload
++privacy, all moderation/error mappings, stale response cancellation, report status
++ownership/expiry, no automatic POST retries. Injected fixtures remain Debug-only and
++cannot hit PROD. Test names/body never enter normal diagnostics.
++
++UI tests on iPhone 13 simulator: initial cover/progress/music state, title/Start while
++backend hangs, name rejection/edit and block, report reason/Send/Cancel/status/support,
++Game Over navigation, keyboard/large text/VoiceOver labels. Audio-state tests complement,
++not replace, physical listening. Repeat production build/argument isolation checks.
++
++Physical iPhone 13 on the exact processed internal TestFlight build: both landscapes,
++clean install and supported update, 15 minutes sustained play, intro skip, menu music,
++silent switch, in-game mute, headphones/speaker, haptics, background/foreground,
++VoiceOver and largest supported text for applicable UI, online real publication,
++multiple devices/runs, failed/lost-ack submission and report/owner-response flow.
++Record build/device/OS/date/check results. Existing-build update is marked not
++applicable only with evidence that no prior install/distribution path exists.
++
++Also perform a labelled iPad simulator compatibility-mode smoke test on an iPhone-only
++build: launch, both landscape presentation, reachable controls, highscore/report/privacy.
++This does not imply native iPad support or physical iPad acceptance. Failed applicable
++checks block draft readiness, while independent asset/copy preparation can continue.
+--- /dev/null
++++ specs/002-app-store-release/contracts/store-release.md
+@@ -0,0 +1,159 @@
++# Store package, account and unsent handoff contract
++
++## Deliverables and identity
++
++Working release package: `docs/releases/app-store/<version>-<build>/` (created during
++implementation). Keep editable listing text, source screenshots, final ordered PNGs,
++asset/candidate SHA manifests, anonymized acceptance evidence and release-record.md.
++Large archives/device logs and private legal/contact/report evidence live in an
++owner-controlled private location; the record holds non-secret references/checksums.
++No placeholder field value may be uploaded.
++
++Before external changes, inspect the intended Chrome session, organization/team,
++existing app/bundle ID and version/history. Reuse a matching record; create only when
++absence is established. Current repo bundle ID is `com.hyldenbrandt.donkeytrump3d`,
++team `QHL89A7A8J`; these are source values, not proof of account ownership/access.
++Record the actual app ID, version/build, role and relevant agreements. Do not extract
++cookies/tokens or use an unapproved substitute browser to bypass authentication.
++
++## Required account/input matrix
++
++| Input | Discovery and action if missing |
++|---|---|
++| Intended organization, app/history, role | Read Connect via supported Chrome access; unresolved access blocks only account-dependent actions. |
++| Signing and internal tester eligibility | Inspect local signing/account and existing owner tester membership; verify upload/internal install without external beta review. |
++| Genuine support/review contact, copyright owner | Obtain from verified account/project facts; ask owner together for missing name/email/phone/copyright facts, store private evidence outside Git. |
++| Trader, territorial licences, agreements | Determine from actual owner facts and current questionnaire. Owner-only legal acceptance cannot be guessed or bypassed. |
++| Public asset provenance | Retain owner cover/prompt/music provenance and assess names/models/audio/starter names; concrete unresolved issues block related declarations/media. |
++| Hardware and candidate checks | Record actual physical iPhone availability and OS; missing hardware evidence blocks readiness, not design/independent media work. |
++| Shared Azure inventory/cost baseline | Refresh existing plans/apps, permissions, current plan charges/capacity, incremental estimate including moderation/pages/diagnostics. |
++
++Discover first, request only missing facts in a consolidated owner-input request;
++no invented data or repeated authorization for already approved ordinary preparation.
++A tool connection failure is not proof the user's login/account is wrong.
++
++## Listing and media
++
++English app name/subtitle, description, promotional text, keywords, categories,
++copyright, support/privacy URLs and genuine review contact/instructions. Current
++limits are checked against Apple/Connect during execution; research records 4,000
++characters for description, 170 promotional characters and 100 keyword bytes.
++Use truthful 3D arcade/satire wording, offline-play versus online-highscore distinction,
++original no-affiliation copy. No copied competitor names as keyword bait, invented
++endorsement or unverified licensing claim. Supply What's New only if applicable.
++
++Five images per required iPhone display set:
++1. Representative 3D gameplay and objective.
++2. Jumping/dodging and readable landscape controls.
++3. Another real level/rescue moment.
++4. Real title/intro presentation, with optional clearly distinguished supporting art.
++5. The real highscore UI with approved synthetic DEV entries only.
++
++Capture at an accepted native larger-iPhone landscape resolution (research baseline
++2868×1320, 2796×1290 or 2736×1260 for 6.9-inch). Record exact simulator/model/OS/source.
++No stretching iPhone 13 captures, fake gameplay, debug controls or real-user names.
++Media source build must match release source/features/optimizations except the explicit
++AppStoreCapture HTTPS base URL and simulator platform. See isolation procedure below. Final image pipeline validates dimension,
++orientation, opaque JPG/PNG, order and caption legibility, retains unedited captures
++and outputs a checksum manifest. Review actual pixels at intended size. Icon must
++match candidate asset catalog, current format requirements and truthful branding.
++Optional video and native iPad assets remain outside scope.
++
++## Concrete screenshot isolation
++
++Create `AppStoreCapture` configuration/scheme based on Release compiler/optimization
++settings, no DEBUG/test launch parsers or injected UI/game state. Set base URL to
++`https://donkeytrump-api-d.azurewebsites.net/capture`; normal `/api/v2/...` path composition
++then uses `/capture/api/v2/...`. A build-phase check requires iphonesimulator SDK for
++this configuration; archive/export validation additionally requires configuration
++Release, exact PROD origin and no capture path. CI tests both valid capture build and
++rejected device/archive capture configuration. The upload manifest records only the
++separately validated Release archive. Capture is not a distribution exception.
++
++The existing DEV API conditionally maps the same v2 handlers under `/capture`, with a
++separate store bound to `highscores-capture` container on donkeytrumpd. It must never
++fallback to the normal DEV/PROD container. Enable only when deployment inventory,
++WEBSITE_SITE_NAME=donkeytrump-api-d and storage account all match DEV; enabling in PROD
++fails startup and PROD contract tests require capture routes404. Ordinary DEV routes
++and data remain untouched. Give only DEV MI the additional container-scoped permission;
++no account-wide role/new compute service. Same validation/ranking/moderation/ETags apply.
++
++Operator `capture-seed --target dev --dataset capture --apply` inside DEV App Service
++initializes or replaces only this disposable capture dataset with approved synthetic
++names/low scores and schema2 state. It refuses other targets/containers and records
++fixture checksum, not secrets. This explicit owned-fixture command is the sole reset
++exception; all normal/live missing-state rules stay unchanged. Any capture test scores
++are synthetic and never promoted or copied to live stores. Preserve snapshot/content
++identity for the capture session, inspect every visible row, and reseed if unapproved
++entries arrive (route remains publicly reachable). Image acceptance requires the actual
++pixels contain only approved synthetic names, regardless of fixture seed evidence.
++After capture, disable the DEV-only route and delete the capture dataset using MI;
++include this small additional storage/operation cost in estimates. Tests assert route,
++container and credential separation, no fallback and no ordinary DEV data changes.
++
++## Public pages, privacy and territory declarations
++
++Default real URLs are `https://donkeytrump-api-p.azurewebsites.net/support` and
++`https://donkeytrump-api-p.azurewebsites.net/privacy`, served by the existing owner
++controlled app. Revalidate the actual configured PROD host before publication.
++Pages must load anonymously on mobile/desktop, identify app and genuine contact,
++explain public submission, installation-based safeguards, reports/status, retention,
++removal requests, hosting/processors and contact. No login/cookies/analytics.
++Local-gameplay data remains distinguishable from transmitted data.
++
++Complete privacy inventory for public handle (Apple's screen-name/User ID category),
++scores/game content, installation fingerprint, private reports and actual diagnostics.
++Determine linkage/purpose/retention from the final model, not “no accounts.” Recheck
++platform HTTP/IP logging and provider retention. Validate privacy manifest and store
++answers separately; one does not replace the other. Do not freeze existing help copy
++if moderation adds new retained data. Audit rights, content/age, export/encryption and
++accessibility claims with dated evidence and current questions; record unresolved
++facts as gates rather than chosen answers.
++
++Price is free, no purchases/subscriptions/ads. Maintain an eligibility matrix for
++all territories. Exclude only where applicable requirements cannot be met, recording
++why (including current China/Vietnam game-licence requirements if no documents exist).
++Determine EU trader status from real facts; free pricing is not the answer. Disable
++future-territory auto-expansion unless newly eligible countries are verified. Inspect
++and disable optional Apple-silicon Mac/Vision Pro availability, pre-order and any
++scheduled/automatic release. Check device-history restrictions before iPhone-only
++configuration, without silently adding native iPad scope.
++
++## Candidate and Connect sequence
++
++1. Finish candidate/moderation/pages and automated checks; freeze candidate source,
++   config and dependency identity. Record backend artifact/schema and real PROD URL.
++2. Archive with valid signing and normal App Store Connect distribution (NOT TestFlight
++   Internal Only). Validate archive: iPhone family/min OS, correct icon, privacy manifest,
++   production endpoints, release flags excluded, export answer from actual evidence.
++3. Upload once. After timeout inspect existing processing/version/build before any
++   retry. Wait for processed success and resolve actual validation errors. Use internal
++   TestFlight with the existing authorized owner account for physical acceptance.
++   Do not add an external tester group or send a beta/App Store review submission.
++4. Record physical acceptance against that exact processed build ID/version/build.
++   Apple's thinning changes binary packaging; retain archive/source/Connect identity,
++   not an assertion that device IPA bytes equal the archive. A changed candidate
++   requires affected tests/media/declarations and a new uploaded build identity.
++5. Save listing, processed images/order, declarations, price/territories, real URLs,
++   review instructions and selected tested build. Reopen each area and compare saved
++   state against the local package; “typed” or “upload started” is insufficient.
++6. With all readiness gates passed, select manual release and assemble an unsent
++   review draft using Add for Review only if that action remains unsent. Stop before
++   Submit for Review or any equivalent sending action. A changed workflow/button
++   boundary blocks that step; never guess a click that could submit/publish.
++7. Reopen the intended app/version/draft. Confirm zero required-field errors, correct
++   selected build, processed media, manual release and owner Submit action available.
++   Record direct Connect link and actual state. Completion requires no remaining
++   owner copy/media/declaration/build work. Owner submits, handles later review feedback
++   and releases after approval. No agent Apple submission/publication is allowed.
++
++## Evidence/resumption contract
++
++Each release-record step has: target identity, intended change, observed before/after,
++result, observation time, candidate/media hashes, non-secret proof and next action.
++Separate local-ready, remote-saved, build-uploaded/processed, device-validated,
++draft-validated, owner-submitted, approved and released states. Last three remain
++outside this agent's completion scope. Resume by reading remote state first; do not
++blindly repeat app creation, uploads or draft assembly. Failed checks preserve their
++evidence and block the dependent readiness claim. Independent cross-vendor approval
++is required after completed artifacts/checks and any material fixes, per AGENTS.md.
