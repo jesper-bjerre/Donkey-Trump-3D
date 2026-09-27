@@ -1,0 +1,24 @@
+2026-09-27 finished candidate validation (lead executed, reviewer may inspect evidence):
+- HighscoresTests__UseAzurite=true ~/.dotnet/dotnet test src/backend.tests -c Release --logger 'console;verbosity=minimal': exit0, 59 passed, 0 failed, 0 skipped, duration1s. Real running loopback Azurite3.37.0, unique test-owned containers cleaned by fixture. Includes first-creation/existing-blob two-writer races, 100 writers plus committed/unconfirmed write, storage/replay/zero score, fake Azure conditional headers and corruption/timeouts, new starter tests.
+- ~/.dotnet/dotnet build src/backend --no-restore: Debug build succeeded, 0 warnings/errors.
+- Local running helper identity checked via ps cmdline; rebuilt Debug API and sent its supported SIGUSR1 to restart API while preserving same container. GET health and highscores 200; before0 entries after10 scores100..1000. No POST to user's running local list. Full sanitized runtime evidence below.
+- OpenAPI parsed with Ruby standard-library YAML.safe_load; GET starter example10, GET populated11, POST ranked11; checked minimum/maximum, ranks1..n, unique IDs, descending points. Entries schema minItems10. All PASS.
+- Changed Markdown local-link targets exist and git diff --check PASS.
+- iOS runtime code unchanged; included HighscoreModels source shows client accepts up to100 entries including10 and treats revision as opaque. No new iOS build/test or UI visual check in this task.
+- No Azure deployment, remote changes, commit or push. Existing unrelated Xcode/endpoint/doc edits preserved. Quickstart contains a pre-existing environment-selection paragraph: captured task-start contents are the diff base, not falsely attributed to this task.
+{
+  "origin": "http://127.0.0.1:5281",
+  "health": 200,
+  "highscores": 200,
+  "rowsBefore": 0,
+  "rowsAfter": 10,
+  "existingPlayersPreserved": true,
+  "sameContainer": true,
+  "scoreRange": [
+    100,
+    1000
+  ],
+  "revision": "empty",
+  "restarts": 1
+}
+Focused follow-up after first APPROVE: searched actual iOS integration helpers/performance sources. No absolute empty/rank/count assumptions found in performance harness; two-installations helper used nonempty entries to prove prior publication, now insufficient for virtual starters. Lead confirmed and fixed that precondition to require nonempty entries AND revision != empty. Ran isolated runpy/unittest.mock check: fresh revision=empty with10rows raises expected publish-first assertion before any os.kill; persisted revision reaches restart boundary, with os.kill intercepted. Both PASS. No simulator/network/process side effects from this check. Reconciled research, technical-proposal, ios-flow and completed task wording with explicit owner update; dated validation/review evidence unchanged. Updated links exist; git diff --check passes. All original14 reviewed file hashes unchanged, so previous 59-test result still applies to same backend source/tests; no redundant rerun.

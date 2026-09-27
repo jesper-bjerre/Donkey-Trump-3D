@@ -1,6 +1,6 @@
 # Donkey Trump Highscores API
 
-One ASP.NET Core 10 Minimal API stores the all-time top 100 completed runs in one private Azure Block Blob. The native iPhone app loads asynchronously and never queues a failed submission. See the [HTTP contract](../../specs/001-global-highscores/contracts/highscores.openapi.yaml), [quickstart](../../specs/001-global-highscores/quickstart.md) and [executed validation](../../specs/001-global-highscores/validation.md).
+One ASP.NET Core 10 Minimal API stores the all-time top 100 in one private Azure Block Blob. New lists start with ten cartoon opponents scoring 100–1,000 points. Valid older lists below ten rows are filled without changing existing players. Starters follow ordinary ranking and can all be displaced by real players. The native iPhone app loads asynchronously and never queues a failed submission. See the [HTTP contract](../../specs/001-global-highscores/contracts/highscores.openapi.yaml), [quickstart](../../specs/001-global-highscores/quickstart.md) and [executed validation](../../specs/001-global-highscores/validation.md).
 
 ## Build and local integration
 
@@ -45,7 +45,7 @@ Names are optional to publish, public after submission, normalized to NFC and re
 
 Sorting is score descending, then server-assigned successful-save sequence ascending. The full-list cutoff must be beaten. A conditional `If-Match`/`If-None-Match` single Put Blob protects simultaneous updates. Only recognized rejected writes are retried: at most five write attempts within a six-second total deadline, including reads and backoff. SDK retries are disabled; network timeout is two seconds. An ambiguous attempted save returns `submission_unconfirmed` and is never automatically uploaded again. The app also never retries, persists or defers an unsuccessful POST.
 
-Identical same-ID submissions are deduplicated only while the result remains ranked. A changed canonical payload for a ranked ID is 409. This is not a historical receipt archive. Only `BlobNotFound` in an existing container means empty; missing container, invalid schema/data and authorization failures fail closed without repair or overwrite.
+Identical same-ID submissions are deduplicated only while the result remains ranked. A changed canonical payload for a ranked ID is 409. This is not a historical receipt archive. GET stays read-only: deterministic starters are persisted with the next new score in the same conditional write. The literal revision `empty` means no blob has been persisted yet, even though ten starting opponents are visible. Only `BlobNotFound` in an existing container permits a fresh starter list; missing container, invalid schema/data and authorization failures fail closed without repair or overwrite.
 
 ## Configuration and operations
 

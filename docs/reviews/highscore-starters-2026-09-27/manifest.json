@@ -1,0 +1,21 @@
+{
+  "specs/001-global-highscores/contracts/highscores.openapi.yaml": "bbe83c45479992d35836b2c889ecac991b1a33164812387e0e780241f8216238",
+  "specs/001-global-highscores/contracts/ios-flow.md": "f3073d44af95e2f891e4d07185b879a1b5a3ff7a32933d75ba3f98253ff7139f",
+  "specs/001-global-highscores/data-model.md": "80f9d640019fc490ed1d089fbab5037a30f2f2d28672f7be9e8d283bcb27f45a",
+  "specs/001-global-highscores/plan.md": "7b4b2c49336897d05dd8ea5a54e7ae8f6652882dc0519dbeb2a186c8f5c82fbe",
+  "specs/001-global-highscores/quickstart.md": "d4aad5bcd8db698e531d9def092e958791bac5c27a8799bad764c1f6268a07da",
+  "specs/001-global-highscores/research.md": "f5ac97e2662aa413f11e2ff81d3922e8592ea91195610c786b2c5b03c1d1c7a6",
+  "specs/001-global-highscores/spec.md": "8b8062d8f4470d42dc3cd13bd63cefb190cfe63d72e32d78714cca322cc0c9be",
+  "specs/001-global-highscores/tasks.md": "202819e5dc439c53f62c3cda821b0f8a7469ca073b45864a6b8e379ee28d3832",
+  "specs/001-global-highscores/technical-proposal.md": "d915a4670efc063413a38e065271a749e285440d5c00162bcecb2bdf64668af9",
+  "src/backend.tests/BlobHighscoreStoreTests.cs": "3077bf1f2bb9f0af4bae8e71e15eb3eb741755675d2cf195a7d4c336a99311b9",
+  "src/backend.tests/HighscoreConcurrencyTests.cs": "d168cc73dcd2e7704186850800425a2b450f298e5b446037c0be9876d755db7f",
+  "src/backend.tests/HighscoreEndpointTests.cs": "7e32ca52085e7f6c2d81a756b974782cbf250e37bce8396ade376e9a62ebae50",
+  "src/backend.tests/HighscoreReadContractTests.cs": "1024d20a80241482572ffae7ae6ddaff7900443996989e22dcebaf51da04df7c",
+  "src/backend.tests/HighscoreStarterTests.cs": "502e46460520b56f4c2d653db6e2be5c676684eb462de8e0537ab74e64ea3c7a",
+  "src/backend.tests/HighscoreStorageSmokeTests.cs": "fb2857e67f395f766eab8d93031fbb69d581547d0a819f2626267b2517e30e87",
+  "src/backend/Highscores/BlobHighscoreStore.cs": "39d528d937b41a6e1bae0238d43f51ae34ff09799650edd2b4731c0c725d294a",
+  "src/backend/Highscores/HighscoreStarters.cs": "b93b9e91ce0f9497a57673b75784300245f09f68206a2fb432d8180c5b1b0cd3",
+  "src/backend/README.md": "c473b01143d1af7bc1a944aaa527c44317f315ac8f9ec3505c40aad6650118ee",
+  "src/tests/support/verify-two-installations.py": "1d3e3a2006f250052cddeea932bf38d17c4030c3a6af193276a695e7d66ae965"
+}

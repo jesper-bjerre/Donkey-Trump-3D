@@ -1,0 +1,70 @@
+{
+  "date": "2026-09-27",
+  "base": "4c191a6c8998c37b6765362b9b17c957fb8ae61f",
+  "lead": {
+    "vendor": "OpenAI",
+    "tool": "Codex",
+    "modelId": "Not exposed in this session",
+    "reasoning": "Not exposed in this session"
+  },
+  "reviewer": {
+    "vendor": "Anthropic",
+    "tool": "Claude Code 2.1.283",
+    "requestedModel": "claude-opus-5-5",
+    "effortArgument": "high",
+    "effortEnvironment": "high",
+    "safeMode": true,
+    "tools": [],
+    "mcpServers": {},
+    "noSessionPersistence": true,
+    "textProbe": "REVIEW_ROUTE_OK; exit0; no stderr or effort-cap warning",
+    "effortLimitation": "Provider does not separately attest effective effort"
+  },
+  "sessions": [
+    {
+      "phase": "probe-json.out",
+      "sessionId": "181921cf-bdef-42ad-a4ab-2c1f8782557b",
+      "exitCode": 0,
+      "subtype": "success",
+      "actualModels": [
+        "claude-opus-5-5"
+      ],
+      "provider": "firstParty",
+      "canonicalModel": "claude-opus-5-5",
+      "inputTokens": 2,
+      "outputTokens": 16
+    },
+    {
+      "phase": "review.jsonl",
+      "sessionId": "2b14848d-b193-4689-ba7a-cd015b2bc4e7",
+      "exitCode": 0,
+      "subtype": "success",
+      "actualModels": [
+        "claude-opus-5-5"
+      ],
+      "provider": "firstParty",
+      "canonicalModel": "claude-opus-5-5",
+      "inputTokens": 2,
+      "outputTokens": 11042
+    },
+    {
+      "phase": "review-2.jsonl",
+      "sessionId": "95e34aad-2d2b-4cb8-a834-fbd2531e7ad3",
+      "exitCode": 0,
+      "subtype": "success",
+      "actualModels": [
+        "claude-opus-5-5"
+      ],
+      "provider": "firstParty",
+      "canonicalModel": "claude-opus-5-5",
+      "inputTokens": 2,
+      "outputTokens": 7813
+    }
+  ],
+  "hashes": {
+    "manifest.json": "ccd311f96afe29e31bff699083271495fe30bb2f3cd9c1dbbfe61292d06073d1",
+    "packet.txt": "97a631c2e5e4ab8776fb70da94c37c28c7273fab9208c1be962dfce8aafcb93a",
+    "packet-2.txt": "461747aca19830f6ec02cd1b1702907d39f69457c1cb159cbe93a42c248d0d6c",
+    "checks.txt": "1f65cb19781b957b1edddc48bf2418b12588a32565099a5fa82431f38b1a7c53"
+  }
+}

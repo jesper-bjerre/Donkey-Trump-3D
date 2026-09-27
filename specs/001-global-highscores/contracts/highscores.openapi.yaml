@@ -4,7 +4,7 @@ info:
   version: 1.0.0
   description: |
     Implemented HTTP contract; executed evidence is recorded in ../validation.md.
-    Anonymous all-time top 100 completed runs. No account or client secret.
+    Anonymous all-time top 100 with at least ten entries, using low-scoring cartoon starters on new or undersized lists. No account or client secret.
     All snapshots are complete, ordered and uncached. Equal scores retain
     successful-save order. A GET never reserves a place; POST rechecks.
     A timed-out POST may have committed. The iPhone client must not replay
@@ -23,12 +23,14 @@ paths:
       operationId: getHighscores
       summary: Read the current complete top 100
       description: |
-        BlobNotFound in an existing container returns an empty snapshot.
+        BlobNotFound in an existing container returns ten deterministic cartoon starters.
+        Valid lists below ten rows are filled without altering existing players.
+        GET does not write; a new submission persists the fill conditionally.
         Missing container, corrupt data and storage failures return errors.
         No query parameters, pagination or conditional-GET/304 path in v1.
       responses:
         '200':
-          description: Current observed ranking, possibly empty
+          description: Current observed ranking with at least ten entries
           headers:
             Cache-Control:
               $ref: '#/components/headers/NoStore'
@@ -37,9 +39,49 @@ paths:
               schema:
                 $ref: '#/components/schemas/Snapshot'
               examples:
-                empty:
+                starters:
                   value:
-                    entries: []
+                    entries:
+                      - entryId: 'd7c30000-0000-4000-8000-000000000001'
+                        rank: 1
+                        displayName: Bugs Bunny
+                        score: 1000
+                      - entryId: 'd7c30000-0000-4000-8000-000000000002'
+                        rank: 2
+                        displayName: Daffy Duck
+                        score: 900
+                      - entryId: 'd7c30000-0000-4000-8000-000000000003'
+                        rank: 3
+                        displayName: Scooby-Doo
+                        score: 800
+                      - entryId: 'd7c30000-0000-4000-8000-000000000004'
+                        rank: 4
+                        displayName: Fred Flintstone
+                        score: 700
+                      - entryId: 'd7c30000-0000-4000-8000-000000000005'
+                        rank: 5
+                        displayName: Garfield
+                        score: 600
+                      - entryId: 'd7c30000-0000-4000-8000-000000000006'
+                        rank: 6
+                        displayName: Snoopy
+                        score: 500
+                      - entryId: 'd7c30000-0000-4000-8000-000000000007'
+                        rank: 7
+                        displayName: Popeye
+                        score: 400
+                      - entryId: 'd7c30000-0000-4000-8000-000000000008'
+                        rank: 8
+                        displayName: Tom
+                        score: 300
+                      - entryId: 'd7c30000-0000-4000-8000-000000000009'
+                        rank: 9
+                        displayName: Jerry
+                        score: 200
+                      - entryId: 'd7c30000-0000-4000-8000-000000000010'
+                        rank: 10
+                        displayName: Tweety
+                        score: 100
                     revision: empty
                     fetchedAtUtc: '2026-09-26T12:00:00.000Z'
                 populated:
@@ -49,6 +91,46 @@ paths:
                         rank: 1
                         displayName: Løkke
                         score: 1200
+                      - entryId: 'd7c30000-0000-4000-8000-000000000001'
+                        rank: 2
+                        displayName: Bugs Bunny
+                        score: 1000
+                      - entryId: 'd7c30000-0000-4000-8000-000000000002'
+                        rank: 3
+                        displayName: Daffy Duck
+                        score: 900
+                      - entryId: 'd7c30000-0000-4000-8000-000000000003'
+                        rank: 4
+                        displayName: Scooby-Doo
+                        score: 800
+                      - entryId: 'd7c30000-0000-4000-8000-000000000004'
+                        rank: 5
+                        displayName: Fred Flintstone
+                        score: 700
+                      - entryId: 'd7c30000-0000-4000-8000-000000000005'
+                        rank: 6
+                        displayName: Garfield
+                        score: 600
+                      - entryId: 'd7c30000-0000-4000-8000-000000000006'
+                        rank: 7
+                        displayName: Snoopy
+                        score: 500
+                      - entryId: 'd7c30000-0000-4000-8000-000000000007'
+                        rank: 8
+                        displayName: Popeye
+                        score: 400
+                      - entryId: 'd7c30000-0000-4000-8000-000000000008'
+                        rank: 9
+                        displayName: Tom
+                        score: 300
+                      - entryId: 'd7c30000-0000-4000-8000-000000000009'
+                        rank: 10
+                        displayName: Jerry
+                        score: 200
+                      - entryId: 'd7c30000-0000-4000-8000-000000000010'
+                        rank: 11
+                        displayName: Tweety
+                        score: 100
                     revision: '"0x8DE001"'
                     fetchedAtUtc: '2026-09-26T12:00:00.000Z'
         '429':
@@ -109,6 +191,46 @@ paths:
                         rank: 1
                         displayName: Løkke
                         score: 1200
+                      - entryId: 'd7c30000-0000-4000-8000-000000000001'
+                        rank: 2
+                        displayName: Bugs Bunny
+                        score: 1000
+                      - entryId: 'd7c30000-0000-4000-8000-000000000002'
+                        rank: 3
+                        displayName: Daffy Duck
+                        score: 900
+                      - entryId: 'd7c30000-0000-4000-8000-000000000003'
+                        rank: 4
+                        displayName: Scooby-Doo
+                        score: 800
+                      - entryId: 'd7c30000-0000-4000-8000-000000000004'
+                        rank: 5
+                        displayName: Fred Flintstone
+                        score: 700
+                      - entryId: 'd7c30000-0000-4000-8000-000000000005'
+                        rank: 6
+                        displayName: Garfield
+                        score: 600
+                      - entryId: 'd7c30000-0000-4000-8000-000000000006'
+                        rank: 7
+                        displayName: Snoopy
+                        score: 500
+                      - entryId: 'd7c30000-0000-4000-8000-000000000007'
+                        rank: 8
+                        displayName: Popeye
+                        score: 400
+                      - entryId: 'd7c30000-0000-4000-8000-000000000008'
+                        rank: 9
+                        displayName: Tom
+                        score: 300
+                      - entryId: 'd7c30000-0000-4000-8000-000000000009'
+                        rank: 10
+                        displayName: Jerry
+                        score: 200
+                      - entryId: 'd7c30000-0000-4000-8000-000000000010'
+                        rank: 11
+                        displayName: Tweety
+                        score: 100
                     revision: '"0x8DE001"'
                     fetchedAtUtc: '2026-09-26T12:00:00.000Z'
         '400':
@@ -282,6 +404,7 @@ components:
           $ref: '#/components/schemas/Score'
     Entries:
       type: array
+      minItems: 10
       maxItems: 100
       uniqueItems: true
       items:

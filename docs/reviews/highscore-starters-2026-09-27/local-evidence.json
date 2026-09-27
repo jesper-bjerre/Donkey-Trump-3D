@@ -1,0 +1,15 @@
+{
+  "origin": "http://127.0.0.1:5281",
+  "health": 200,
+  "highscores": 200,
+  "rowsBefore": 0,
+  "rowsAfter": 10,
+  "existingPlayersPreserved": true,
+  "sameContainer": true,
+  "scoreRange": [
+    100,
+    1000
+  ],
+  "revision": "empty",
+  "restarts": 1
+}

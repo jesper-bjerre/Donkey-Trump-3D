@@ -1,0 +1,572 @@
+--- before/specs/001-global-highscores/contracts/highscores.openapi.yaml
++++ after/specs/001-global-highscores/contracts/highscores.openapi.yaml
+@@ -4,7 +4,7 @@
+   version: 1.0.0
+   description: |
+     Implemented HTTP contract; executed evidence is recorded in ../validation.md.
+-    Anonymous all-time top 100 completed runs. No account or client secret.
++    Anonymous all-time top 100 with at least ten entries, using low-scoring cartoon starters on new or undersized lists. No account or client secret.
+     All snapshots are complete, ordered and uncached. Equal scores retain
+     successful-save order. A GET never reserves a place; POST rechecks.
+     A timed-out POST may have committed. The iPhone client must not replay
+@@ -23,12 +23,14 @@
+       operationId: getHighscores
+       summary: Read the current complete top 100
+       description: |
+-        BlobNotFound in an existing container returns an empty snapshot.
++        BlobNotFound in an existing container returns ten deterministic cartoon starters.
++        Valid lists below ten rows are filled without altering existing players.
++        GET does not write; a new submission persists the fill conditionally.
+         Missing container, corrupt data and storage failures return errors.
+         No query parameters, pagination or conditional-GET/304 path in v1.
+       responses:
+         '200':
+-          description: Current observed ranking, possibly empty
++          description: Current observed ranking with at least ten entries
+           headers:
+             Cache-Control:
+               $ref: '#/components/headers/NoStore'
+@@ -37,9 +39,49 @@
+               schema:
+                 $ref: '#/components/schemas/Snapshot'
+               examples:
+-                empty:
++                starters:
+                   value:
+-                    entries: []
++                    entries:
++                      - entryId: 'd7c30000-0000-4000-8000-000000000001'
++                        rank: 1
++                        displayName: Bugs Bunny
++                        score: 1000
++                      - entryId: 'd7c30000-0000-4000-8000-000000000002'
++                        rank: 2
++                        displayName: Daffy Duck
++                        score: 900
++                      - entryId: 'd7c30000-0000-4000-8000-000000000003'
++                        rank: 3
++                        displayName: Scooby-Doo
++                        score: 800
++                      - entryId: 'd7c30000-0000-4000-8000-000000000004'
++                        rank: 4
++                        displayName: Fred Flintstone
++                        score: 700
++                      - entryId: 'd7c30000-0000-4000-8000-000000000005'
++                        rank: 5
++                        displayName: Garfield
++                        score: 600
++                      - entryId: 'd7c30000-0000-4000-8000-000000000006'
++                        rank: 6
++                        displayName: Snoopy
++                        score: 500
++                      - entryId: 'd7c30000-0000-4000-8000-000000000007'
++                        rank: 7
++                        displayName: Popeye
++                        score: 400
++                      - entryId: 'd7c30000-0000-4000-8000-000000000008'
++                        rank: 8
++                        displayName: Tom
++                        score: 300
++                      - entryId: 'd7c30000-0000-4000-8000-000000000009'
++                        rank: 9
++                        displayName: Jerry
++                        score: 200
++                      - entryId: 'd7c30000-0000-4000-8000-000000000010'
++                        rank: 10
++                        displayName: Tweety
++                        score: 100
+                     revision: empty
+                     fetchedAtUtc: '2026-09-26T12:00:00.000Z'
+                 populated:
+@@ -49,6 +91,46 @@
+                         rank: 1
+                         displayName: Løkke
+                         score: 1200
++                      - entryId: 'd7c30000-0000-4000-8000-000000000001'
++                        rank: 2
++                        displayName: Bugs Bunny
++                        score: 1000
++                      - entryId: 'd7c30000-0000-4000-8000-000000000002'
++                        rank: 3
++                        displayName: Daffy Duck
++                        score: 900
++                      - entryId: 'd7c30000-0000-4000-8000-000000000003'
++                        rank: 4
++                        displayName: Scooby-Doo
++                        score: 800
++                      - entryId: 'd7c30000-0000-4000-8000-000000000004'
++                        rank: 5
++                        displayName: Fred Flintstone
++                        score: 700
++                      - entryId: 'd7c30000-0000-4000-8000-000000000005'
++                        rank: 6
++                        displayName: Garfield
++                        score: 600
++                      - entryId: 'd7c30000-0000-4000-8000-000000000006'
++                        rank: 7
++                        displayName: Snoopy
++                        score: 500
++                      - entryId: 'd7c30000-0000-4000-8000-000000000007'
++                        rank: 8
++                        displayName: Popeye
++                        score: 400
++                      - entryId: 'd7c30000-0000-4000-8000-000000000008'
++                        rank: 9
++                        displayName: Tom
++                        score: 300
++                      - entryId: 'd7c30000-0000-4000-8000-000000000009'
++                        rank: 10
++                        displayName: Jerry
++                        score: 200
++                      - entryId: 'd7c30000-0000-4000-8000-000000000010'
++                        rank: 11
++                        displayName: Tweety
++                        score: 100
+                     revision: '"0x8DE001"'
+                     fetchedAtUtc: '2026-09-26T12:00:00.000Z'
+         '429':
+@@ -109,6 +191,46 @@
+                         rank: 1
+                         displayName: Løkke
+                         score: 1200
++                      - entryId: 'd7c30000-0000-4000-8000-000000000001'
++                        rank: 2
++                        displayName: Bugs Bunny
++                        score: 1000
++                      - entryId: 'd7c30000-0000-4000-8000-000000000002'
++                        rank: 3
++                        displayName: Daffy Duck
++                        score: 900
++                      - entryId: 'd7c30000-0000-4000-8000-000000000003'
++                        rank: 4
++                        displayName: Scooby-Doo
++                        score: 800
++                      - entryId: 'd7c30000-0000-4000-8000-000000000004'
++                        rank: 5
++                        displayName: Fred Flintstone
++                        score: 700
++                      - entryId: 'd7c30000-0000-4000-8000-000000000005'
++                        rank: 6
++                        displayName: Garfield
++                        score: 600
++                      - entryId: 'd7c30000-0000-4000-8000-000000000006'
++                        rank: 7
++                        displayName: Snoopy
++                        score: 500
++                      - entryId: 'd7c30000-0000-4000-8000-000000000007'
++                        rank: 8
++                        displayName: Popeye
++                        score: 400
++                      - entryId: 'd7c30000-0000-4000-8000-000000000008'
++                        rank: 9
++                        displayName: Tom
++                        score: 300
++                      - entryId: 'd7c30000-0000-4000-8000-000000000009'
++                        rank: 10
++                        displayName: Jerry
++                        score: 200
++                      - entryId: 'd7c30000-0000-4000-8000-000000000010'
++                        rank: 11
++                        displayName: Tweety
++                        score: 100
+                     revision: '"0x8DE001"'
+                     fetchedAtUtc: '2026-09-26T12:00:00.000Z'
+         '400':
+@@ -282,6 +404,7 @@
+           $ref: '#/components/schemas/Score'
+     Entries:
+       type: array
++      minItems: 10
+       maxItems: 100
+       uniqueItems: true
+       items:
+--- before/specs/001-global-highscores/contracts/ios-flow.md
++++ after/specs/001-global-highscores/contracts/ios-flow.md
+@@ -39,7 +39,7 @@
+ 
+ Apply scrolling after rows exist and after keyboard dismissal. Interior selected rows should be vertically centred; at the start/end use the closest valid position keeping the whole row visible. A subsequent explicit refresh that no longer contains the selected ID explains displacement and opens the bottom. Never highlight another row with the same name or score.
+ 
+-If a session-memory snapshot remains after refresh failure, mark it `Previously loaded — may be out of date.` It is browse-only and must not decide current qualification. Empty means a confirmed empty response, not an error converted into an empty list.
++If a session-memory snapshot remains after refresh failure, mark it `Previously loaded — may be out of date.` It is browse-only and must not decide current qualification. The current backend supplies at least ten rows, including cartoon starters where needed. The client retains its empty state for legacy responses and injected test fixtures: empty means a confirmed empty response, never an error converted into a successful list.
+ 
+ ## Layout, accessibility and configuration
+ 
+--- before/specs/001-global-highscores/data-model.md
++++ after/specs/001-global-highscores/data-model.md
+@@ -54,7 +54,7 @@
+ 
+ ### Conditional update lifecycle
+ 
+-1. Validate/canonicalize input before storage. Read a valid document and matching ETag. Only `BlobNotFound` in an existing container produces a virtual empty document with sequence 1; a missing container is an error.
++1. Validate/canonicalize input before storage. Read a valid document and matching ETag. Only `BlobNotFound` in an existing container produces a virtual new document; a missing container is an error. Fill valid documents below ten rows with deterministic cartoon starters (100–1,000 points), stable IDs and unused sequences starting at `nextSequence`. Preserve every existing row and its tie order. GET does not persist this fill; a new submission persists the resulting candidate through the existing conditional write. A replay returns the filled snapshot without a write.
+ 2. If the ID exists, compare the canonical payload and return current ranked snapshot or 409 without a write.
+ 3. If the list is full and the candidate score is <= the last score, return `notQualified` and the read snapshot. This check is authoritative at that read; it reserves nothing.
+ 4. Otherwise build a new candidate with the next sequence and server timestamp, sort, truncate to 100 and increment `nextSequence`. Validate size and overflow before attempting upload.
+@@ -76,7 +76,7 @@
+ | `outcome` | POST only: `ranked` or `notQualified` |
+ | `entryId`, `rank` at POST root | Present only for `ranked`, matching one row in the returned snapshot |
+ 
+-Serialize timestamps as RFC 3339 UTC with milliseconds, for example `2026-09-26T12:00:00.000Z`. The client must explicitly support fractional seconds when decoding. A revision identifies observed content, not a promise that no other writer has since changed it. A new empty-list observation can share revision `empty` but have a different fetch time.
++Serialize timestamps as RFC 3339 UTC with milliseconds, for example `2026-09-26T12:00:00.000Z`. The client must explicitly support fractional seconds when decoding. A revision identifies observed content, not a promise that no other writer has since changed it. A new starter-list observation can share revision `empty` before the first persisted submission but have a different fetch time. The revision denotes storage state, including when a valid older document is filled virtually to ten rows.
+ 
+ Successful responses are complete snapshots, not patches. They use `Cache-Control: no-store`; no HTTP 304 path is provided initially. Swift decoding ignores unknown response fields for additive evolution but verifies the known invariants: max 100, unique IDs, contiguous ranks, non-increasing scores, valid rows and consistent ranked entry/rank. Invalid response data becomes a service error and never establishes eligibility.
+ 
+--- before/specs/001-global-highscores/plan.md
++++ after/specs/001-global-highscores/plan.md
+@@ -110,7 +110,7 @@
+ 
+ ### Backend boundary
+ 
+-- `GET /api/v1/highscores` returns a complete bounded snapshot. A missing blob in an existing container returns an empty list; other storage problems return errors.
++- `GET /api/v1/highscores` returns a complete bounded snapshot. A missing blob in an existing container returns ten deterministic cartoon starters (owner update 2026-09-27); valid lists with fewer than ten entries are filled to ten while preserving players. GET remains read-only; the next new score persists starters in the normal conditional write. Other storage problems return errors.
+ - `POST /api/v1/highscores` validates and canonicalizes input, detects an existing run, then merges/rechecks against fresh storage with conditional writes. Rank and tie order are server-owned. No caller can edit an existing ranked run.
+ - Return the successfully written candidate plus its write ETag, not a later read. `notQualified` is a normal 200 outcome. Operational failures use stable Problem Details codes, including `submission_unconfirmed` when a write may have committed.
+ - Configure six-second cancellation/deadline across reads, credentials, backoff and writes; SDK retries are disabled. Recognized CAS conflicts alone receive up to five attempts. Serialization must fit one small conditional Put Blob.
+--- before/specs/001-global-highscores/quickstart.md
++++ after/specs/001-global-highscores/quickstart.md
+@@ -43,7 +43,7 @@
+ curl --fail "$DT3D_ORIGIN/api/v1/highscores"
+ ```
+ 
+-Liveness returns `Healthy` without storage access. Fresh GET returns `entries: []`, revision `empty`, UTC fetched time and `Cache-Control: no-store`. POST JSON has exactly `submissionId` (nonzero UUID), `displayName`, `score` (multiple of 100) and `levelReached` (positive integer). See executable examples in [shared fixtures](../../src/tests/fixtures/highscores.json). On fresh storage an explicit submission returns `ranked`; an identical ranked-ID replay preserves the row/revision; a changed payload for that ID is 409. A full-list equal cutoff returns `notQualified`. Unknown/invalid fields, malformed JSON, >4 KiB bodies, unsupported media and throttling return safe Problem Details. The iPhone never retries a failed POST, including after `Retry-After`.
++Liveness returns `Healthy` without storage access. Fresh GET returns ten cartoon starters scoring 100–1,000 points, revision `empty` (no persisted blob yet), UTC fetched time and `Cache-Control: no-store`. GET does not write storage; the next new submission persists starters with the player result. POST JSON has exactly `submissionId` (nonzero UUID), `displayName`, `score` (multiple of 100) and `levelReached` (positive integer). See executable examples in [shared fixtures](../../src/tests/fixtures/highscores.json). On fresh storage an explicit submission returns `ranked`; an identical ranked-ID replay preserves the row/revision; a changed payload for that ID is 409. A full-list equal cutoff returns `notQualified`. Unknown/invalid fields, malformed JSON, >4 KiB bodies, unsupported media and throttling return safe Problem Details. The iPhone never retries a failed POST, including after `Retry-After`.
+ 
+ ## Backend checks
+ 
+--- before/specs/001-global-highscores/research.md
++++ after/specs/001-global-highscores/research.md
+@@ -34,7 +34,7 @@
+ 
+ ## 4. Empty, corrupt and unavailable storage
+ 
+-**Decision:** Treat only `404 BlobNotFound` as an empty ranking. `ContainerNotFound`, malformed/oversized JSON, an unknown schema version and authorization failures become operational errors. Retry `ConditionNotMet` from the intended condition and recognized first-create `BlobAlreadyExists` races; other 409/412 errors are not ranking conflicts. Never auto-create a production container or overwrite corrupt state in the request path.
++**Decision:** Treat only `404 BlobNotFound` as a new ranking. Owner update 2026-09-27: present ten deterministic cartoon starters for new lists and fill valid undersized lists to ten; GET remains read-only and the next new submission persists the fill conditionally. `ContainerNotFound`, malformed/oversized JSON, an unknown schema version and authorization failures become operational errors. Retry `ConditionNotMet` from the intended condition and recognized first-create `BlobAlreadyExists` races; other 409/412 errors are not ranking conflicts. Never auto-create a production container or overwrite corrupt state in the request path.
+ 
+ **Rationale:** Treating every missing resource as an empty list could hide a deployment problem or destroy evidence of corruption. Reads are bounded to 256 KiB and writes are serialized and size-checked before upload. Use one small Put Blob operation, not a staged multi-block upload.
+ 
+--- before/specs/001-global-highscores/spec.md
++++ after/specs/001-global-highscores/spec.md
+@@ -94,7 +94,7 @@
+ 
+ ### Edge Cases
+ 
+-- Empty and partially filled lists contain only real entries, without invented rows.
++- Owner update 2026-09-27: valid lists always contain at least ten entries. The backend supplies deterministic cartoon starters with 100–1,000 points for a new or undersized list. Preserve existing players; starters use ordinary ranking and can eventually all be displaced. Storage/network errors remain errors, never fabricated successful lists.
+ - Game Over means loss of the last life. A rescue, single lost life, pause-menu restart, abandoned run or return to title does not publish a result.
+ - Use the run's final score, never the previously saved personal best or the next run's score.
+ - Equal scores have consecutive ranks ordered by successful save order. A full list never replaces an earlier equal cutoff score.
+@@ -107,7 +107,7 @@
+ 
+ ### Functional Requirements
+ 
+-- **FR-001**: Maintain one shared, all-time list of the best 100 completed-run scores, retaining fewer entries until 100 qualifying results exist.
++- **FR-001**: Maintain one shared, all-time list of the best 100 completed-run scores, with at least ten entries supplied by low-scoring cartoon starters until enough results exist. Keep the maximum of 100; start scores are 100–1,000 and are displaced by the same ranking rules.
+ - **FR-002**: Rank by descending score, then first successful save for ties; show consecutive ranks starting at 1.
+ - **FR-003**: Persist the list independently of any individual device and service process lifetime.
+ - **FR-004**: Evaluate only the final score of a run reaching Game Over through loss of all lives, independently of the local personal best.
+--- before/specs/001-global-highscores/tasks.md
++++ after/specs/001-global-highscores/tasks.md
+@@ -112,7 +112,7 @@
+ 
+ ### Tests
+ 
+-- [X] T032 [P] [US3] Extend the GET contract evidence in `src/backend.tests/HighscoreReadContractTests.cs`: empty versus populated snapshot, no-store/no-304 behavior, BlobNotFound versus missing container/corrupt data/unavailable storage, bounded cancellation and stable public projection. Ensure a failed read cannot look like an empty valid ranking. (Depends on T026; FR-012, FR-014, FR-018.)
++- [X] T032 [P] [US3] Extend the GET contract evidence in `src/backend.tests/HighscoreReadContractTests.cs`: starter versus populated snapshot (minimum-ten owner update 2026-09-27), no-store/no-304 behavior, BlobNotFound versus missing container/corrupt data/unavailable storage, bounded cancellation and stable public projection. Ensure a failed read cannot look like an empty valid ranking. (Depends on T026; FR-012, FR-014, FR-018.)
+ - [X] T033 [P] [US3] Write browsing/deadline/generation cases in `src/DonkeyTrump3DTests/HighscoreBrowsingTests.swift`: top anchor, a selected entry disappearing on an explicit refresh (explain displacement and show the last real row), eight-second hang/slow-stream/uncooperative-task timeout, close/start/controller restart versus late response, explicit retry and stale browse-only cache; assert refresh never reopens a terminal run's qualification and an absent/invalid URL does not block play. (Depends on T026; FR-012, FR-013, FR-014, FR-015, FR-018.)
+ - [X] T034 [P] [US3] Write title/landscape UI cases in `src/DonkeyTrump3DUITests/HighscoreBrowsingUITests.swift`: open/close while loading, immediate Start, empty/error/stale text, read-only refresh, rank/name/score accessibility labels and reachable navigation at standard/large accessibility sizes with the software keyboard dismissed. (Depends on T026; FR-012, FR-013, FR-014, FR-019.)
+ 
+--- before/specs/001-global-highscores/technical-proposal.md
++++ after/specs/001-global-highscores/technical-proposal.md
+@@ -48,13 +48,13 @@
+ 
+ A stable run ID makes replay idempotent while that run remains ranked. An evicted run replayed with the same payload cannot beat the monotonically rising all-time cutoff. Responses describe the current result, not a replay of an earlier response. Changed payloads for already evicted IDs cannot be detected without a receipt/history store; that stronger guarantee is outside this simple anonymous design.
+ 
+-Provision the container during deployment. A missing blob in an existing container means an empty list. A missing container, storage outage or malformed JSON means an operational error: never silently replace corrupt state with an empty list.
++Provision the container during deployment. Owner update 2026-09-27: a missing blob in an existing container presents ten deterministic cartoon starters (100–1,000 points). Valid undersized lists are filled to ten without replacing players. Reads do not write; a new score persists the fill with its conditional write. A missing container, storage outage or malformed JSON means an operational error: never silently replace corrupt state with an empty list.
+ 
+ ## Proposed HTTP contract
+ 
+ | Route | Behaviour |
+ |---|---|
+-| `GET /api/v1/highscores` | Return `{ entries, revision, fetchedAtUtc }`; each public row has `entryId`, `rank`, `displayName`, `score`. Empty array only for a genuinely empty list. |
++| `GET /api/v1/highscores` | Return `{ entries, revision, fetchedAtUtc }`; each public row has `entryId`, `rank`, `displayName`, `score`. At least ten rows, including server-owned cartoon starters when needed; maximum 100. |
+ | `POST /api/v1/highscores` | Accept `{ submissionId, displayName, score, levelReached }`. Recheck and return `{ outcome, entryId, rank, entries, revision }`, with outcome `ranked` or `notQualified`. Omit rank/entry ID for non-qualification. |
+ | `GET /health/live` | Process liveness, already implemented in the starter. Does not establish storage readiness. |
+ 
+--- before/src/backend.tests/BlobHighscoreStoreTests.cs
++++ after/src/backend.tests/BlobHighscoreStoreTests.cs
+@@ -17,7 +17,7 @@
+             uploaded=await request.Content!.ReadAsByteArrayAsync();return BlobHttpHandler.Saved();
+         };
+         var run=Run();var result=await http.Store().SubmitAsync(run,default);
+-        Assert.Equal("ranked",result.Outcome);Assert.Equal("\"saved\"",result.Revision);Assert.Equal(run.SubmissionId,Assert.Single(result.Entries).EntryId);
++        Assert.Equal("ranked",result.Outcome);Assert.Equal("\"saved\"",result.Revision);Assert.Equal(11,result.Entries.Count);Assert.Contains(result.Entries,e=>e.EntryId==run.SubmissionId);
+         Assert.Equal(1,http.Reads);Assert.Equal(1,http.Writes);Assert.NotNull(uploaded);
+         var condition=Assert.Single(http.Conditions);Assert.Equal(missing?null:"\"v1\"",condition.Match);Assert.Equal(missing?"*":null,condition.NoneMatch);Assert.Equal("",condition.Query);
+     }
+@@ -28,8 +28,8 @@
+             ? http.Reads==1?BlobHttpHandler.Error(404,"BlobNotFound"):BlobHttpHandler.Document(current.Serialize(),"\"competitor\"")
+             :http.Writes==1?BlobHttpHandler.Error(status,code):BlobHttpHandler.Saved());
+         var result=await http.Store(backoff:_=>{backoffs++;return Task.CompletedTask;}).SubmitAsync(Run(),default);
+-        Assert.Equal(2,http.Reads);Assert.Equal(2,http.Writes);Assert.Equal(1,backoffs);Assert.Equal(2,result.Entries.Count);
+-        Assert.Equal(competitor.SubmissionId,result.Entries[0].EntryId);Assert.Equal("\"competitor\"",http.Conditions[1].Match);
++        Assert.Equal(2,http.Reads);Assert.Equal(2,http.Writes);Assert.Equal(1,backoffs);Assert.Equal(11,result.Entries.Count);
++        Assert.Contains(result.Entries,e=>e.EntryId==competitor.SubmissionId);Assert.Equal("\"competitor\"",http.Conditions[1].Match);
+     }
+     [Fact] public async Task ContentionStopsAtFiveUploadsAndFourBackoffs() {
+         using var http=new BlobHttpHandler();int backoffs=0;
+--- before/src/backend.tests/HighscoreConcurrencyTests.cs
++++ after/src/backend.tests/HighscoreConcurrencyTests.cs
+@@ -23,8 +23,8 @@
+         var a=new HighscoreSubmission(Guid.NewGuid(),"Equal",100,1);var b=new HighscoreSubmission(Guid.NewGuid(),"Equal",100,1);
+         var results=await Task.WhenAll(Store(options,aTransport).SubmitAsync(a,default),Store(options,bTransport).SubmitAsync(b,default));
+         Assert.All(results,r=>Assert.Equal("ranked",r.Outcome));var final=await baseline.ReadAsync(default);
+-        Assert.Equal(existing?3:2,final.Entries.Count);Assert.Contains(final.Entries,e=>e.EntryId==a.SubmissionId);Assert.Contains(final.Entries,e=>e.EntryId==b.SubmissionId);
+-        var firstResult=results.Single(r=>r.Entries.Count==(existing?2:1));Assert.Equal(firstResult.EntryId,final.Entries[0].EntryId);
++        Assert.Equal(existing?13:12,final.Entries.Count);Assert.Contains(final.Entries,e=>e.EntryId==a.SubmissionId);Assert.Contains(final.Entries,e=>e.EntryId==b.SubmissionId);
++        var firstResult=results.Single(r=>r.Entries.Count==(existing?12:11));Assert.Equal(firstResult.EntryId,final.Entries.First(e=>e.EntryId==a.SubmissionId || e.EntryId==b.SubmissionId).EntryId);
+         var replay=await Store(options).SubmitAsync(a,default);Assert.Equal(final.Revision,replay.Revision);
+         var restarted=await Store(options).ReadAsync(default);Assert.Equal(final.Entries,restarted.Entries);Assert.Equal(final.Revision,restarted.Revision);
+     }
+--- before/src/backend.tests/HighscoreEndpointTests.cs
++++ after/src/backend.tests/HighscoreEndpointTests.cs
+@@ -11,7 +11,7 @@
+ {
+     private sealed class Store : IHighscoreStore {
+         public int Calls;
+-        private HighscoreDocument document = HighscoreDocument.Empty;
++        private HighscoreDocument document = HighscoreStarters.Fill(HighscoreDocument.Empty);
+         public Task<HighscoreSnapshot> ReadAsync(CancellationToken token) { Calls++; return Task.FromResult(HighscoreSnapshot.From(document, "empty", DateTimeOffset.UtcNow)); }
+         public Task<HighscoreResult> SubmitAsync(HighscoreSubmission run, CancellationToken token) {
+             Calls++; document = HighscoreRanking.Evaluate(document, run, DateTimeOffset.UtcNow).Document;
+@@ -23,7 +23,7 @@
+         Assert.Equal("Healthy", await client.GetStringAsync("/health/live")); Assert.Equal(0, store.Calls);
+         using var response = await client.GetAsync("/api/v1/highscores"); Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+         Assert.True(response.Headers.CacheControl?.NoStore); var json = await response.Content.ReadFromJsonAsync<JsonElement>();
+-        Assert.Empty(json.GetProperty("entries").EnumerateArray()); Assert.Equal("empty", json.GetProperty("revision").GetString());
++        Assert.Equal(10,json.GetProperty("entries").GetArrayLength()); Assert.Equal("empty", json.GetProperty("revision").GetString());
+         Assert.Matches(@"\.\d{3}Z$", json.GetProperty("fetchedAtUtc").GetString()!);
+     }
+     [Fact] public async Task SaveReplayAndConflictUseExactPublicContract() {
+@@ -32,7 +32,7 @@
+         for (int i=0;i<2;i++) {
+             using var response = await client.PostAsJsonAsync("/api/v1/highscores", run); Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+             var data = await response.Content.ReadFromJsonAsync<JsonElement>(); Assert.Equal("ranked", data.GetProperty("outcome").GetString());
+-            Assert.Equal(run.submissionId, data.GetProperty("entryId").GetGuid()); var row = Assert.Single(data.GetProperty("entries").EnumerateArray());
++            Assert.Equal(run.submissionId, data.GetProperty("entryId").GetGuid()); var row = Assert.Single(data.GetProperty("entries").EnumerateArray(),e=>e.GetProperty("entryId").GetGuid()==run.submissionId);
+             Assert.Equal(new[] {"displayName","entryId","rank","score"}, row.EnumerateObject().Select(p=>p.Name).Order().ToArray());
+             Assert.Equal("Løkke", row.GetProperty("displayName").GetString());
+         }
+--- before/src/backend.tests/HighscoreReadContractTests.cs
++++ after/src/backend.tests/HighscoreReadContractTests.cs
+@@ -20,13 +20,13 @@
+     }
+     [Theory][InlineData(0)][InlineData(1)]
+     public async Task ConditionalGetReturnsFreshPublicSnapshotInsteadOf304(int count) {
+-        var document=HighscoreDocument.Empty;
++        var document=HighscoreStarters.Fill(HighscoreDocument.Empty);
+         if(count>0) document=HighscoreRanking.Evaluate(document,new(Guid.NewGuid(),"Løkke",100,2),DateTimeOffset.UtcNow).Document;
+         var snapshot=HighscoreSnapshot.From(document,"\"revision\"",DateTimeOffset.UtcNow);
+         await using var factory=new HighscoreApiFactory(new Store(_=>Task.FromResult(snapshot)));
+         using var client=factory.CreateClient();client.DefaultRequestHeaders.TryAddWithoutValidation("If-None-Match","\"revision\"");
+         using var response=await client.GetAsync("/api/v1/highscores");Assert.Equal(HttpStatusCode.OK,response.StatusCode);
+         var json=await response.Content.ReadAsStringAsync();var data=JsonDocument.Parse(json).RootElement;
+-        Assert.Equal(count,data.GetProperty("entries").GetArrayLength());Assert.DoesNotContain("sequence",json);Assert.DoesNotContain("levelReached",json);
++        Assert.Equal(10+count,data.GetProperty("entries").GetArrayLength());Assert.DoesNotContain("sequence",json);Assert.DoesNotContain("levelReached",json);
+     }
+ }
+--- before/src/backend.tests/HighscoreStarterTests.cs
++++ after/src/backend.tests/HighscoreStarterTests.cs
+@@ -0,0 +1,82 @@
++using DonkeyTrump.Highscores.Tests.Support;
++
++namespace DonkeyTrump.Highscores.Tests;
++
++public class HighscoreStarterTests
++{
++    [Fact] public void FreshListHasTenStableLowScoreOpponents()
++    {
++        var empty = HighscoreDocument.Empty;
++        var first = HighscoreStarters.Fill(empty);
++        var second = HighscoreStarters.Fill(HighscoreDocument.Empty);
++        Assert.Empty(empty.Entries);
++        Assert.Equal(first.Entries, second.Entries);
++        Assert.Equal(10, first.Entries.Count);
++        Assert.Equal(Enumerable.Range(1,10).Reverse().Select(i=>i*100), first.Entries.Select(e=>e.Score));
++        Assert.Equal(10, first.Entries.Select(e=>e.SubmissionId).Distinct().Count());
++        Assert.Equal(10, first.Entries.Select(e=>e.DisplayName).Distinct().Count());
++        Assert.Contains(first.Entries,e=>e.DisplayName=="Bugs Bunny");
++        Assert.Same(first,HighscoreStarters.Fill(first));
++        first.Validate();
++    }
++
++    [Theory][InlineData(1)][InlineData(9)][InlineData(10)][InlineData(100)]
++    public void ExistingPlayersAndEarlierEqualScoresArePreserved(int count)
++    {
++        var existing = HighscoreDocument.Empty;
++        for (int i=0;i<count;i++) existing=HighscoreRanking.Evaluate(existing,
++            new(Guid.NewGuid(),"Real player",1000,1),DateTimeOffset.UtcNow).Document;
++        var filled=HighscoreStarters.Fill(existing);
++        Assert.Equal(Math.Max(10,count),filled.Entries.Count);
++        Assert.Equal(existing.Entries,filled.Entries.Take(count));
++        Assert.Equal(count,existing.Entries.Count);
++        Assert.Equal(filled.NextSequence-1,filled.Entries.Max(e=>e.Sequence));
++        filled.Validate();
++    }
++
++    [Fact] public void PartialStarterListDoesNotDuplicateIdsOrReplaceAnExistingRow()
++    {
++        var seeded=HighscoreStarters.Fill(HighscoreDocument.Empty);
++        var existing=seeded with {Entries=[seeded.Entries[0] with {DisplayName="Existing player"}]};
++        var filled=HighscoreStarters.Fill(existing);
++        Assert.Equal(10,filled.Entries.Count);
++        Assert.Equal(10,filled.Entries.Select(e=>e.SubmissionId).Distinct().Count());
++        Assert.Equal(existing.Entries[0],filled.Entries[0]);
++        filled.Validate();
++    }
++
++    [Fact] public void RealPlayersCanDisplaceEveryStarterWithoutReplenishment()
++    {
++        var document=HighscoreStarters.Fill(HighscoreDocument.Empty);
++        var seedIds=document.Entries.Select(e=>e.SubmissionId).ToHashSet();
++        for(int i=0;i<100;i++) document=HighscoreRanking.Evaluate(document,
++            new(Guid.NewGuid(),"Real player",1100,1),DateTimeOffset.UtcNow).Document;
++        Assert.Same(document,HighscoreStarters.Fill(document));
++        Assert.Equal(100,document.Entries.Count);
++        Assert.DoesNotContain(document.Entries,e=>seedIds.Contains(e.SubmissionId));
++    }
++
++    [Theory][InlineData(false)][InlineData(true)]
++    public async Task ReadFillsMissingOrPartialStorageWithoutWriting(bool missing)
++    {
++        using var http=new BlobHttpHandler();
++        var player=new HighscoreSubmission(Guid.NewGuid(),"Existing player",0,1);
++        var existing=HighscoreRanking.Evaluate(HighscoreDocument.Empty,player,DateTimeOffset.UtcNow).Document;
++        http.Respond=(_,_)=>Task.FromResult(missing?BlobHttpHandler.Error(404,"BlobNotFound"):BlobHttpHandler.Document(existing.Serialize()));
++        var first=await http.Store().ReadAsync(default);
++        var second=await http.Store().ReadAsync(default);
++        Assert.Equal(10,first.Entries.Count);Assert.Equal(first.Entries,second.Entries);
++        Assert.Equal(missing?"empty":"\"v1\"",first.Revision);
++        Assert.Equal(0,http.Writes);
++        if(!missing) Assert.Contains(first.Entries,e=>e.EntryId==player.SubmissionId && e.Score==0);
++    }
++
++    [Fact] public async Task CorruptReadNeverBecomesAStarterList()
++    {
++        using var http=new BlobHttpHandler();
++        http.Respond=(_,_)=>Task.FromResult(BlobHttpHandler.Document("{"u8.ToArray()));
++        var failure=await Assert.ThrowsAsync<HighscoreFailure>(()=>http.Store().ReadAsync(default));
++        Assert.Equal("storage_invalid",failure.Code);Assert.Equal(0,http.Writes);
++        Assert.Throws<HighscoreFailure>(()=>HighscoreStarters.Fill(HighscoreDocument.Empty with {NextSequence=long.MaxValue}));
++    }
++}
+--- before/src/backend.tests/HighscoreStorageSmokeTests.cs
++++ after/src/backend.tests/HighscoreStorageSmokeTests.cs
+@@ -14,17 +14,20 @@
+         var secondStore = new BlobHighscoreStore(fixture.Options.CreateClient(), fixture.Options, TimeProvider.System);
+         await using var first = new HighscoreApiFactory(firstStore); await using var second = new HighscoreApiFactory(secondStore);
+         using var a = first.CreateClient(); using var b = second.CreateClient();
+-        var empty = await a.GetFromJsonAsync<JsonElement>("/api/v1/highscores"); Assert.Empty(empty.GetProperty("entries").EnumerateArray());
++        var initial = await a.GetFromJsonAsync<JsonElement>("/api/v1/highscores"); Assert.Equal(10,initial.GetProperty("entries").GetArrayLength());
++        Assert.False(await fixture.Container.GetBlobClient(fixture.Options.BlobName).ExistsAsync());
+         var run = new { submissionId = Guid.NewGuid(), displayName = "Løkke", score = 0, levelReached = 1 };
+         using var saved = await a.PostAsJsonAsync("/api/v1/highscores", run); saved.EnsureSuccessStatusCode();
+         var written = await saved.Content.ReadFromJsonAsync<JsonElement>(); Assert.Equal("ranked", written.GetProperty("outcome").GetString());
+         var loaded = await b.GetFromJsonAsync<JsonElement>("/api/v1/highscores");
+         Assert.Equal(written.GetProperty("revision").GetString(), loaded.GetProperty("revision").GetString());
+-        Assert.Equal(run.submissionId, Assert.Single(loaded.GetProperty("entries").EnumerateArray()).GetProperty("entryId").GetGuid());
++        Assert.Equal(11,loaded.GetProperty("entries").GetArrayLength());
++        Assert.Equal(run.submissionId,loaded.GetProperty("entries")[10].GetProperty("entryId").GetGuid());
+         using var replay = await b.PostAsJsonAsync("/api/v1/highscores",run); replay.EnsureSuccessStatusCode();
+         var repeated = await replay.Content.ReadFromJsonAsync<JsonElement>();
+         Assert.Equal(written.GetProperty("revision").GetString(), repeated.GetProperty("revision").GetString());
+-        Assert.Single(repeated.GetProperty("entries").EnumerateArray());
++        Assert.Equal(11,repeated.GetProperty("entries").GetArrayLength());
++        Assert.Equal(initial.GetProperty("entries").GetRawText(), JsonSerializer.Serialize(loaded.GetProperty("entries").EnumerateArray().Take(10)));
+         // Fresh store instance models an API process losing all in-memory state.
+         var restarted = new BlobHighscoreStore(fixture.Options.CreateClient(), fixture.Options, TimeProvider.System);
+         Assert.Equal(loaded.GetProperty("revision").GetString(), (await restarted.ReadAsync(default)).Revision);
+--- before/src/backend/Highscores/BlobHighscoreStore.cs
++++ after/src/backend/Highscores/BlobHighscoreStore.cs
+@@ -31,10 +31,9 @@
+             HighscoreDocument document;
+             try { document = JsonSerializer.Deserialize<HighscoreDocument>(bytes, HighscoreJson.Options) ?? throw HighscoreFailure.InvalidStorage(); }
+             catch (JsonException) { throw HighscoreFailure.InvalidStorage(); }
+-            document.Validate();
+-            return (document, response.Value.Details.ETag);
++            return (HighscoreStarters.Fill(document), response.Value.Details.ETag);
+         } catch (RequestFailedException e) when (e.Status == 404 && e.ErrorCode == "BlobNotFound") {
+-            return (HighscoreDocument.Empty, null);
++            return (HighscoreStarters.Fill(HighscoreDocument.Empty), null);
+         }
+     }
+ 
+--- before/src/backend/Highscores/HighscoreStarters.cs
++++ after/src/backend/Highscores/HighscoreStarters.cs
+@@ -0,0 +1,36 @@
++namespace DonkeyTrump.Highscores;
++
++/// Server-owned starting opponents. GET remains read-only; the next new score
++/// persists these rows with the same conditional write as the player's result.
++public static class HighscoreStarters
++{
++    public const int MinimumEntries = 10;
++    private static readonly string[] Names = [
++        "Bugs Bunny", "Daffy Duck", "Scooby-Doo", "Fred Flintstone", "Garfield",
++        "Snoopy", "Popeye", "Tom", "Jerry", "Tweety"
++    ];
++    private static readonly DateTimeOffset AcceptedAt = new(2026, 9, 27, 0, 0, 0, TimeSpan.Zero);
++
++    public static HighscoreDocument Fill(HighscoreDocument document)
++    {
++        // Never disguise corrupt storage as a fresh starter list.
++        document.Validate();
++        if (document.Entries.Count >= MinimumEntries) return document;
++        var entries = new List<StoredEntry>(document.Entries);
++        var next = document.NextSequence;
++        for (int i = 0; i < Names.Length && entries.Count < MinimumEntries; i++)
++        {
++            var id = Guid.Parse($"d7c30000-0000-4000-8000-{i + 1:D12}");
++            if (entries.Any(e => e.SubmissionId == id)) continue;
++            if (next == long.MaxValue) throw HighscoreFailure.InvalidStorage();
++            entries.Add(new StoredEntry {
++                SubmissionId = id, DisplayName = Names[i], Score = (MinimumEntries - i) * 100,
++                LevelReached = 1, Sequence = next++, AcceptedAtUtc = AcceptedAt
++            });
++        }
++        return document with {
++            NextSequence = next,
++            Entries = entries.OrderByDescending(e => e.Score).ThenBy(e => e.Sequence).ToList()
++        };
++    }
++}
+--- before/src/backend/README.md
++++ after/src/backend/README.md
+@@ -1,6 +1,6 @@
+ # Donkey Trump Highscores API
+ 
+-One ASP.NET Core 10 Minimal API stores the all-time top 100 completed runs in one private Azure Block Blob. The native iPhone app loads asynchronously and never queues a failed submission. See the [HTTP contract](../../specs/001-global-highscores/contracts/highscores.openapi.yaml), [quickstart](../../specs/001-global-highscores/quickstart.md) and [executed validation](../../specs/001-global-highscores/validation.md).
++One ASP.NET Core 10 Minimal API stores the all-time top 100 in one private Azure Block Blob. New lists start with ten cartoon opponents scoring 100–1,000 points. Valid older lists below ten rows are filled without changing existing players. Starters follow ordinary ranking and can all be displaced by real players. The native iPhone app loads asynchronously and never queues a failed submission. See the [HTTP contract](../../specs/001-global-highscores/contracts/highscores.openapi.yaml), [quickstart](../../specs/001-global-highscores/quickstart.md) and [executed validation](../../specs/001-global-highscores/validation.md).
+ 
+ ## Build and local integration
+ 
+@@ -45,7 +45,7 @@
+ 
+ Sorting is score descending, then server-assigned successful-save sequence ascending. The full-list cutoff must be beaten. A conditional `If-Match`/`If-None-Match` single Put Blob protects simultaneous updates. Only recognized rejected writes are retried: at most five write attempts within a six-second total deadline, including reads and backoff. SDK retries are disabled; network timeout is two seconds. An ambiguous attempted save returns `submission_unconfirmed` and is never automatically uploaded again. The app also never retries, persists or defers an unsuccessful POST.
+ 
+-Identical same-ID submissions are deduplicated only while the result remains ranked. A changed canonical payload for a ranked ID is 409. This is not a historical receipt archive. Only `BlobNotFound` in an existing container means empty; missing container, invalid schema/data and authorization failures fail closed without repair or overwrite.
++Identical same-ID submissions are deduplicated only while the result remains ranked. A changed canonical payload for a ranked ID is 409. This is not a historical receipt archive. GET stays read-only: deterministic starters are persisted with the next new score in the same conditional write. The literal revision `empty` means no blob has been persisted yet, even though ten starting opponents are visible. Only `BlobNotFound` in an existing container permits a fresh starter list; missing container, invalid schema/data and authorization failures fail closed without repair or overwrite.
+ 
+ ## Configuration and operations
+ 
+--- before/src/tests/support/verify-two-installations.py
++++ after/src/tests/support/verify-two-installations.py
+@@ -18,7 +18,7 @@
+         data = json.load(response)
+         return {key: data[key] for key in ('revision', 'entries')}
+ 
+-expected = get(); assert expected['entries'], 'Publish from the first app before checking persistence'
++expected = get(); assert expected['entries'] and expected['revision'] != 'empty', 'Publish from the first app before checking persistence'
+ os.kill(before['ownerPid'], signal.SIGUSR1)
+ for _ in range(100):
+     after = json.loads(state_file.read_text())

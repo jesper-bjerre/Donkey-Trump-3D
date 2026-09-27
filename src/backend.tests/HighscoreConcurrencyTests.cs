@@ -23,8 +23,8 @@ public class HighscoreConcurrencyTests(AzuriteFixture fixture,ITestOutputHelper 
         var a=new HighscoreSubmission(Guid.NewGuid(),"Equal",100,1);var b=new HighscoreSubmission(Guid.NewGuid(),"Equal",100,1);
         var results=await Task.WhenAll(Store(options,aTransport).SubmitAsync(a,default),Store(options,bTransport).SubmitAsync(b,default));
         Assert.All(results,r=>Assert.Equal("ranked",r.Outcome));var final=await baseline.ReadAsync(default);
-        Assert.Equal(existing?3:2,final.Entries.Count);Assert.Contains(final.Entries,e=>e.EntryId==a.SubmissionId);Assert.Contains(final.Entries,e=>e.EntryId==b.SubmissionId);
-        var firstResult=results.Single(r=>r.Entries.Count==(existing?2:1));Assert.Equal(firstResult.EntryId,final.Entries[0].EntryId);
+        Assert.Equal(existing?13:12,final.Entries.Count);Assert.Contains(final.Entries,e=>e.EntryId==a.SubmissionId);Assert.Contains(final.Entries,e=>e.EntryId==b.SubmissionId);
+        var firstResult=results.Single(r=>r.Entries.Count==(existing?12:11));Assert.Equal(firstResult.EntryId,final.Entries.First(e=>e.EntryId==a.SubmissionId || e.EntryId==b.SubmissionId).EntryId);
         var replay=await Store(options).SubmitAsync(a,default);Assert.Equal(final.Revision,replay.Revision);
         var restarted=await Store(options).ReadAsync(default);Assert.Equal(final.Entries,restarted.Entries);Assert.Equal(final.Revision,restarted.Revision);
     }

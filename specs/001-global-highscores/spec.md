@@ -94,7 +94,7 @@ If the service cannot be reached after Game Over, I want an error and my local p
 
 ### Edge Cases
 
-- Empty and partially filled lists contain only real entries, without invented rows.
+- Owner update 2026-09-27: valid lists always contain at least ten entries. The backend supplies deterministic cartoon starters with 100–1,000 points for a new or undersized list. Preserve existing players; starters use ordinary ranking and can eventually all be displaced. Storage/network errors remain errors, never fabricated successful lists.
 - Game Over means loss of the last life. A rescue, single lost life, pause-menu restart, abandoned run or return to title does not publish a result.
 - Use the run's final score, never the previously saved personal best or the next run's score.
 - Equal scores have consecutive ranks ordered by successful save order. A full list never replaces an earlier equal cutoff score.
@@ -107,7 +107,7 @@ If the service cannot be reached after Game Over, I want an error and my local p
 
 ### Functional Requirements
 
-- **FR-001**: Maintain one shared, all-time list of the best 100 completed-run scores, retaining fewer entries until 100 qualifying results exist.
+- **FR-001**: Maintain one shared, all-time list of the best 100 completed-run scores, with at least ten entries supplied by low-scoring cartoon starters until enough results exist. Keep the maximum of 100; start scores are 100–1,000 and are displaced by the same ranking rules.
 - **FR-002**: Rank by descending score, then first successful save for ties; show consecutive ranks starting at 1.
 - **FR-003**: Persist the list independently of any individual device and service process lifetime.
 - **FR-004**: Evaluate only the final score of a run reaching Game Over through loss of all lives, independently of the local personal best.

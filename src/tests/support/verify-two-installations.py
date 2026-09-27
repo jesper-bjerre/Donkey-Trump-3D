@@ -18,7 +18,7 @@ def get():
         data = json.load(response)
         return {key: data[key] for key in ('revision', 'entries')}
 
-expected = get(); assert expected['entries'], 'Publish from the first app before checking persistence'
+expected = get(); assert expected['entries'] and expected['revision'] != 'empty', 'Publish from the first app before checking persistence'
 os.kill(before['ownerPid'], signal.SIGUSR1)
 for _ in range(100):
     after = json.loads(state_file.read_text())

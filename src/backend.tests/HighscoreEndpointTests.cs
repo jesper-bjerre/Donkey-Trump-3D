@@ -11,7 +11,7 @@ public class HighscoreEndpointTests
 {
     private sealed class Store : IHighscoreStore {
         public int Calls;
-        private HighscoreDocument document = HighscoreDocument.Empty;
+        private HighscoreDocument document = HighscoreStarters.Fill(HighscoreDocument.Empty);
         public Task<HighscoreSnapshot> ReadAsync(CancellationToken token) { Calls++; return Task.FromResult(HighscoreSnapshot.From(document, "empty", DateTimeOffset.UtcNow)); }
         public Task<HighscoreResult> SubmitAsync(HighscoreSubmission run, CancellationToken token) {
             Calls++; document = HighscoreRanking.Evaluate(document, run, DateTimeOffset.UtcNow).Document;
@@ -23,7 +23,7 @@ public class HighscoreEndpointTests
         Assert.Equal("Healthy", await client.GetStringAsync("/health/live")); Assert.Equal(0, store.Calls);
         using var response = await client.GetAsync("/api/v1/highscores"); Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.True(response.Headers.CacheControl?.NoStore); var json = await response.Content.ReadFromJsonAsync<JsonElement>();
-        Assert.Empty(json.GetProperty("entries").EnumerateArray()); Assert.Equal("empty", json.GetProperty("revision").GetString());
+        Assert.Equal(10,json.GetProperty("entries").GetArrayLength()); Assert.Equal("empty", json.GetProperty("revision").GetString());
         Assert.Matches(@"\.\d{3}Z$", json.GetProperty("fetchedAtUtc").GetString()!);
     }
     [Fact] public async Task SaveReplayAndConflictUseExactPublicContract() {
@@ -32,7 +32,7 @@ public class HighscoreEndpointTests
         for (int i=0;i<2;i++) {
             using var response = await client.PostAsJsonAsync("/api/v1/highscores", run); Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             var data = await response.Content.ReadFromJsonAsync<JsonElement>(); Assert.Equal("ranked", data.GetProperty("outcome").GetString());
-            Assert.Equal(run.submissionId, data.GetProperty("entryId").GetGuid()); var row = Assert.Single(data.GetProperty("entries").EnumerateArray());
+            Assert.Equal(run.submissionId, data.GetProperty("entryId").GetGuid()); var row = Assert.Single(data.GetProperty("entries").EnumerateArray(),e=>e.GetProperty("entryId").GetGuid()==run.submissionId);
             Assert.Equal(new[] {"displayName","entryId","rank","score"}, row.EnumerateObject().Select(p=>p.Name).Order().ToArray());
             Assert.Equal("Løkke", row.GetProperty("displayName").GetString());
         }

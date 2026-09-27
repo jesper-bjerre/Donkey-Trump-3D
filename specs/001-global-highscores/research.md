@@ -34,7 +34,7 @@ Source: [Azure Storage retry configuration](https://learn.microsoft.com/en-us/az
 
 ## 4. Empty, corrupt and unavailable storage
 
-**Decision:** Treat only `404 BlobNotFound` as an empty ranking. `ContainerNotFound`, malformed/oversized JSON, an unknown schema version and authorization failures become operational errors. Retry `ConditionNotMet` from the intended condition and recognized first-create `BlobAlreadyExists` races; other 409/412 errors are not ranking conflicts. Never auto-create a production container or overwrite corrupt state in the request path.
+**Decision:** Treat only `404 BlobNotFound` as a new ranking. Owner update 2026-09-27: present ten deterministic cartoon starters for new lists and fill valid undersized lists to ten; GET remains read-only and the next new submission persists the fill conditionally. `ContainerNotFound`, malformed/oversized JSON, an unknown schema version and authorization failures become operational errors. Retry `ConditionNotMet` from the intended condition and recognized first-create `BlobAlreadyExists` races; other 409/412 errors are not ranking conflicts. Never auto-create a production container or overwrite corrupt state in the request path.
 
 **Rationale:** Treating every missing resource as an empty list could hide a deployment problem or destroy evidence of corruption. Reads are bounded to 256 KiB and writes are serialized and size-checked before upload. Use one small Put Blob operation, not a staged multi-block upload.
 

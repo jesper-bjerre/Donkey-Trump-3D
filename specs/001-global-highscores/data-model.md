@@ -54,7 +54,7 @@ The sequence counter belongs to the same conditional write as the entry. A losin
 
 ### Conditional update lifecycle
 
-1. Validate/canonicalize input before storage. Read a valid document and matching ETag. Only `BlobNotFound` in an existing container produces a virtual empty document with sequence 1; a missing container is an error.
+1. Validate/canonicalize input before storage. Read a valid document and matching ETag. Only `BlobNotFound` in an existing container produces a virtual new document; a missing container is an error. Fill valid documents below ten rows with deterministic cartoon starters (100–1,000 points), stable IDs and unused sequences starting at `nextSequence`. Preserve every existing row and its tie order. GET does not persist this fill; a new submission persists the resulting candidate through the existing conditional write. A replay returns the filled snapshot without a write.
 2. If the ID exists, compare the canonical payload and return current ranked snapshot or 409 without a write.
 3. If the list is full and the candidate score is <= the last score, return `notQualified` and the read snapshot. This check is authoritative at that read; it reserves nothing.
 4. Otherwise build a new candidate with the next sequence and server timestamp, sort, truncate to 100 and increment `nextSequence`. Validate size and overflow before attempting upload.
@@ -76,7 +76,7 @@ The all-time cutoff never decreases under these v1 operations. Consequently an e
 | `outcome` | POST only: `ranked` or `notQualified` |
 | `entryId`, `rank` at POST root | Present only for `ranked`, matching one row in the returned snapshot |
 
-Serialize timestamps as RFC 3339 UTC with milliseconds, for example `2026-09-26T12:00:00.000Z`. The client must explicitly support fractional seconds when decoding. A revision identifies observed content, not a promise that no other writer has since changed it. A new empty-list observation can share revision `empty` but have a different fetch time.
+Serialize timestamps as RFC 3339 UTC with milliseconds, for example `2026-09-26T12:00:00.000Z`. The client must explicitly support fractional seconds when decoding. A revision identifies observed content, not a promise that no other writer has since changed it. A new starter-list observation can share revision `empty` before the first persisted submission but have a different fetch time. The revision denotes storage state, including when a valid older document is filled virtually to ten rows.
 
 Successful responses are complete snapshots, not patches. They use `Cache-Control: no-store`; no HTTP 304 path is provided initially. Swift decoding ignores unknown response fields for additive evolution but verifies the known invariants: max 100, unique IDs, contiguous ranks, non-increasing scores, valid rows and consistent ranked entry/rank. Invalid response data becomes a service error and never establishes eligibility.
 

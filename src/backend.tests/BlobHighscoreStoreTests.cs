@@ -17,7 +17,7 @@ public class BlobHighscoreStoreTests
             uploaded=await request.Content!.ReadAsByteArrayAsync();return BlobHttpHandler.Saved();
         };
         var run=Run();var result=await http.Store().SubmitAsync(run,default);
-        Assert.Equal("ranked",result.Outcome);Assert.Equal("\"saved\"",result.Revision);Assert.Equal(run.SubmissionId,Assert.Single(result.Entries).EntryId);
+        Assert.Equal("ranked",result.Outcome);Assert.Equal("\"saved\"",result.Revision);Assert.Equal(11,result.Entries.Count);Assert.Contains(result.Entries,e=>e.EntryId==run.SubmissionId);
         Assert.Equal(1,http.Reads);Assert.Equal(1,http.Writes);Assert.NotNull(uploaded);
         var condition=Assert.Single(http.Conditions);Assert.Equal(missing?null:"\"v1\"",condition.Match);Assert.Equal(missing?"*":null,condition.NoneMatch);Assert.Equal("",condition.Query);
     }
@@ -28,8 +28,8 @@ public class BlobHighscoreStoreTests
             ? http.Reads==1?BlobHttpHandler.Error(404,"BlobNotFound"):BlobHttpHandler.Document(current.Serialize(),"\"competitor\"")
             :http.Writes==1?BlobHttpHandler.Error(status,code):BlobHttpHandler.Saved());
         var result=await http.Store(backoff:_=>{backoffs++;return Task.CompletedTask;}).SubmitAsync(Run(),default);
-        Assert.Equal(2,http.Reads);Assert.Equal(2,http.Writes);Assert.Equal(1,backoffs);Assert.Equal(2,result.Entries.Count);
-        Assert.Equal(competitor.SubmissionId,result.Entries[0].EntryId);Assert.Equal("\"competitor\"",http.Conditions[1].Match);
+        Assert.Equal(2,http.Reads);Assert.Equal(2,http.Writes);Assert.Equal(1,backoffs);Assert.Equal(11,result.Entries.Count);
+        Assert.Contains(result.Entries,e=>e.EntryId==competitor.SubmissionId);Assert.Equal("\"competitor\"",http.Conditions[1].Match);
     }
     [Fact] public async Task ContentionStopsAtFiveUploadsAndFourBackoffs() {
         using var http=new BlobHttpHandler();int backoffs=0;

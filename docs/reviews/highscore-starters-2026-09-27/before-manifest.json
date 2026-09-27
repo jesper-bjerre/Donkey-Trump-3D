@@ -1,0 +1,19 @@
+{
+  "specs/001-global-highscores/contracts/highscores.openapi.yaml": "be662a7f2d86c71c8bbaf7e90c1d1b5846c3561bc29515f2f493a55cbaf62dd7",
+  "specs/001-global-highscores/contracts/ios-flow.md": "6ea027fc9cbe8bdd079c0413294436a67409f7fd905cc8f3cd7fc47a19786bb5",
+  "specs/001-global-highscores/data-model.md": "b85ca0f54d9f6632b5c850c8cc81ca3a083e09b19558f996831e211e92c77c38",
+  "specs/001-global-highscores/plan.md": "e0b667b55981cbe2b60ba0b21b7f715dce92c5971e7458fa993f5dfce12c6b8d",
+  "specs/001-global-highscores/quickstart.md": "afe267ac6314d43a70d4c71c1110f2ba2e3da766468f070e0a455d83d372b76e",
+  "specs/001-global-highscores/research.md": "26cd29489acf2514ab598b2890d215d161a03726e65a681d1be15506db6ac8fd",
+  "specs/001-global-highscores/spec.md": "33ce9ef12606b7f5a3c520e5b268d13d78faa43dc1b512d89c2efeba6d04ca92",
+  "specs/001-global-highscores/tasks.md": "2d5923217dc23b8790ad7498a116f13afa531ea489a6565387574ed2429a3467",
+  "specs/001-global-highscores/technical-proposal.md": "e90a24c0a6bc7395496d3c5f370961cc18715535d214a2eff7b1d2075ff8657a",
+  "src/backend.tests/BlobHighscoreStoreTests.cs": "228c56db03f702387572ec1727216dae62786fe93e0e842fbc8fe2144c207fb7",
+  "src/backend.tests/HighscoreConcurrencyTests.cs": "8ef45dbe387db3a56c5d31d9fa4f2c74a0b6dd9b0150dabe7790fc5b90c84f77",
+  "src/backend.tests/HighscoreEndpointTests.cs": "22643bb2daf01790a1f3e74b05d5f5930741b7f772eda1ed7193f818e7d2ad96",
+  "src/backend.tests/HighscoreReadContractTests.cs": "bb0652caa25690c4c9303524ddf8346b96b34e7a46ca60b2298f356a753b4880",
+  "src/backend.tests/HighscoreStorageSmokeTests.cs": "caa3119228a3030558c28301c0f5acd904ed494ab5e8896ea3383203aae2f596",
+  "src/backend/Highscores/BlobHighscoreStore.cs": "9bcf53d55d4d70aca6cbcea73aad353eb94ac73cf606ab2f129c4d1e26950035",
+  "src/backend/README.md": "02dedf360d56a52915474884f344abc23cfaccd87fe7139539ce0a91f26ab22e",
+  "src/tests/support/verify-two-installations.py": "2b0b3646c0295356bbb7b9a4247ac482509be3bcbbc234a1eebf8e7b45c4a2fd"
+}

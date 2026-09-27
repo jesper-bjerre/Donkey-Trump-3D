@@ -39,7 +39,7 @@ Use `entryId` for view identity, scrolling and highlighting. Duplicate names and
 
 Apply scrolling after rows exist and after keyboard dismissal. Interior selected rows should be vertically centred; at the start/end use the closest valid position keeping the whole row visible. A subsequent explicit refresh that no longer contains the selected ID explains displacement and opens the bottom. Never highlight another row with the same name or score.
 
-If a session-memory snapshot remains after refresh failure, mark it `Previously loaded — may be out of date.` It is browse-only and must not decide current qualification. Empty means a confirmed empty response, not an error converted into an empty list.
+If a session-memory snapshot remains after refresh failure, mark it `Previously loaded — may be out of date.` It is browse-only and must not decide current qualification. The current backend supplies at least ten rows, including cartoon starters where needed. The client retains its empty state for legacy responses and injected test fixtures: empty means a confirmed empty response, never an error converted into a successful list.
 
 ## Layout, accessibility and configuration
 

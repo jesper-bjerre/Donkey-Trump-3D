@@ -31,10 +31,9 @@ public sealed class BlobHighscoreStore : IHighscoreStore
             HighscoreDocument document;
             try { document = JsonSerializer.Deserialize<HighscoreDocument>(bytes, HighscoreJson.Options) ?? throw HighscoreFailure.InvalidStorage(); }
             catch (JsonException) { throw HighscoreFailure.InvalidStorage(); }
-            document.Validate();
-            return (document, response.Value.Details.ETag);
+            return (HighscoreStarters.Fill(document), response.Value.Details.ETag);
         } catch (RequestFailedException e) when (e.Status == 404 && e.ErrorCode == "BlobNotFound") {
-            return (HighscoreDocument.Empty, null);
+            return (HighscoreStarters.Fill(HighscoreDocument.Empty), null);
         }
     }
 

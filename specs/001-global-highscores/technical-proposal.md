@@ -48,13 +48,13 @@ Example: A and B read version 7. A saves version 8. B's version-7 write fails, s
 
 A stable run ID makes replay idempotent while that run remains ranked. An evicted run replayed with the same payload cannot beat the monotonically rising all-time cutoff. Responses describe the current result, not a replay of an earlier response. Changed payloads for already evicted IDs cannot be detected without a receipt/history store; that stronger guarantee is outside this simple anonymous design.
 
-Provision the container during deployment. A missing blob in an existing container means an empty list. A missing container, storage outage or malformed JSON means an operational error: never silently replace corrupt state with an empty list.
+Provision the container during deployment. Owner update 2026-09-27: a missing blob in an existing container presents ten deterministic cartoon starters (100–1,000 points). Valid undersized lists are filled to ten without replacing players. Reads do not write; a new score persists the fill with its conditional write. A missing container, storage outage or malformed JSON means an operational error: never silently replace corrupt state with an empty list.
 
 ## Proposed HTTP contract
 
 | Route | Behaviour |
 |---|---|
-| `GET /api/v1/highscores` | Return `{ entries, revision, fetchedAtUtc }`; each public row has `entryId`, `rank`, `displayName`, `score`. Empty array only for a genuinely empty list. |
+| `GET /api/v1/highscores` | Return `{ entries, revision, fetchedAtUtc }`; each public row has `entryId`, `rank`, `displayName`, `score`. At least ten rows, including server-owned cartoon starters when needed; maximum 100. |
 | `POST /api/v1/highscores` | Accept `{ submissionId, displayName, score, levelReached }`. Recheck and return `{ outcome, entryId, rank, entries, revision }`, with outcome `ranked` or `notQualified`. Omit rank/entry ID for non-qualification. |
 | `GET /health/live` | Process liveness, already implemented in the starter. Does not establish storage readiness. |
 

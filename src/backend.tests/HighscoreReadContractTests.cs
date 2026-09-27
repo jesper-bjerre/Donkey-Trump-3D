@@ -20,13 +20,13 @@ public class HighscoreReadContractTests
     }
     [Theory][InlineData(0)][InlineData(1)]
     public async Task ConditionalGetReturnsFreshPublicSnapshotInsteadOf304(int count) {
-        var document=HighscoreDocument.Empty;
+        var document=HighscoreStarters.Fill(HighscoreDocument.Empty);
         if(count>0) document=HighscoreRanking.Evaluate(document,new(Guid.NewGuid(),"Løkke",100,2),DateTimeOffset.UtcNow).Document;
         var snapshot=HighscoreSnapshot.From(document,"\"revision\"",DateTimeOffset.UtcNow);
         await using var factory=new HighscoreApiFactory(new Store(_=>Task.FromResult(snapshot)));
         using var client=factory.CreateClient();client.DefaultRequestHeaders.TryAddWithoutValidation("If-None-Match","\"revision\"");
         using var response=await client.GetAsync("/api/v1/highscores");Assert.Equal(HttpStatusCode.OK,response.StatusCode);
         var json=await response.Content.ReadAsStringAsync();var data=JsonDocument.Parse(json).RootElement;
-        Assert.Equal(count,data.GetProperty("entries").GetArrayLength());Assert.DoesNotContain("sequence",json);Assert.DoesNotContain("levelReached",json);
+        Assert.Equal(10+count,data.GetProperty("entries").GetArrayLength());Assert.DoesNotContain("sequence",json);Assert.DoesNotContain("levelReached",json);
     }
 }

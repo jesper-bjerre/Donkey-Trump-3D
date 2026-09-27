@@ -110,7 +110,7 @@ src/
 
 ### Backend boundary
 
-- `GET /api/v1/highscores` returns a complete bounded snapshot. A missing blob in an existing container returns an empty list; other storage problems return errors.
+- `GET /api/v1/highscores` returns a complete bounded snapshot. A missing blob in an existing container returns ten deterministic cartoon starters (owner update 2026-09-27); valid lists with fewer than ten entries are filled to ten while preserving players. GET remains read-only; the next new score persists starters in the normal conditional write. Other storage problems return errors.
 - `POST /api/v1/highscores` validates and canonicalizes input, detects an existing run, then merges/rechecks against fresh storage with conditional writes. Rank and tie order are server-owned. No caller can edit an existing ranked run.
 - Return the successfully written candidate plus its write ETag, not a later read. `notQualified` is a normal 200 outcome. Operational failures use stable Problem Details codes, including `submission_unconfirmed` when a write may have committed.
 - Configure six-second cancellation/deadline across reads, credentials, backoff and writes; SDK retries are disabled. Recognized CAS conflicts alone receive up to five attempts. Serialization must fit one small conditional Put Blob.
