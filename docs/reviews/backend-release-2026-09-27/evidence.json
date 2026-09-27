@@ -1,0 +1,537 @@
+{
+  "sourceCommit": "66812f7b802b2d3a697a9db4eec0d6dcf4add7e0",
+  "artifact": {
+    "commit": "66812f7b802b2d3a697a9db4eec0d6dcf4add7e0",
+    "sha256": "9165d96e7e61e49a3fc567accf0b8102fb636e619e93eb67040b4f08a9884ab2"
+  },
+  "tests": {
+    "backendPassed": 59,
+    "backendFailed": 0,
+    "backendSkipped": 0,
+    "realAzurite": true,
+    "releasePipelineChecks": "passed"
+  },
+  "approvedSourceHashes": {
+    "src/backend.tests/BlobHighscoreStoreTests.cs": "3077bf1f2bb9f0af4bae8e71e15eb3eb741755675d2cf195a7d4c336a99311b9",
+    "src/backend.tests/HighscoreConcurrencyTests.cs": "d168cc73dcd2e7704186850800425a2b450f298e5b446037c0be9876d755db7f",
+    "src/backend.tests/HighscoreEndpointTests.cs": "7e32ca52085e7f6c2d81a756b974782cbf250e37bce8396ade376e9a62ebae50",
+    "src/backend.tests/HighscoreReadContractTests.cs": "1024d20a80241482572ffae7ae6ddaff7900443996989e22dcebaf51da04df7c",
+    "src/backend.tests/HighscoreStarterTests.cs": "502e46460520b56f4c2d653db6e2be5c676684eb462de8e0537ab74e64ea3c7a",
+    "src/backend.tests/HighscoreStorageSmokeTests.cs": "fb2857e67f395f766eab8d93031fbb69d581547d0a819f2626267b2517e30e87",
+    "src/backend/Highscores/BlobHighscoreStore.cs": "39d528d937b41a6e1bae0238d43f51ae34ff09799650edd2b4731c0c725d294a",
+    "src/backend/Highscores/HighscoreStarters.cs": "b93b9e91ce0f9497a57673b75784300245f09f68206a2fb432d8180c5b1b0cd3",
+    "src/backend/README.md": "c473b01143d1af7bc1a944aaa527c44317f315ac8f9ec3505c40aad6650118ee"
+  },
+  "runs": {
+    "ci": {
+      "conclusion": "success",
+      "headSha": "66812f7b802b2d3a697a9db4eec0d6dcf4add7e0",
+      "jobs": [
+        {
+          "completedAt": "2026-09-27T12:56:00Z",
+          "conclusion": "success",
+          "databaseId": 108623573824,
+          "name": "test",
+          "startedAt": "2026-09-27T12:55:19Z",
+          "status": "completed",
+          "steps": [
+            {
+              "completedAt": "2026-09-27T12:55:20Z",
+              "conclusion": "success",
+              "name": "Set up job",
+              "number": 1,
+              "startedAt": "2026-09-27T12:55:19Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-09-27T12:55:32Z",
+              "conclusion": "success",
+              "name": "Initialize containers",
+              "number": 2,
+              "startedAt": "2026-09-27T12:55:20Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-09-27T12:55:34Z",
+              "conclusion": "success",
+              "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+              "number": 3,
+              "startedAt": "2026-09-27T12:55:32Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-09-27T12:55:34Z",
+              "conclusion": "success",
+              "name": "Run actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9",
+              "number": 4,
+              "startedAt": "2026-09-27T12:55:34Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-09-27T12:55:34Z",
+              "conclusion": "success",
+              "name": "Release pipeline checks",
+              "number": 5,
+              "startedAt": "2026-09-27T12:55:34Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-09-27T12:55:56Z",
+              "conclusion": "success",
+              "name": "Build and test API with real Azurite",
+              "number": 6,
+              "startedAt": "2026-09-27T12:55:34Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-09-27T12:55:56Z",
+              "conclusion": "success",
+              "name": "Post Run actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9",
+              "number": 10,
+              "startedAt": "2026-09-27T12:55:56Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-09-27T12:55:57Z",
+              "conclusion": "success",
+              "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+              "number": 11,
+              "startedAt": "2026-09-27T12:55:56Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-09-27T12:55:58Z",
+              "conclusion": "success",
+              "name": "Stop containers",
+              "number": 12,
+              "startedAt": "2026-09-27T12:55:57Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-09-27T12:55:58Z",
+              "conclusion": "success",
+              "name": "Complete job",
+              "number": 13,
+              "startedAt": "2026-09-27T12:55:58Z",
+              "status": "completed"
+            }
+          ],
+          "url": "https://github.com/jesper-bjerre/Donkey-Trump-3D/actions/runs/36320605599/job/108623573824"
+        }
+      ],
+      "status": "completed",
+      "url": "https://github.com/jesper-bjerre/Donkey-Trump-3D/actions/runs/36320605599"
+    },
+    "dev": {
+      "conclusion": "success",
+      "headSha": "66812f7b802b2d3a697a9db4eec0d6dcf4add7e0",
+      "jobs": [
+        {
+          "completedAt": "2026-09-27T12:56:07Z",
+          "conclusion": "success",
+          "databaseId": 108623573959,
+          "name": "build",
+          "startedAt": "2026-09-27T12:55:18Z",
+          "status": "completed",
+          "steps": [
+            {
+              "completedAt": "2026-09-27T12:55:20Z",
+              "conclusion": "success",
+              "name": "Set up job",
+              "number": 1,
+              "startedAt": "2026-09-27T12:55:19Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-09-27T12:55:37Z",
+              "conclusion": "success",
+              "name": "Initialize containers",
+              "number": 2,
+              "startedAt": "2026-09-27T12:55:20Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-09-27T12:55:38Z",
+              "conclusion": "success",
+              "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+              "number": 3,
+              "startedAt": "2026-09-27T12:55:37Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-09-27T12:55:39Z",
+              "conclusion": "success",
+              "name": "Run actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9",
+              "number": 4,
+              "startedAt": "2026-09-27T12:55:38Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-09-27T12:55:39Z",
+              "conclusion": "success",
+              "name": "Release pipeline checks",
+              "number": 5,
+              "startedAt": "2026-09-27T12:55:39Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-09-27T12:56:03Z",
+              "conclusion": "success",
+              "name": "Build and test API with real Azurite",
+              "number": 6,
+              "startedAt": "2026-09-27T12:55:39Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-09-27T12:56:04Z",
+              "conclusion": "success",
+              "name": "Publish immutable release package",
+              "number": 7,
+              "startedAt": "2026-09-27T12:56:03Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-09-27T12:56:05Z",
+              "conclusion": "success",
+              "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+              "number": 8,
+              "startedAt": "2026-09-27T12:56:04Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-09-27T12:56:05Z",
+              "conclusion": "success",
+              "name": "Post Run actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9",
+              "number": 14,
+              "startedAt": "2026-09-27T12:56:05Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-09-27T12:56:05Z",
+              "conclusion": "success",
+              "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+              "number": 15,
+              "startedAt": "2026-09-27T12:56:05Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-09-27T12:56:07Z",
+              "conclusion": "success",
+              "name": "Stop containers",
+              "number": 16,
+              "startedAt": "2026-09-27T12:56:05Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-09-27T12:56:07Z",
+              "conclusion": "success",
+              "name": "Complete job",
+              "number": 17,
+              "startedAt": "2026-09-27T12:56:07Z",
+              "status": "completed"
+            }
+          ],
+          "url": "https://github.com/jesper-bjerre/Donkey-Trump-3D/actions/runs/36320605615/job/108623573959"
+        },
+        {
+          "completedAt": "2026-09-27T12:59:18Z",
+          "conclusion": "success",
+          "databaseId": 108623708668,
+          "name": "deploy",
+          "startedAt": "2026-09-27T12:56:11Z",
+          "status": "completed",
+          "steps": [
+            {
+              "completedAt": "2026-09-27T12:56:12Z",
+              "conclusion": "success",
+              "name": "Set up job",
+              "number": 1,
+              "startedAt": "2026-09-27T12:56:11Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-09-27T12:56:13Z",
+              "conclusion": "success",
+              "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+              "number": 2,
+              "startedAt": "2026-09-27T12:56:12Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-09-27T12:56:14Z",
+              "conclusion": "success",
+              "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+              "number": 3,
+              "startedAt": "2026-09-27T12:56:13Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-09-27T12:56:14Z",
+              "conclusion": "success",
+              "name": "Verify tested package",
+              "number": 4,
+              "startedAt": "2026-09-27T12:56:14Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-09-27T12:56:20Z",
+              "conclusion": "success",
+              "name": "Run azure/login@8216e11d8cd9b42fe925c852af8e76311ff067ac",
+              "number": 5,
+              "startedAt": "2026-09-27T12:56:14Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-09-27T12:59:10Z",
+              "conclusion": "success",
+              "name": "Deploy to existing DEV app",
+              "number": 6,
+              "startedAt": "2026-09-27T12:56:20Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-09-27T12:59:16Z",
+              "conclusion": "success",
+              "name": "Verify HTTPS and managed identity storage access",
+              "number": 7,
+              "startedAt": "2026-09-27T12:59:10Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-09-27T12:59:16Z",
+              "conclusion": "success",
+              "name": "Post Run azure/login@8216e11d8cd9b42fe925c852af8e76311ff067ac",
+              "number": 13,
+              "startedAt": "2026-09-27T12:59:16Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-09-27T12:59:17Z",
+              "conclusion": "success",
+              "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+              "number": 14,
+              "startedAt": "2026-09-27T12:59:16Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-09-27T12:59:17Z",
+              "conclusion": "success",
+              "name": "Complete job",
+              "number": 15,
+              "startedAt": "2026-09-27T12:59:17Z",
+              "status": "completed"
+            }
+          ],
+          "url": "https://github.com/jesper-bjerre/Donkey-Trump-3D/actions/runs/36320605615/job/108623708668"
+        }
+      ],
+      "status": "completed",
+      "url": "https://github.com/jesper-bjerre/Donkey-Trump-3D/actions/runs/36320605615"
+    },
+    "prod": {
+      "conclusion": "success",
+      "headSha": "66812f7b802b2d3a697a9db4eec0d6dcf4add7e0",
+      "jobs": [
+        {
+          "completedAt": "2026-09-27T13:02:49Z",
+          "conclusion": "success",
+          "databaseId": 108624271226,
+          "name": "deploy",
+          "startedAt": "2026-09-27T12:59:50Z",
+          "status": "completed",
+          "steps": [
+            {
+              "completedAt": "2026-09-27T12:59:52Z",
+              "conclusion": "success",
+              "name": "Set up job",
+              "number": 1,
+              "startedAt": "2026-09-27T12:59:51Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-09-27T12:59:53Z",
+              "conclusion": "success",
+              "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+              "number": 2,
+              "startedAt": "2026-09-27T12:59:52Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-09-27T12:59:54Z",
+              "conclusion": "success",
+              "name": "Validate successful DEV run provenance",
+              "number": 3,
+              "startedAt": "2026-09-27T12:59:53Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-09-27T12:59:56Z",
+              "conclusion": "success",
+              "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+              "number": 4,
+              "startedAt": "2026-09-27T12:59:54Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-09-27T12:59:56Z",
+              "conclusion": "success",
+              "name": "Verify exact DEV package",
+              "number": 5,
+              "startedAt": "2026-09-27T12:59:56Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-09-27T13:00:03Z",
+              "conclusion": "success",
+              "name": "Run azure/login@8216e11d8cd9b42fe925c852af8e76311ff067ac",
+              "number": 6,
+              "startedAt": "2026-09-27T12:59:56Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-09-27T13:02:05Z",
+              "conclusion": "success",
+              "name": "Deploy verified DEV package to existing PROD app",
+              "number": 7,
+              "startedAt": "2026-09-27T13:00:03Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-09-27T13:02:46Z",
+              "conclusion": "success",
+              "name": "Verify HTTPS and managed identity storage access",
+              "number": 8,
+              "startedAt": "2026-09-27T13:02:05Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-09-27T13:02:46Z",
+              "conclusion": "success",
+              "name": "Post Run azure/login@8216e11d8cd9b42fe925c852af8e76311ff067ac",
+              "number": 15,
+              "startedAt": "2026-09-27T13:02:46Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-09-27T13:02:47Z",
+              "conclusion": "success",
+              "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+              "number": 16,
+              "startedAt": "2026-09-27T13:02:46Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-09-27T13:02:47Z",
+              "conclusion": "success",
+              "name": "Complete job",
+              "number": 17,
+              "startedAt": "2026-09-27T13:02:47Z",
+              "status": "completed"
+            }
+          ],
+          "url": "https://github.com/jesper-bjerre/Donkey-Trump-3D/actions/runs/36320852774/job/108624271226"
+        }
+      ],
+      "status": "completed",
+      "url": "https://github.com/jesper-bjerre/Donkey-Trump-3D/actions/runs/36320852774"
+    }
+  },
+  "verification": {
+    "dev": {
+      "checkedAtUtc": "2026-09-27T12:59:43.130729+00:00",
+      "origin": "https://donkeytrump-api-d.azurewebsites.net",
+      "rows": 10,
+      "starters": 9,
+      "priorRowsPreserved": true,
+      "revisionUnchanged": true,
+      "noPostSent": true
+    },
+    "prod": {
+      "checkedAtUtc": "2026-09-27T13:05:26.660393+00:00",
+      "origin": "https://donkeytrump-api-p.azurewebsites.net",
+      "rows": 10,
+      "starters": 10,
+      "priorRowsPreserved": true,
+      "revisionUnchanged": true,
+      "noPostSent": true
+    }
+  },
+  "postHealth": [
+    {
+      "app": "donkeytrump-api-d",
+      "path": "/health/live",
+      "status": 200,
+      "seconds": 0.962
+    },
+    {
+      "app": "donkeytrump-api-p",
+      "path": "/health/live",
+      "status": 200,
+      "seconds": 0.161
+    },
+    {
+      "app": "byensgaader-api-d",
+      "path": "/health",
+      "status": 200,
+      "seconds": 1.048
+    },
+    {
+      "app": "byensgaader-api-p",
+      "path": "/health",
+      "status": 200,
+      "seconds": 0.313
+    }
+  ],
+  "planBefore": {
+    "plan": "asp-vejles-koder-p",
+    "sku": {
+      "capacity": 1,
+      "family": "B",
+      "name": "B1",
+      "size": "B1",
+      "tier": "Basic"
+    },
+    "sites": null,
+    "windowStart": "2026-09-27T12:37:14.571883+00:00",
+    "metrics": {
+      "CpuPercentage": {
+        "samples": 20,
+        "mean": 22.5,
+        "max": 36.0
+      },
+      "MemoryPercentage": {
+        "samples": 20,
+        "mean": 76.35,
+        "max": 78.0
+      }
+    }
+  },
+  "planAfter": {
+    "plan": "asp-vejles-koder-p",
+    "sku": {
+      "capacity": 1,
+      "family": "B",
+      "name": "B1",
+      "size": "B1",
+      "tier": "Basic"
+    },
+    "windowStart": "2026-09-27T13:06:39.491896+00:00",
+    "metrics": {
+      "CpuPercentage": {
+        "samples": 6,
+        "mean": 23.833333333333332,
+        "max": 35.0
+      },
+      "MemoryPercentage": {
+        "samples": 6,
+        "mean": 79.5,
+        "max": 80.0
+      }
+    }
+  },
+  "worktreePreservation": {
+    "filesVerifiedUnchanged": 106,
+    "from": "4c191a6c8998c37b6765362b9b17c957fb8ae61f",
+    "to": "66812f7b802b2d3a697a9db4eec0d6dcf4add7e0"
+  }
+}
