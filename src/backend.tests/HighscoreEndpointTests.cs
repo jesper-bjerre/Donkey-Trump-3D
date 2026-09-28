@@ -18,13 +18,26 @@ public class HighscoreEndpointTests
             return Task.FromResult(HighscoreResult.From(HighscoreSnapshot.From(document, "\"test\"", DateTimeOffset.UtcNow), run.SubmissionId));
         }
     }
-    [Fact] public async Task LivenessDoesNotTouchStorageAndGetIsUncached() {
+    [Theory]
+    [InlineData("/api/v1/highscores")]
+    [InlineData("/api/v2/highscores")]
+    public async Task LivenessDoesNotTouchStorageAndGetIsUncached(string path) {
         var store = new Store(); await using var factory = new HighscoreApiFactory(store); using var client = factory.CreateClient();
         Assert.Equal("Healthy", await client.GetStringAsync("/health/live")); Assert.Equal(0, store.Calls);
-        using var response = await client.GetAsync("/api/v1/highscores"); Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        using var response = await client.GetAsync(path); Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.True(response.Headers.CacheControl?.NoStore); var json = await response.Content.ReadFromJsonAsync<JsonElement>();
+        Assert.Equal(new[] {"entries", "fetchedAtUtc", "revision"}, json.EnumerateObject().Select(p=>p.Name).Order().ToArray());
+        foreach (var row in json.GetProperty("entries").EnumerateArray())
+            Assert.Equal(new[] {"displayName", "entryId", "rank", "score"}, row.EnumerateObject().Select(p=>p.Name).Order().ToArray());
         Assert.Equal(10,json.GetProperty("entries").GetArrayLength()); Assert.Equal("empty", json.GetProperty("revision").GetString());
         Assert.Matches(@"\.\d{3}Z$", json.GetProperty("fetchedAtUtc").GetString()!);
+    }
+    [Fact] public async Task V2ReadAliasDoesNotEnableLegacyWrites() {
+        var store = new Store(); await using var factory = new HighscoreApiFactory(store); using var client = factory.CreateClient();
+        using var response = await client.PostAsJsonAsync("/api/v2/highscores", new { submissionId = Guid.NewGuid(), displayName = "Test", score = 100, levelReached = 1 });
+        Assert.Equal(HttpStatusCode.MethodNotAllowed, response.StatusCode);
+        Assert.True(response.Headers.CacheControl?.NoStore);
+        Assert.Equal(0, store.Calls);
     }
     [Fact] public async Task SaveReplayAndConflictUseExactPublicContract() {
         await using var factory = new HighscoreApiFactory(new Store()); using var client = factory.CreateClient();

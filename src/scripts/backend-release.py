@@ -73,12 +73,13 @@ def smoke(origin, attempts=20):
             with opener.open(origin + "/health/live", timeout=15) as response:
                 if response.status != 200 or response.read(1024).decode().strip() != "Healthy":
                     raise ValueError("Liveness contract failed")
-            with opener.open(origin + "/api/v1/highscores", timeout=15) as response:
-                if response.status != 200 or response.headers.get("Cache-Control") != "no-store":
-                    raise ValueError("Snapshot status/cache contract failed")
-                data = json.loads(response.read(262145))
-                if not isinstance(data.get("entries"), list) or len(data["entries"]) > 100 or not data.get("revision"):
-                    raise ValueError("Snapshot contract failed")
+            for path in ("/api/v1/highscores", "/api/v2/highscores"):
+                with opener.open(origin + path, timeout=15) as response:
+                    if response.status != 200 or response.headers.get("Cache-Control") != "no-store":
+                        raise ValueError("Snapshot status/cache contract failed")
+                    data = json.loads(response.read(262145))
+                    if not isinstance(data.get("entries"), list) or len(data["entries"]) > 100 or not data.get("revision"):
+                        raise ValueError("Snapshot contract failed")
             break
         except (urllib.error.URLError, TimeoutError, ValueError, OSError):
             # Never emit the response body, exceptions, player names or network addresses.
@@ -93,7 +94,7 @@ def smoke(origin, attempts=20):
             raise RuntimeError("Expected platform HTTPS redirect") from None
     else:
         raise RuntimeError("HTTP did not redirect to HTTPS")
-    print("PASS: process liveness, authenticated storage snapshot, no-store and HTTPS redirect")
+    print("PASS: process liveness, authenticated storage snapshots (v1 and v2), no-store and HTTPS redirect")
 
 
 def main():

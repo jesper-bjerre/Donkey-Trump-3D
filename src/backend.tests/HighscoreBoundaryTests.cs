@@ -20,14 +20,29 @@ public class HighscoreBoundaryTests
         Assert.True(watch.Elapsed<TimeSpan.FromSeconds(2));
         foreach(var response in responses) {if(response.StatusCode==HttpStatusCode.TooManyRequests) {Assert.True(int.TryParse(response.Headers.GetValues("Retry-After").Single(),out var seconds)&&seconds>=1);Assert.Equal("application/problem+json",response.Content.Headers.ContentType?.MediaType);}response.Dispose();}
     }
-    [Fact] public async Task SafeErrorsAndDiagnosticsDoNotExposeSubmittedDataOrExceptions() {
+    [Theory][InlineData("/api/v1/highscores")][InlineData("/api/v2/highscores")]
+    public async Task SafeErrorsAndDiagnosticsDoNotExposeSubmittedDataOrExceptions(string path) {
         await using var factory=new HighscoreApiFactory(new Store(true));using var client=factory.CreateClient();
         Assert.Equal("Healthy",await client.GetStringAsync("/health/live"));
-        using var get=await client.GetAsync("/api/v1/highscores");
+        using var get=await client.GetAsync(path);
+        Assert.Equal(HttpStatusCode.InternalServerError,get.StatusCode);
+        Assert.True(get.Headers.CacheControl?.NoStore);
         using var post=await client.PostAsJsonAsync("/api/v1/highscores",new HighscoreSubmission(Guid.NewGuid(),"PRIVATE_PLAYER",123400,42));
         var combined=await get.Content.ReadAsStringAsync()+await post.Content.ReadAsStringAsync()+string.Join("\n",factory.Logs);
         foreach(var excluded in new[]{"PRIVATE_PLAYER","123400","198.51.100.5","private-payload","System.Exception","secret fixture"})Assert.DoesNotContain(excluded,combined);
         Assert.Contains(factory.Logs,line=>line.Contains("highscore_request"));
+    }
+    [Fact] public async Task BothReadVersionsShareOneRateLimitBucket() {
+        await using var factory=new HighscoreApiFactory(new Store(), new Dictionary<string,string?> {
+            ["Highscores:RateLimits:GetCapacity"]="1", ["Highscores:RateLimits:GetPerSecond"]="1"
+        });
+        using var client=factory.CreateClient();
+        var responses=await Task.WhenAll(client.GetAsync("/api/v1/highscores"),client.GetAsync("/api/v2/highscores"));
+        Assert.Single(responses,r=>r.StatusCode==HttpStatusCode.OK);
+        var rejected=Assert.Single(responses,r=>r.StatusCode==HttpStatusCode.TooManyRequests);
+        Assert.True(rejected.Headers.CacheControl?.NoStore);
+        Assert.True(int.TryParse(rejected.Headers.GetValues("Retry-After").Single(),out var seconds)&&seconds>=1);
+        foreach(var response in responses) response.Dispose();
     }
     [Fact] public void ProductionUsesHttpsManagedIdentityAndEmulatorIsLocalOnly() {
         Assert.False(new HighscoreOptions {UseAzurite=true}.IsValid("Production"));

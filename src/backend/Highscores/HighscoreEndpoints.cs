@@ -8,7 +8,9 @@ public static class HighscoreEndpoints
 {
     public static void MapHighscores(this WebApplication app)
     {
-        app.MapGet("/api/v1/highscores", async (HttpContext context, IHighscoreStore store) => {
+        // Public snapshots have the same contract in both API versions.
+        foreach (var route in new[] { "/api/v1/highscores", "/api/v2/highscores" })
+        app.MapGet(route, async (HttpContext context, IHighscoreStore store) => {
             try { return Results.Json(await store.ReadAsync(context.RequestAborted), HighscoreJson.Options); }
             catch (HighscoreFailure error) { return Problem(error); }
             catch (Exception) { return Problem(new(500, "internal_error", "Highscores are unavailable")); }

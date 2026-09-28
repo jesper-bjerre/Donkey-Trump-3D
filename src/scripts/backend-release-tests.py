@@ -7,6 +7,8 @@ import json
 from pathlib import Path
 import tempfile
 import unittest
+from unittest.mock import patch
+import urllib.error
 import zipfile
 
 spec = importlib.util.spec_from_file_location('release', Path(__file__).with_name('backend-release.py'))
@@ -83,6 +85,38 @@ class PromotionTests(unittest.TestCase):
         for origin in ['http://example.test', 'https://user:password@example.test',
                        'https://example.test?token=anything', 'https://example.test/path']:
             with self.assertRaises(ValueError): release.smoke(origin)
+
+
+class SmokeVersionTests(unittest.TestCase):
+    def test_both_read_versions_are_required_before_promotion(self):
+        class Response(io.BytesIO):
+            status = 200
+            headers = {"Cache-Control": "no-store"}
+
+        class Opener:
+            def __init__(self, v2_exists):
+                self.v2_exists = v2_exists
+                self.paths = []
+            def open(self, url, timeout):
+                self.paths.append(url)
+                if url.startswith('http:'):
+                    raise urllib.error.HTTPError(url, 301, 'HTTPS', {"Location": "https://example.test/health/live"}, None)
+                if url.endswith('/health/live'):
+                    return Response(b'Healthy')
+                if url.endswith('/api/v2/highscores') and not self.v2_exists:
+                    raise urllib.error.HTTPError(url, 404, 'Missing', {}, None)
+                return Response(b'{"entries":[],"revision":"fixture"}')
+
+        for exists in (False, True):
+            opener = Opener(exists)
+            with self.subTest(v2_exists=exists), patch.object(release.urllib.request, 'build_opener', return_value=opener), contextlib.redirect_stdout(io.StringIO()):
+                if exists:
+                    release.smoke('https://example.test', attempts=1)
+                else:
+                    with self.assertRaisesRegex(RuntimeError, 'smoke failed'):
+                        release.smoke('https://example.test', attempts=1)
+                self.assertIn('https://example.test/api/v1/highscores', opener.paths)
+                self.assertIn('https://example.test/api/v2/highscores', opener.paths)
 
 
 if __name__ == '__main__': unittest.main()

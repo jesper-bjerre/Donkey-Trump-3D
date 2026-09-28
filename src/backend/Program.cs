@@ -36,7 +36,7 @@ builder.Services.AddOptions<RateLimiterOptions>().Configure<IOptions<HighscoreOp
 var app = builder.Build();
 app.UseExceptionHandler();
 app.Use(async (context, next) => {
-    bool highscore = context.Request.Path == "/api/v1/highscores";
+    bool highscore = context.Request.Path == "/api/v1/highscores" || context.Request.Path == "/api/v2/highscores";
     if (highscore) context.Response.Headers.CacheControl = "no-store";
     var started = System.Diagnostics.Stopwatch.GetTimestamp();
     await next(context);
