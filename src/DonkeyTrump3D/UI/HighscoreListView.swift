@@ -2,6 +2,7 @@ import SwiftUI
 
 struct HighscoreListView: View {
     let browse: HighscoreBrowse
+    var report: ((UUID) -> Void)? = nil
     @AccessibilityFocusState private var focusedEntry: UUID?
     @State private var didFocus = false
 
@@ -21,13 +22,18 @@ struct HighscoreListView: View {
                                     Text("\(entry.rank)").monospacedDigit().frame(minWidth: 36, alignment: .trailing)
                                     Text(verbatim: entry.displayName).frame(maxWidth: .infinity, alignment: .leading)
                                     Text("\(entry.score)").monospacedDigit()
+                                    if let report {
+                                        Button { report(entry.id) } label: { Image(systemName: "flag") .frame(minWidth: 44, minHeight: 44) }
+                                            .accessibilityLabel("Report name at rank \(entry.rank)")
+                                            .accessibilityIdentifier("reportEntry\(entry.rank)")
+                                    }
                                     if selected { Image(systemName: "star.fill").accessibilityHidden(true) }
                                 }
                                 .font(.body.weight(selected ? .bold : .regular))
                                 .padding(.horizontal, 14).padding(.vertical, 8)
                                 .background(selected ? Color.orange.opacity(0.3) : Color.white.opacity(0.07), in: RoundedRectangle(cornerRadius: 8))
                                 .id(entry.id)
-                                .accessibilityElement(children: .ignore)
+                                .accessibilityElement(children: .contain)
                                 .accessibilityLabel("Rank \(entry.rank), \(entry.displayName), \(entry.score) points" + (selected ? ", Your result" : ""))
                                 .accessibilityIdentifier(selected ? "highscoreSelectedRow" : "highscoreRow\(entry.rank)")
                                 .accessibilityFocused($focusedEntry, equals: entry.id)
@@ -89,27 +95,30 @@ struct HighscorePanel: View {
                 } else if case .failed = coordinator.state {
                     Button { coordinator.refresh() } label: { Label("Retry list", systemImage: "arrow.clockwise").labelStyle(.iconOnly) }.accessibilityIdentifier("highscoreRefresh")
                 }
-                Button { coordinator.cancel() } label: { Label("Close", systemImage: "xmark.circle").labelStyle(.iconOnly) }.accessibilityIdentifier("highscoreClose")
+                Button { model.reports.history() } label: { Label("My Reports", systemImage: "tray").labelStyle(.iconOnly) }.accessibilityIdentifier("openReports")
+                Button { model.reports.close(); coordinator.cancel() } label: { Label("Close", systemImage: "xmark.circle").labelStyle(.iconOnly) }.accessibilityIdentifier("highscoreClose")
             }
             .layoutPriority(1)
             }
             Group {
-                switch coordinator.state {
+                if model.reports.isPresented { ReportsView(coordinator: model.reports) }
+                else { switch coordinator.state {
                 case .closed: EmptyView()
                 case .loading: ProgressView("Loading highscores…").accessibilityIdentifier("highscoreLoading")
                 case .enteringName(_, let error): HighscoreNameEntryView(error: error, submit: { coordinator.submit(name: $0) }, cancel: { coordinator.cancel() })
                 case .submitting: ProgressView("Submitting score…").accessibilityIdentifier("highscoreSubmitting")
-                case .browsing(let browse): HighscoreListView(browse: browse)
+                case .browsing(let browse): HighscoreListView(browse: browse, report: { model.reports.open(entryId: $0) })
                 case .failed(let message, let cached):
                     VStack {
                         ScrollView { Text(message).multilineTextAlignment(.center).accessibilityIdentifier("highscoreError") }
                             .frame(maxHeight: cached == nil ? .infinity : 90)
-                        if let cached { HighscoreListView(browse: cached) }
+                        if let cached { HighscoreListView(browse: cached, report: { model.reports.open(entryId: $0) }) }
                     }
                     #if DEBUG
                     .background { HighscoreRenderProbe(kind: "failure", marker: message) }
                     #endif
                 }
+            }
             }
             .frame(minHeight: 0, maxHeight: .infinity).clipped()
             HStack {

@@ -26,7 +26,7 @@ cookies/tokens or use an unapproved substitute browser to bypass authentication.
 | Trader, territorial licences, agreements | Determine from actual owner facts and current questionnaire. Owner-only legal acceptance cannot be guessed or bypassed. |
 | Public asset provenance | Retain owner cover/prompt/music provenance and assess names/models/audio/starter names; concrete unresolved issues block related declarations/media. |
 | Hardware and candidate checks | Record actual physical iPhone availability and OS; missing hardware evidence blocks readiness, not design/independent media work. |
-| Shared Azure inventory/cost baseline | Refresh existing plans/apps, permissions, current plan charges/capacity, incremental estimate including moderation/pages/diagnostics. |
+| Shared Azure inventory/capacity | Refresh existing plans/apps, permissions and capacity, including moderation/pages/diagnostics/capture workloads. The owner monitors costs; no financial release gate. |
 
 Discover first, request only missing facts in a consolidated owner-input request;
 no invented data or repeated authorization for already approved ordinary preparation.
@@ -63,14 +63,14 @@ Optional video and native iPad assets remain outside scope.
 
 Create `AppStoreCapture` configuration/scheme based on Release compiler/optimization
 settings, no DEBUG/test launch parsers or injected UI/game state. Set base URL to
-`https://donkeytrump-api-d.azurewebsites.net/capture`; normal `/api/v2/...` path composition
-then uses `/capture/api/v2/...`. A build-phase check requires iphonesimulator SDK for
+`https://donkeytrump-api-d.azurewebsites.net/capture`; normal `/api/v1/...` path composition
+then uses `/capture/api/v1/...`. A build-phase check requires iphonesimulator SDK for
 this configuration; archive/export validation additionally requires configuration
 Release, exact PROD origin and no capture path. CI tests both valid capture build and
 rejected device/archive capture configuration. The upload manifest records only the
 separately validated Release archive. Capture is not a distribution exception.
 
-The existing DEV API conditionally maps the same v2 handlers under `/capture`, with a
+The existing DEV API conditionally maps the same current handlers under `/capture`, with a
 separate store bound to `highscores-capture` container on donkeytrumpd. It must never
 fallback to the normal DEV/PROD container. Enable only when deployment inventory,
 WEBSITE_SITE_NAME=donkeytrump-api-d and storage account all match DEV; enabling in PROD
@@ -87,8 +87,7 @@ are synthetic and never promoted or copied to live stores. Preserve snapshot/con
 identity for the capture session, inspect every visible row, and reseed if unapproved
 entries arrive (route remains publicly reachable). Image acceptance requires the actual
 pixels contain only approved synthetic names, regardless of fixture seed evidence.
-After capture, disable the DEV-only route and delete the capture dataset using MI;
-include this small additional storage/operation cost in estimates. Tests assert route,
+After capture, disable the DEV-only route and delete the capture dataset using MI. Tests assert route,
 container and credential separation, no fallback and no ordinary DEV data changes.
 
 ## Public pages, privacy and territory declarations

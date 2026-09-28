@@ -1,7 +1,7 @@
 import Foundation
 
 /// A separate delegate has no reference back to the session. Never replay a POST through a redirect.
-private final class HighscoreRedirectPolicy: NSObject, URLSessionTaskDelegate, @unchecked Sendable {
+final class HighscoreRedirectPolicy: NSObject, URLSessionTaskDelegate, @unchecked Sendable {
     func urlSession(_ session: URLSession, task: URLSessionTask, willPerformHTTPRedirection response: HTTPURLResponse,
                     newRequest request: URLRequest, completionHandler: @escaping (URLRequest?) -> Void) {
         completionHandler(nil)
@@ -10,9 +10,10 @@ private final class HighscoreRedirectPolicy: NSObject, URLSessionTaskDelegate, @
 
 final class URLSessionHighscoreService: HighscoreService, @unchecked Sendable {
     private let configuration: HighscoreConfiguration
+    private let credential: any InstallationCredentialProviding
     private let session: URLSession
-    init(configuration: HighscoreConfiguration, sessionConfiguration: URLSessionConfiguration? = nil) {
-        self.configuration = configuration
+    init(configuration: HighscoreConfiguration, sessionConfiguration: URLSessionConfiguration? = nil, credential: any InstallationCredentialProviding = InstallationCredentialStore.shared) {
+        self.configuration = configuration; self.credential = credential
         let transport = sessionConfiguration ?? .ephemeral
         transport.waitsForConnectivity = false
         transport.timeoutIntervalForRequest = 8
@@ -31,6 +32,7 @@ final class URLSessionHighscoreService: HighscoreService, @unchecked Sendable {
         request.setValue("application/json", forHTTPHeaderField: "Accept")
         request.setValue("no-store", forHTTPHeaderField: "Cache-Control")
         if let submission {
+            request.setValue(try await credential.authorization(), forHTTPHeaderField: "Authorization")
             request.setValue("application/json", forHTTPHeaderField: "Content-Type")
             request.httpBody = try JSONEncoder().encode(submission)
         }

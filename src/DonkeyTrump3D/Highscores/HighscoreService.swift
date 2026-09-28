@@ -6,7 +6,7 @@ protocol HighscoreService: Sendable {
 }
 
 enum HighscoreServiceError: Error, Sendable {
-    case unavailable, invalidResponse, unconfirmed
+    case unavailable, invalidResponse, unconfirmed, credentialUnavailable
     case rejected(HighscoreProblem)
 }
 

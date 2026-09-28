@@ -79,6 +79,11 @@ struct HighscoreSnapshot: Codable, Sendable, Equatable {
         HighscoreRules.validScore(score) && (entries.count < 100 || score > (entries.last?.score ?? Int.max))
     }
     static func decode(_ data: Data, submission: Bool = false) throws -> Self {
+        let result = try decoder().decode(Self.self, from: data)
+        try result.validate(submission: submission)
+        return result
+    }
+    static func decoder() -> JSONDecoder {
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .custom { decoder in
             let value = try decoder.singleValueContainer().decode(String.self)
@@ -87,9 +92,7 @@ struct HighscoreSnapshot: Codable, Sendable, Equatable {
             guard value.hasSuffix("Z"), let date = formatter.date(from: value) else { throw HighscoreServiceError.invalidResponse }
             return date
         }
-        let result = try decoder.decode(Self.self, from: data)
-        try result.validate(submission: submission)
-        return result
+        return decoder
     }
 }
 
@@ -100,6 +103,6 @@ struct HighscoreProblem: Decodable, Error, Sendable, Equatable {
     let code: String
     let errors: [String: [String]]?
     var editableNameError: Bool {
-        status == 400 && code == "validation_failed" && errors?.isEmpty == false && errors?.keys.allSatisfy { $0 == "displayName" } == true
+        status == 422 && code == "name_rejected"
     }
 }

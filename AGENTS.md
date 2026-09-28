@@ -6,6 +6,26 @@ analysis work. Follow the user's authorized scope, the applicable skill, and the
 specification, plan, tasks and contracts when relevant. Preserve unrelated changes.
 This workflow supplements the constitution; it does not amend or weaken it.
 
+## Tests require an explicit user request
+
+Do not run tests unless the user explicitly requests them in the current prompt.
+An implementation, fix, deployment, review or Spec Kit request does not itself
+authorize tests. This includes unit, integration, UI, end-to-end and smoke tests,
+test scripts, and commands that indirectly execute tests. Do not run tests through
+a delegated agent or trigger a test workflow to bypass this rule.
+
+When tests are explicitly requested, run only the requested scope. Otherwise use
+source inspection and existing evidence, and state that tests were not run when
+reporting implementation results. Do not ask for test authorization routinely or
+treat intentionally unrun tests as a blocker to implementation or review. Never
+claim that unrun tests passed or that unverified runtime behavior was verified.
+
+This owner-directed policy takes precedence over automatic test requirements in
+repository instructions, skills and the constitution. References below to required
+checks, reruns and completion gates include tests only when explicitly requested
+in the current prompt. Independent review remains required where applicable, with
+the absence of newly executed tests disclosed to the reviewer.
+
 ## Required independent cross-vendor review
 
 Before declaring an authorized implementation or substantive review/analysis

@@ -30,17 +30,17 @@ service, database, account system, tracking SDK, frontend framework or mail prov
 one private schema-versioned Blob aggregate with ETags (Azure version history disabled); static HTML bundled with API;
 local versioned release artifacts and private owner evidence where sensitive.
 **Testing:** Swift Testing, XCTest/XCUITest, xUnit/Azurite, Python pipeline/asset/contract
-checks, physical iPhone13 via internal TestFlight, labelled iPad simulator compatibility.
+checks, owner-run physical iPhone13 test later via internal TestFlight, labelled iPad simulator compatibility. The owner is disconnecting the phone (2026-09-27); continue independent preparation without waiting for device access and retain physical results as pending.
 **Target Platform:** native landscape iPhone iOS26+, existing Linux App Services/Blob,
 owner's Chrome Connect session. No native iPad/Mac/Vision Pro release scope.
 **Project Type:** native mobile app + small API + documentation/static support pages.
 **Performance Goals:** no backend/audio startup gate; preserve fixed120Hz simulation and up-to120fps requested presentation, profile actual
 iPhone13 pacing, and retain <100ms added latency across 100 start/restart attempts; app network deadlines <=8s, backend
 operation<=6s/network<=2s, <=5 conditional attempts, no SDK/application upload retries.
-**Constraints:** DKK100/month including VAT incremental operation; keep shared plan
+**Constraints:** owner monitors Azure costs; no budget or financial release gate. Keep shared plan
 tier/scale and unrelated apps; no login, no deferred uploads, no agent Apple submission.
 **Scale/Scope:** top100, minimum10 successful-list entries, bounded 1MiB moderation
-aggregate and caps in the data model; small-launch costing baseline 1,000 GET/100
+aggregate and caps in the data model; small-launch traffic assumption 1,000 GET/100
 POST per day across environments, refreshed for new report traffic and diagnostics.
 
 ## Constitution Check
@@ -78,7 +78,7 @@ specs/002-app-store-release/
 
 src/DonkeyTrump3D/
 ├── App/                     # Release launch flags, existing lifecycle
-├── Highscores/              # v2 credential/report service and coordinator
+├── Highscores/              # credential/report service and coordinator
 ├── UI/                      # report/status/support/privacy flows
 └── Resources/               # privacy manifest, existing cover/music/icon
 src/DonkeyTrump3DTests/       # existing Swift targets, new credential/report cases
@@ -90,7 +90,7 @@ src/backend/
 └── wwwroot/                 # planned accessible support/privacy HTML
 src/backend.tests/           # schema/race/migration/operator/API tests
 src/scripts/                 # existing release tools + planned local smoke/media checks
-infra/                       # existing resource inventory/budget, no new App Service Plan
+infra/                       # existing resource inventory, no new App Service Plan
 .github/workflows/           # extend existing backend CI/DEV/PROD artifact promotion
 docs/releases/app-store/    # future release packages, non-secret evidence only
 ```
@@ -113,7 +113,7 @@ not a missing product choice or permission to fabricate facts.
 ## Phase 1 — Design and dependency order
 
 1. **Inventory and private input register:** actual account/app/history/signing,
-   rights/contact/trader facts, physical device, Azure inventory/cost baseline. Resolve
+   rights/contact/trader facts, physical device, Azure inventory/capacity. Resolve
    missing owner facts together after discovery. Probe DEV SSH and harmless aggregate
    metadata read via app MI early; a missing supported MI context blocks operator-dependent
    work, never permits token/environment extraction or human Blob credential fallback.
@@ -121,13 +121,13 @@ not a missing product choice or permission to fabricate facts.
 2. **Backend safety foundation:** schema2, canonical credential ownership, filtering,
    ETag-atomic reports/removal/block, bounded capacities/retention and shared operator
    mode. Add migrations and explicit v1 writer retirement; establish rollback floor.
-3. **iOS and public pages:** v2 publication/report/status flows, protected credential,
+3. **iOS and public pages:** current publication/report/status flows, protected credential,
    privacy/support links and pages; release argument/fixture isolation, manifest,
    iPhone-only configuration after history check. Preserve reviewed UX/audio behavior.
 4. **Integration and operator rehearsal:** deterministic local tests, DEV migration
    and concurrency/lost-ack cases, real owner daily report workflow. Extend existing
    pipelines/manifest/schema checks, then authorized PROD promotion with neighboring
-   app health/cost/capacity evidence. Never reset a live ranking for a test.
+   app health/capacity evidence. Never reset a live ranking for a test.
 5. **Release package:** truthful editable listing/media and rights/declaration matrix;
    signed archive/normal upload/internal TestFlight, exact-build physical checks,
    iPad compatibility smoke. Refresh affected package parts when candidate changes.
@@ -148,7 +148,7 @@ Validation instructions: [quickstart.md](quickstart.md).
 | FR002,011,016 | iOS release boundaries, signing/internal TestFlight identity, physical/iPad compatibility matrix. |
 | FR003–006 | Store copy/media provenance, native captures and rights/territory research. |
 | FR007–010,017 | Public pages/data inventory, genuine contact, truthful declarations and eligible free territories. |
-| FR012–013 | Shared-resource/cost gate, existing CI/DEV/PROD artifacts, live/race/failure checks. |
+| FR012–013 | Shared-resource/capacity gate, existing CI/DEV/PROD artifacts, live/race/failure checks. |
 | FR014–015 | Credential, filter/report/operator, bounded aggregate/retention/migration contract. |
 | FR024–026 | iOS contract startup/music/name-entry/min-ten regression gates; retain earlier accepted choices. |
 | SC001–010 | Quickstart scenarios plus per-candidate store/iOS/operator evidence; not satisfied by plan existence. |
@@ -166,9 +166,10 @@ Validation instructions: [quickstart.md](quickstart.md).
   attribution; credential-free writes retire before new release. Describe both limits.
 - Schema2 requires migration-aware recovery. Old schema1 builds/data snapshots cannot
   safely be restored after moderation starts. Quiesce only this game's API.
-- Shared plan/cost evidence must be refreshed; no extra tier/scale/budget without the
-  already specified separate owner decision. Public report storage/rate controls are
-  not guarantees against malicious cost or all offensive names.
+- Shared-plan capacity evidence must be refreshed; no extra plan or tier/scale changes
+  without the already specified separate owner decision. The owner monitors costs;
+  no budget, cost estimate or billing baseline is a release gate. Public report
+  storage/rate controls cannot guarantee prevention of all offensive names.
 - Physical iPhone13 and genuine owner moderation participation cannot be fabricated.
   Missing gates block readiness but not remaining independent preparation.
 

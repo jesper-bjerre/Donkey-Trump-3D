@@ -71,7 +71,7 @@ python3 src/scripts/release-moderation-smoke.py   --origin http://127.0.0.1:5281
 Expected assertions:
 - migrate a populated schema-1 fixture conditionally, preserve all real rows/ties;
   corrupt/missing state is not replaced; repeated/lost-ack migration is safe;
-- v1 GET public shape unchanged, v1 POST426, v2 missing/malformed secret401;
+- v1 GET public shape unchanged, POST missing/malformed secret401; no second HTTP API version;
 - two installation credentials publish independent scores; wrong-owner replay409;
 - prohibited name422 allows current-run correction; benign names accepted;
 - report → owner acknowledge → remove/block/resolve → same reporter status succeeds;
@@ -110,10 +110,10 @@ Record exact run IDs, artifact SHA, supported schema and rollback floor. Refresh
 plan/tier/scale, storage and neighboring-app health. Only this game's API may be
 quiesced; preserve shared plan settings and other apps.
 
-Verify both public pages and current PROD configuration after deployment. Compare
-incremental cost assumptions (including moderation/report retention and bandwidth)
-against DKK100/month including VAT; record existing committed plan charges separately.
-Do not treat budget alerts as a hard cap. Retain before/after health/capacity evidence.
+Verify both public pages and current PROD configuration after deployment. Retain
+before/after health/capacity evidence, including moderation and capture workloads.
+The owner monitors Azure costs; no budget, cost estimate or billing baseline is
+required for provisioning or release acceptance.
 No synthetic automated POSTs to PROD: production publication evidence uses an explicitly
 identified human-controlled test run and owner moderation of that test-owned result.
 

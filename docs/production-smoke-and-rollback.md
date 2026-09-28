@@ -158,7 +158,17 @@ The initial deployment does not configure Blob versioning or a protected backup.
 Any data-recovery operation must first establish an explicitly authorized protected
 copy; the rollback pipeline only restores API code and never rewrites scores.
 
-### v2 read compatibility hotfix — 2026-09-28
+## Schema 2 moderation migration safety (unreleased implementation)
+
+The new package manifest requires readSchemas=[1,2], writeSchemas=[2], rollbackFloor=2. Older schema1-only artifacts are rejected by promotion verification. The operator enables `Moderation__Maintenance=true` only for an explicit data conversion; routine pipelines preserve the current setting and do not enable it on every deployment. never resize/stop the shared plan or byensgaader neighbor. A successful read-only deployment smoke is not completed migration or write readiness.
+
+Before DEV and then PROD migration: verify actual deployed artifact/instance inventory, restart only this API to terminate old workers, confirm maintenance on every instance and wait beyond the six-second in-flight deadline. Public v1 writes must be503; validated reads and SSH remain available. Background cleanup pauses. Missing proof of quiescence blocks migration.
+
+Use authenticated `az webapp ssh` to run the published DLL **inside the matching App Service**. `dotnet /home/site/wwwroot/DonkeyTrump.Highscores.Api.dll moderation inspect --target dev|prod` must establish MI Blob access. Human credentials only open SSH; never use AzureCliCredential/shared keys or dump environment/token values. Preview `migrate --expected-etag ETAG`, then the same command with `--apply` after all prerequisites. The command validates the current aggregate, keeps one private24h backup, converts conditionally preserving rows/ties, verifies and deletes the backup. If acknowledgement is lost, inspect schema/revision before deciding what to do next; never reset the list.
+
+Clear maintenance only after verified schema2 and backup cleanup, then restart only the game API and test owned v1 results/receipts/removal/block plus neighbor availability. Preserve moderation guards for test cleanup. Rollback may use only a verified schema2-aware artifact, including this release's maintenance/read-only recovery baseline. Never restore a schema1 snapshot over active tombstones/blocks or promote a pre-moderation package. Keep maintenance/read-only service if writes cannot safely resume. Live DEV/PROD rehearsals remain UNEXECUTED until their release records contain actual evidence.
+
+### Historical v2 read compatibility hotfix — 2026-09-28
 
 The PROD iPhone client reads `/api/v2/highscores`. Backend release
 `75cd63253b21e47927b1c620ff88bfea8460598a` (DEV run `36408244479`) adds that
@@ -169,3 +179,8 @@ after deployment; prefer a retained, verified package with v2 read compatibility
 This is not permission to restore a schema1 artifact after the separately planned
 moderation migration: its schema2 recovery rules still apply. Artifact retention
 is 30 days; verify availability and compatibility before any rollback.
+
+The subsequent owner decision is to evolve `/api/v1` in place, updating the
+unreleased iPhone app together with the backend. The v2 read alias above records
+the earlier hotfix; it is not a requirement for the next release. Storage schema
+numbers describe the private Blob format, not additional public API versions.

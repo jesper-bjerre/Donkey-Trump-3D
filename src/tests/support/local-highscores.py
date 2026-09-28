@@ -4,6 +4,7 @@ Requires an already running local Azurite. No Azure resources or shared scores a
 """
 import argparse, base64, datetime, hashlib, hmac, json, os, pathlib, signal, socket, subprocess, time, urllib.request, urllib.error, uuid
 from urllib.parse import urlsplit
+from azurite_owned import OwnedAzurite
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--state-file', required=True)
@@ -70,6 +71,9 @@ def handle(signum, _):
 
 for number in (signal.SIGTERM, signal.SIGINT, signal.SIGUSR1): signal.signal(number, handle)
 container_request('PUT')
+OwnedAzurite(args.azurite_endpoint, container).request('PUT', 'global-v1.json', json.dumps({
+    'schemaVersion': 2, 'nextSequence': 1, 'entries': [], 'removedSubmissionIds': [],
+    'blockedInstallations': [], 'reports': [], 'spamReceipts': [], 'operatorAudit': []}).encode())
 try:
     start()
     print(json.dumps({'origin': origin, 'stateFile': str(state_path)}), flush=True)

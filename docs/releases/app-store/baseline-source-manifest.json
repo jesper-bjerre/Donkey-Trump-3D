@@ -1,0 +1,11 @@
+{
+  "base": "94dc44d89929137c4ff02649da58ba8fefa29f1e",
+  "purpose": "pre-change baseline only; not final candidate",
+  "sha256": {
+    "global.json": "ce61f5ae207d33d00594c77c5999c7f0dc66434e85a85f38090335d588438974",
+    "src/DonkeyTrump3D.xcodeproj/project.pbxproj": "8b0ce9546299d856c4386a12620d185f324320d8671e8b3ee842ac10fa0156cd",
+    "specs/002-app-store-release/spec.md": "4c0c832442163669c82262946d8392cd79d8205b24349eb95089323c2ed8d8e5",
+    "specs/002-app-store-release/plan.md": "692ff36b61b91eac39d9012d2a2047a9b6552fdfa81965fa892699d812a9e3dd",
+    "specs/002-app-store-release/data-model.md": "ae8426d40bf028de37189c549904f1667f0e25306fdeeb6891a804d207bce66c"
+  }
+}

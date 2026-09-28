@@ -41,7 +41,6 @@ repository root:
 ```sh
 python3 infra/provision-backend.py development
 python3 infra/provision-backend.py production
-python3 infra/configure-backend-budget.py
 ```
 
 The script refuses name collisions with resources not tagged for this repository,
@@ -157,8 +156,11 @@ Incremental storage cost depends on reads, conditional-write retries, retained d
 and egress. The stored ranking is bounded to 256 KiB. For a small launch, use 1,000
 GETs and 100 POSTs per day across both environments as a planning assumption, not a
 rate limit or a traffic measurement. Sustained traffic at the API's per-process
-limits is a different, more expensive scenario. The owner's ceiling is DKK 100 per
-month including VAT for incremental operation; existing plan charges are separate.
+limits is a different, more expensive scenario. On 2026-09-27 the owner removed
+the budget ceiling and took responsibility for monitoring Azure costs. Budget
+configuration, cost estimates and billing baselines are not deployment or release
+prerequisites. The following prices and alert settings are historical observations,
+not current acceptance requirements.
 Microsoft's [Retail Prices API](https://learn.microsoft.com/en-us/rest/api/cost-management/retail-prices/azure-retail-prices)
 returned these West Europe General Block Blob v2 Hot/LRS DKK rates on 2026-09-26:
 0.1258 per GB/month (first tier), 0.0276 per 10,000 reads and 0.3466 per
@@ -168,7 +170,7 @@ egress and other operations. Even budgeting 1 GB stored adds only about DKK 0.16
 including VAT. These are list-price planning inputs, not an invoice or a guaranteed
 cap; actual subscription pricing, tax, traffic and egress determine the bill.
 No paid log analytics, extra compute, Front Door or monitoring service is provisioned.
-The deployed `donkeytrump-monthly-budget` covers resources tagged `Project=DonkeyTrump`: both DEV/PROD apps and storage
+The previously deployed `donkeytrump-monthly-budget` covers resources tagged `Project=DonkeyTrump`: both DEV/PROD apps and storage
 accounts, including their attributed transaction and bandwidth charges, at DKK 80/month before tax (DKK 100
 with 25% VAT). Actual-cost warnings trigger at 50%, 75% and 100%, and a forecast
 warning at 90%. Only the signed-in owner, already a recipient of the existing Azure
@@ -179,15 +181,14 @@ It preserves an existing budget's period and refuses a different scope or limit.
 The helper verifies that both apps and both storage accounts carry this tag.
 The existing shared plan charges remain outside this incremental project budget;
 there is no additional App Service compute charge at the unchanged plan sizes.
-Any future billable project resource must carry the same cost tag; verify its
-cost attribution as part of that change.
+Preserve repository resource tags for ownership and inventory. Budget management
+is owner-controlled; the budget helper is not part of the required workflow.
 
 Azure [budget warnings](https://learn.microsoft.com/en-us/azure/cost-management-billing/costs/tutorial-acm-create-budgets)
-are delayed cost notifications, not an enforceable spending cap. If a warning
-arrives, inspect the source and contain abnormal traffic before the ceiling is
-reached; this can include stopping the affected new API without modifying the
-shared plan or other apps. Do not claim rate limits or warnings guarantee a monthly
-bill. Review the budget before its September 2036 expiry.
+are delayed cost notifications, not an enforceable spending cap. Existing Azure
+budget resources were not deleted or changed when the owner removed the release
+constraint. The owner decides whether to retain or change these alerts. Shared-plan
+capacity and neighboring-app availability checks remain required.
 
 The deployment [evidence and independent review](reviews/backend-deployment-2026-09-26.md)
 records the executed checks and observed resources. App Store moderation, physical

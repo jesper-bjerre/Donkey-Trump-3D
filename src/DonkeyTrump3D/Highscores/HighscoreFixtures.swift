@@ -80,8 +80,8 @@ actor HighscoreFixtureService: HighscoreService {
         posts += 1; count("highscoreFixturePosts")
         if fixture == "save-ack-lost" { throw HighscoreServiceError.unconfirmed }
         if fixture == "validation-error" && posts == 1 {
-            throw HighscoreServiceError.rejected(HighscoreProblem(type: "about:blank", title: "Invalid highscore submission", status: 400,
-                                                                code: "validation_failed", errors: ["displayName": ["Enter another name."]]))
+            throw HighscoreServiceError.rejected(HighscoreProblem(type: "about:blank", title: "Invalid highscore submission", status: 422,
+                                                                code: "name_rejected", errors: ["displayName": ["Enter another name."]]))
         }
         if fixture == "cutoff-race" || !snapshot.qualifies(submission.score) {
             let newer = Self.prepared(count: 100)

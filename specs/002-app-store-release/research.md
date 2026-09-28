@@ -31,7 +31,7 @@ fails publication closed rather than silently minting another identity. No accou
 registration request, hardware ID, IDFA or tracking service. The server fingerprints
 the secret with SHA-256 and stores only the fingerprint alongside attributed rows,
 reports and blocks. The raw secret is sent only in the HTTPS Authorization header
-for v2 publication/report routes, never URLs, public responses, logs or screenshots.
+for publication/report routes, never URLs, public responses, logs or screenshots.
 **Rationale:** the blocked official installation cannot change its name or run ID to
 bypass a block. Startup/local play need not wait for registration or connectivity.
 **Alternatives:** a client-chosen public UUID is not a possession credential; a
@@ -101,7 +101,7 @@ the worker also deletes expired backups hourly/on startup. No general daily data
 backup is introduced. Set a prefix-scoped Azure lifecycle delete rule after one day
 as a secondary cleanup safeguard, not a precise deletion clock. Backup age/cleanup
 lag is monitored; outage exceptions and this extra recovery-copy period appear in
-privacy/cost evidence. Inspect any historical versions/deleted copies/exported backups
+privacy/retention evidence. Inspect any historical versions/deleted copies/exported backups
 before claiming the policy; unknown old copies block that claim. Never restore an old
 snapshot over current moderation guards. Hard instantaneous physical erasure cannot
 be promised during a cloud outage.
@@ -140,9 +140,11 @@ support existing identity/traffic controls; per-process limiting is not a billin
 
 ## 6. Explicit migration and compatibility floor
 
-**Decision:** keep GET `/api/v1/highscores` compatible, add credentialed v2 routes,
-retire v1 POST with 426. New code reads schema 1 only for migration/read compatibility
-and rejects v2 writes until schema 2 is installed. Deploy schema-aware code first,
+**Decision (owner update 2026-09-28):** evolve the existing `/api/v1` in place,
+including credentialed publication and reporting. The app is unreleased and has only
+the owner testing it; no second API or old-client retirement mechanism is needed.
+New code reads storage schema 1 only for explicit data conversion
+and rejects credentialed writes until schema 2 is installed. Deploy schema-aware code first,
 quiesce only this game's API, conditionally migrate the current Blob, then resume.
 Preserve every existing row and sequence; legacy rows have no fabricated producer
 identity. They remain removable, but cannot be retrospectively attributed/blocked.

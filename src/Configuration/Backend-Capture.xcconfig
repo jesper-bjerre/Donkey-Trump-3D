@@ -1,0 +1,2 @@
+// Simulator-only release-equivalent media capture; never a distribution build.
+HIGHSCORE_API_BASE_URL = https:/$()/donkeytrump-api-d.azurewebsites.net/capture

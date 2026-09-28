@@ -23,3 +23,12 @@ Thumbs.db
 *.swp
 .vscode/
 .idea/
+
+# Local release tooling and private build/signing outputs
+__pycache__/
+*.pyc
+.venv/
+*.xcarchive/
+*.ipa
+*.p12
+*.mobileprovision

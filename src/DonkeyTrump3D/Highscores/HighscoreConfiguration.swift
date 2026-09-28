@@ -1,9 +1,14 @@
 import Foundation
+#if APPSTORE_CAPTURE && !targetEnvironment(simulator)
+#error("AppStoreCapture cannot run on a device or be distributed")
+#endif
 
 struct HighscoreConfiguration: Sendable {
     let baseURL: URL
     let isLocalIntegration: Bool
     var endpoint: URL { baseURL.appendingPathComponent("api/v1/highscores") }
+
+    var reportEndpoint: URL { baseURL.appendingPathComponent("api/v1/highscore-reports") }
 
     init(baseURL: URL) throws {
         guard baseURL.scheme == "https", let host = baseURL.host, !host.isEmpty,
@@ -26,6 +31,11 @@ struct HighscoreConfiguration: Sendable {
               !text.isEmpty, let url = URL(string: text) else { return nil }
         #if DEBUG
         if url.scheme == "http" { return try? Self(localOrigin: url) }
+        #endif
+        #if APPSTORE_CAPTURE
+        guard text == "https://donkeytrump-api-d.azurewebsites.net/capture" else { return nil }
+        #elseif !DEBUG
+        guard text == "https://donkeytrump-api-p.azurewebsites.net" else { return nil }
         #endif
         return try? Self(baseURL: url)
     }

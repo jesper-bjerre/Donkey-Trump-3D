@@ -32,12 +32,14 @@ struct LaunchOptions {
     var phaseOverride: String?
 
     static let current: LaunchOptions = {
-        let args = ProcessInfo.processInfo.arguments
         var o = LaunchOptions()
+        #if DEBUG
+        let args = ProcessInfo.processInfo.arguments
         o.autopilot = args.contains("-autopilot")
         o.autostart = args.contains("-autostart")
         o.iconShot = args.contains("-iconShot")
         if let i = args.firstIndex(of: "-introAt"), i + 1 < args.count { o.introAt = Double(args[i + 1]) }
+        #endif
         return o
     }()
 }
@@ -125,7 +127,13 @@ final class GameEngine: NSObject, SCNSceneRendererDelegate {
             if let index = arguments.firstIndex(of: "-highscoreRunID"), index + 1 < arguments.count,
                let supplied = UUID(uuidString: arguments[index + 1]), supplied != HighscoreRules.zeroID { id = supplied }
             else { id = UUID() }
-            session.completeForHighscoreFixture(HighscoreFixtureLaunch.run(for: name, id: id))
+            var run = HighscoreFixtureLaunch.run(for: name, id: id)
+            if case .integration = mode,
+               let index = arguments.firstIndex(of: "-highscoreRunScore"), index + 1 < arguments.count,
+               let score = Int(arguments[index + 1]), HighscoreRules.validScore(score) {
+                run = CompletedRun(id: id, score: score, levelReached: run.levelReached)
+            }
+            session.completeForHighscoreFixture(run)
         }
         #endif
         super.init()

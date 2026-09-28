@@ -19,7 +19,7 @@ struct DonkeyTrump3DApp: App {
         .onChange(of: scenePhase) { old, phase in
             // Only pause when leaving an active session, not during the launch transition.
             if old == .active && phase != .active { model.engine.send(.pause) }
-            if phase == .background { model.highscores.background() }
+            if phase == .background { model.highscores.background(); model.reports.close() }
         }
     }
 }
@@ -37,6 +37,7 @@ final class GameModel {
     }
     let engine: GameEngine
     let highscores: HighscoreCoordinator
+    let reports: ReportCoordinator
 
     init(service: (any HighscoreService)? = nil) {
         let selected: any HighscoreService
@@ -70,6 +71,14 @@ final class GameModel {
         #else
         highscores = HighscoreCoordinator(service: selected)
         #endif
+        var reportConfiguration = HighscoreConfiguration.bundled()
+        #if DEBUG
+        if let mode = HighscoreFixtureLaunch.parse(ProcessInfo.processInfo.arguments) {
+            if case .integration(let origin) = mode { reportConfiguration = try? HighscoreConfiguration(localOrigin: origin) }
+            else { reportConfiguration = nil }
+        }
+        #endif
+        reports = ReportCoordinator(service: reportConfiguration.map { URLSessionReportService(configuration: $0) as any ReportService } ?? UnavailableReportService())
         engine = GameEngine()
         engine.firstFrameSink = { [weak self] in
             MainActor.assumeIsolated { self?.isSceneReady = true }
@@ -81,14 +90,14 @@ final class GameModel {
 
     func send(_ command: EngineCommand) {
         switch command {
-        case .startGame, .restart, .toTitle: highscores.invalidate()
+        case .startGame, .restart, .toTitle: highscores.invalidate(); reports.close()
         default: break
         }
         engine.send(command)
     }
 
     private func receive(_ snapshot: HUDState) {
-        if hud.runID != snapshot.runID || hud.phase == .gameOver && snapshot.phase != .gameOver { highscores.invalidate() }
+        if hud.runID != snapshot.runID || hud.phase == .gameOver && snapshot.phase != .gameOver { highscores.invalidate(); reports.close() }
         hud = snapshot
         if snapshot.phase == .gameOver, let run = snapshot.completedRun { highscores.complete(run) }
     }

@@ -40,9 +40,9 @@ Expired/not-found receipts are removed locally with an honest expiry message. A
 pending report and one already acknowledged/resolved remain distinguishable. Owner
 responses are fixed disposition text, not an unmoderated message channel.
 
-## Publication with v2
+## Publication through the current API
 
-Use v2 routes and canonical secret header. If secret storage fails, keep public
+Use the existing `/api/v1` routes and canonical secret header. If secret storage fails, keep public
 browsing and offline play working and report publication unavailable. Never rotate
 an existing credential because the API returned blocked/invalid. A generated secret
 is reused across name corrections and all later runs on that installation.

@@ -121,12 +121,13 @@ import Observation
                 if case HighscoreServiceError.rejected(let problem) = error, problem.editableNameError,
                    case .completedRun(let run) = self.source, submission != nil {
                     self.stopOperation()
-                    self.state = .enteringName(run, error: problem.errors?["displayName"]?.first ?? "Please check your name.")
+                    self.state = .enteringName(run, error: problem.errors?["displayName"]?.first ?? "Choose a different name.")
                 } else {
                     let unconfirmed: Bool
                     if case HighscoreServiceError.rejected(let problem) = error {
-                        unconfirmed = submission != nil && (problem.code == "submission_unconfirmed" || !["validation_failed", "malformed_request", "submission_conflict", "payload_too_large", "unsupported_media_type", "rate_limited", "service_unavailable", "storage_invalid", "contention_exhausted", "operation_timed_out"].contains(problem.code))
-                    } else { unconfirmed = submission != nil }
+                        unconfirmed = submission != nil && (problem.code == "submission_unconfirmed" || !["publication_blocked", "submission_removed", "installation_credential_invalid", "service_maintenance", "moderation_capacity", "validation_failed", "malformed_request", "submission_conflict", "payload_too_large", "unsupported_media_type", "rate_limited", "service_unavailable", "storage_invalid", "contention_exhausted", "operation_timed_out"].contains(problem.code))
+                    } else if case HighscoreServiceError.credentialUnavailable = error { unconfirmed = false }
+                    else { unconfirmed = submission != nil }
                     self.fail(unconfirmed: unconfirmed)
                 }
             }

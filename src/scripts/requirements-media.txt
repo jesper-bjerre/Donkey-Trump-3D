@@ -1,0 +1,2 @@
+# Version validated with the Mac's Python 3.9 release tooling.
+Pillow==11.3.0

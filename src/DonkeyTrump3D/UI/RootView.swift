@@ -204,6 +204,9 @@ struct HowToPlayView: View {
                                 .frame(width: 28)
                         }
                     }
+                    Link("Privacy Policy", destination: SupportLinks.privacy)
+                    Link("Support and Reporting", destination: SupportLinks.support)
+                    Text("Use the flag beside a highscore to report a name. The owner checks reports every working day. View receipts in My Reports. Blocking affects online publication, not local play.")
                     Text(Copy.privacy)
                         .font(.footnote)
                         .foregroundStyle(.secondary)
