@@ -1,0 +1,68 @@
+diff --git a/specs/002-app-store-release/contracts/moderation-api.md b/specs/002-app-store-release/contracts/moderation-api.md
+index 1a46c0d..88bd538 100644
+--- a/specs/002-app-store-release/contracts/moderation-api.md
++++ b/specs/002-app-store-release/contracts/moderation-api.md
+@@ -79,6 +79,10 @@ reject mismatches or external overrides. Execute `/home/site/wwwroot/DonkeyTrump
+ with `dotnet ... moderation <command> --target dev|prod`. The mode initializes shared
+ storage/domain code and exits without HTTP hosting. Check harmless aggregate metadata
+ first. Do not dump environment/MI endpoint tokens, snapshots or private names into logs.
++Operator startup pre-acquires an MI token with a separate 30-second cancellation
++deadline and reuses that credential in the Blob client. This startup phase performs
++no Blob mutation, prints/stores no token and does not change the six-second store or
++public HTTP deadlines. Local emulator commands bypass MI startup.
+ No public admin route or additional hosted service. Failure to obtain a supported
+ SSH session blocks cloud operator work; no human Blob credential fallback.
+ 
+diff --git a/src/backend/Highscores/HighscoreOptions.cs b/src/backend/Highscores/HighscoreOptions.cs
+index 7e3b0dc..fc442b3 100644
+--- a/src/backend/Highscores/HighscoreOptions.cs
++++ b/src/backend/Highscores/HighscoreOptions.cs
+@@ -41,6 +41,19 @@ public sealed class HighscoreOptions
+ 
+     // Microsoft's public emulator key; never a production credential.
+     public const string EmulatorKey = "Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==";
++    // Operator startup may need a cold MI token. Authenticate once before the
++    // unchanged six-second data-operation deadline; never print/persist the token.
++    public async Task<BlobServiceClient> CreateOperatorClientAsync(CancellationToken cancellationToken)
++    {
++        if (UseAzurite) return CreateClient();
++        using var startup = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
++        startup.CancelAfter(TimeSpan.FromSeconds(30));
++        TokenCredential identity = new ManagedIdentityCredential(string.IsNullOrEmpty(ManagedIdentityClientId)
++            ? ManagedIdentityId.SystemAssigned : ManagedIdentityId.FromUserAssignedClientId(ManagedIdentityClientId));
++        await identity.GetTokenAsync(new TokenRequestContext(["https://storage.azure.com/.default"]), startup.Token);
++        return new BlobServiceClient(new Uri(BlobServiceUri), identity, ClientOptions());
++    }
++
+     public BlobServiceClient CreateClient(BlobClientOptions? options = null)
+     {
+         options ??= ClientOptions();
+diff --git a/src/backend/Moderation/CaptureCommand.cs b/src/backend/Moderation/CaptureCommand.cs
+index ac31015..05cb957 100644
+--- a/src/backend/Moderation/CaptureCommand.cs
++++ b/src/backend/Moderation/CaptureCommand.cs
+@@ -12,9 +12,10 @@ public static class CaptureCommand
+         var enabled=new CaptureOptions {Enabled=true};
+         if(!enabled.IsValid(options,target=="local"?"Test":"Production",Environment.GetEnvironmentVariable("WEBSITE_SITE_NAME")) || command=="capture-seed" && !capture.Enabled)
+             throw new HighscoreFailure(400,"capture_target_invalid","Capture isolation is not configured");
++        var client=await options.CreateOperatorClientAsync(cancellationToken);
+         using var deadline=CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);deadline.CancelAfter(TimeSpan.FromSeconds(6));
+         var token=deadline.Token;var selected=CaptureOptions.Storage(options);
+-        var blob=options.CreateClient().GetBlobContainerClient(selected.ContainerName).GetBlobClient(selected.BlobName);
++        var blob=client.GetBlobContainerClient(selected.ContainerName).GetBlobClient(selected.BlobName);
+         BlobProperties? previous=null;
+         try {previous=(await blob.GetPropertiesAsync(cancellationToken:token)).Value;}
+         catch(RequestFailedException error) when(error.Status==404 && error.ErrorCode=="BlobNotFound") { }
+diff --git a/src/backend/Moderation/ModerationCommand.cs b/src/backend/Moderation/ModerationCommand.cs
+index 4a44923..4085114 100644
+--- a/src/backend/Moderation/ModerationCommand.cs
++++ b/src/backend/Moderation/ModerationCommand.cs
+@@ -46,7 +46,7 @@ public static class ModerationCommand
+                 await CaptureCommand.ExecuteAsync(command,args["--target"],args.ContainsKey("--apply"),options,
+                     configuration.GetSection("Capture").Get<CaptureOptions>() ?? new(),output,token); return 0;
+             }
+-            var client=options.CreateClient();var clock=TimeProvider.System;
++            var client=await options.CreateOperatorClientAsync(token);var clock=TimeProvider.System;
+             var store=new BlobHighscoreStore(client,options,clock,moderation:moderation);
+             if(command=="initialize") {
+                 await ModerationMigration.InitializeAsync(client,options,args.ContainsKey("--apply"),output,token);return 0;

@@ -1,0 +1,27 @@
+{
+  "checkedAtUnix": 1790600634.976506,
+  "checks": [
+    {
+      "environment": "d",
+      "/health/live": 200,
+      "/api/v1/highscores": 200,
+      "entries": 10,
+      "/api/v2/highscores": 404,
+      "/support": 200,
+      "/privacy": 200,
+      "postWithoutCredential": 401,
+      "neighborHealth": 200
+    },
+    {
+      "environment": "p",
+      "/health/live": 200,
+      "/api/v1/highscores": 200,
+      "entries": 10,
+      "/api/v2/highscores": 404,
+      "/support": 200,
+      "/privacy": 200,
+      "postWithoutCredential": 401,
+      "neighborHealth": 200
+    }
+  ]
+}

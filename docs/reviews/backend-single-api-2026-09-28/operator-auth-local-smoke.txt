@@ -1,0 +1,1 @@
+PASS: owned schema1 migration, v1 publication, report, operator acknowledgement/removal/block, private receipt and minimum-ten continuity.

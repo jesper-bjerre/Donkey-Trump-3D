@@ -1,0 +1,6 @@
+{
+  "src/backend/Highscores/HighscoreOptions.cs": "04dacbf13a41b1d55578f7db5ba164ea716da321f7a021fdfa2ead3b7de93560",
+  "src/backend/Moderation/ModerationCommand.cs": "c6479c10e0e1f9b9ca15c284e8dbd4da0dfc564bdcc58ed2301b190ace91e6e8",
+  "src/backend/Moderation/CaptureCommand.cs": "0727f3de0c8d0481cf8202deb4b7d9cf9f8af8499b8884176296cb2a5689f055",
+  "specs/002-app-store-release/contracts/moderation-api.md": "2ab7b9ec7006c8a1b4a327a05be6f8b4a137c86e9da8eaf1de6cb9083c953ed0"
+}

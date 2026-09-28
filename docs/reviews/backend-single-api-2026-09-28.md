@@ -1,7 +1,7 @@
 # Backend single public API — independent review, 2026-09-28
 
-Local implementation consensus: **APPROVED**. Deployment verification follows separately;
-this record does not claim the new service is already live or the App Store task complete.
+Implementation consensus: **APPROVED**. DEV and PROD deployment verification completed;
+this record does not claim the broader App Store task is complete.
 
 Owner authorized DEV/PROD deployment and explicitly requested one existing `/api/v1`
 for the unreleased owner-tested app. Removed v2/426 retirement paths. The existing
@@ -44,3 +44,50 @@ owner moderation participation and App Store draft remain separate unfinished ga
 
 Cloud rollout state is recorded in
 [backend rollout evidence](../releases/app-store/backend-single-api-rollout.md).
+
+## Follow-up: cold operator identity startup
+
+A separate operational defect appeared during PROD rollout: the cold CLI token
+request repeatedly consumed the six-second store deadline. A bounded30-second
+MI-only startup handshake now precedes the unchanged store deadline and reuses the
+credential in memory. Public API authentication/deadlines are unchanged. This is
+new evidence; historical R8 is not relabeled as a review of this repair.
+
+Source commit `27aa8104de27c998526e5844e3264457ca9f1d7a` on `b04ffe3` changes only
+four files (full `git diff --stat` and `git diff --name-status` confirm four M entries,
+20insertions/2deletions). Committed file SHA256 values match the
+[repair manifest](backend-single-api-2026-09-28/auth-manifest.json).
+The first primary-worktree diff mistakenly represented two still-untracked files as
+deleted relative to the newer base. R9 confirmed this evidence problem. That diff is
+preserved as `auth-incorrect-superseded.diff`, not an implementation change. The
+[corrected tracked diff](backend-single-api-2026-09-28/auth-corrected.diff) and explicit
+committed-blob verification resolve R9. No source content changed between reviews.
+
+Fresh text/JSON access probes after resumption succeeded with no effort warning;
+probe session`5ed56d68-a214-44ea-88ac-77e181ab2256`, ClaudeCode2.1.283,
+firstParty claude-opus-5-5, explicit high settings as above. Lead exact model/effort
+remain unavailable. [Initial repair review](backend-single-api-2026-09-28/auth-review-verdict.md)
+and [identity correction review](backend-single-api-2026-09-28/auth-correction-verdict.md)
+both APPROVE the manifest content; final session`c8514c96-1a27-4fc7-b51c-b41de338fa59`.
+Lead agrees; no material code findings remain. R10 requires actual loaded package
+identity and cold wwwroot operator checks in DEV/PROD before conversion. The /tmp
+read-only success is diagnostic, not that rollout proof. Capture stays disabled in
+cloud; local integration checks cover its changed client factory path.
+
+After repair:109 backend tests/0skip and owned local migration/operator smoke PASS;
+local publish PASS. Final cloud evidence is recorded separately below the rollout
+record; until those gates pass this approval alone does not claim deployment complete.
+
+## Completed rollout acceptance
+
+Unchanged reviewed source27aa810 is live in DEV/PROD; all29 mounted artifact file
+hashes match the promoted ZIP. Both cold published operators were exercised before
+conversion. PROD conversion preserved all11 rows, backup absence was independently
+verified, maintenance is now false, and test-owned publication/cleanup restored ten
+rows. DEV report/acknowledge/remove/block/receipt smoke passed. Public API/pages/auth
+and all four game/neighbor health checks passed. Detailed failures and subsequent
+readback/cleanup evidence are preserved in the linked rollout record, including
+post-recycle transient timeouts and an explicit retry of cleanup only after readback.
+Lead agrees the unchanged implementation and completed R10 deployment gates satisfy
+the authorized backend task. Public App Store release and physical testing are not
+claimed. Cold-start timeout limitations remain documented.

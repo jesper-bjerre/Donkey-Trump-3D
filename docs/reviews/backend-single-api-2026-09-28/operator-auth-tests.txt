@@ -1,0 +1,8 @@
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  DonkeyTrump.Highscores.Api -> /Users/jesperhyldenbrandtbjerre/Documents/Development/Donkey-Trump-3D/src/backend/bin/Release/net10.0/DonkeyTrump.Highscores.Api.dll
+  DonkeyTrump.Highscores.Api.Tests -> /Users/jesperhyldenbrandtbjerre/Documents/Development/Donkey-Trump-3D/src/backend.tests/bin/Release/net10.0/DonkeyTrump.Highscores.Api.Tests.dll
+Test run for /Users/jesperhyldenbrandtbjerre/Documents/Development/Donkey-Trump-3D/src/backend.tests/bin/Release/net10.0/DonkeyTrump.Highscores.Api.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:   109, Skipped:     0, Total:   109, Duration: 1 s - DonkeyTrump.Highscores.Api.Tests.dll (net10.0)

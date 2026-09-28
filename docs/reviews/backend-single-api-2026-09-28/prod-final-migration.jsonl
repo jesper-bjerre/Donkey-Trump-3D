@@ -1,0 +1,5 @@
+{"schemaVersion":1,"etag":"\u00220x8DF1D59E1D1C1D4\u0022","entries":11,"reports":0,"removed":0,"blocks":0,"bytes":1986}
+{"preview":true,"action":"migrate","fromSchema":1,"toSchema":2}
+{"applied":true,"schemaVersion":2,"etag":"\u00220x8DF1D5FF1582A6F\u0022"}
+{"schemaVersion":2,"etag":"\u00220x8DF1D5FF1582A6F\u0022","entries":11,"reports":0,"removed":0,"blocks":0,"bytes":2194}
+{"result": "PASS", "schemaVersion": 2, "entriesPreserved": 11, "publicRowsSha256": "48bed100ea6a9af180dd31c90fb995f41b7aad8db82ee443a5f2c85bb18fe702"}
