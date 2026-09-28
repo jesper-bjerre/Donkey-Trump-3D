@@ -1,0 +1,10 @@
+{
+  "method": "GET",
+  "origin": "http://127.0.0.1:5281",
+  "path": "/api/v1/highscores",
+  "status": 200,
+  "entryId": "c84f2d38-4d35-46aa-b96b-070944a25f6e",
+  "score": 2600,
+  "rank": 1,
+  "independentReadback": true
+}

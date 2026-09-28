@@ -1,0 +1,2 @@
+{"result": "PASS", "backend": "current Release DLL", "storage": "dt3d-test-score2600-aaef514e24ac", "origin": "http://127.0.0.1:51309", "submissionId": "ef8ab2d5-9b84-4b9a-94f3-b21b706ee914", "score": 2600, "rank": 1, "independentReadback": true}
+Owned isolated test container removed

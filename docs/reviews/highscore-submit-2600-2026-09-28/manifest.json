@@ -1,0 +1,8 @@
+{
+  "src/backend/Highscores/BlobHighscoreStore.cs": "16193e35595471bdcffed98c8cbd489f07e6f7be39cb75243cf0ecd3fad970a0",
+  "src/backend.tests/HighscoreTransientReadTests.cs": "9a2288116c93afde9e5c5e715bd31839cc12aac1078d0616316b28ea91ff4b24",
+  "specs/002-app-store-release/contracts/moderation-api.md": "2d51939e3f9118e9b40e0b1685763d7817a4e478532677117e779863fa2913db",
+  "src/DonkeyTrump3D/App/GameEngine.swift": "49695b2263617bc57fdd9c84bdd35cfeeb85acc6b564e453f4b29953eb1ca083",
+  "src/DonkeyTrump3DUITests/HighscoreRealSubmissionUITests.swift": "256f8f42673aa7c7ed25a9178721a63614fdc89c2f6fbb69f9bcf1be7ba30a61",
+  "specs/001-global-highscores/plan.md": "2b567ec315eeba6c5218e0e0b8686f8230dad5db91040e196fab27d21736d63d"
+}

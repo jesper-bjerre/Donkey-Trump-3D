@@ -1,0 +1,4 @@
+{"testSubmissionId": "cbdc2a8c-f17b-47b5-97b8-a3d5f94b9e73", "testScore": 2600}
+{"environment": "dev", "postStatus": 200, "outcome": "ranked"}
+{"readbackStatus": 200, "persistedScore": 2600}
+{"result": "PASS", "credentialedPost": 200, "outcome": "ranked", "rankedEntriesRestored": true, "syntheticRankedRows": 0, "entries": 10}

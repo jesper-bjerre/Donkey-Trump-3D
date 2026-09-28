@@ -1,0 +1,4 @@
+{"phase":"identity","milliseconds":1868}
+{"phase":"read","attempt":1,"milliseconds":1638,"status":200}
+{"phase":"read","attempt":2,"milliseconds":11,"status":200}
+{"phase":"read","attempt":3,"milliseconds":18,"status":200}

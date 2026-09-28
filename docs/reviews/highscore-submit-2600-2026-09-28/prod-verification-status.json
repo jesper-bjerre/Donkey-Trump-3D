@@ -1,0 +1,14 @@
+{
+  "workflowRun": 36428990707,
+  "workflowConclusion": "success",
+  "source": "bf3c4165650e9bb4ee8aaf4a9efa2542ac8486a7",
+  "mountedArtifactVerified": false,
+  "liveGetStatus": 200,
+  "livePostAttempted": false,
+  "blocker": "Repeated authenticated-tunnel SSH disconnects/timeouts prevented operator preflight/cleanup; public-check script also encountered TCP/TLS connection failures.",
+  "gameAppOnlyRestarted": true,
+  "postRestartHealthStatus": 200,
+  "postRestartListStatus": 200,
+  "postRestartListSeconds": 4.037,
+  "postDeployment503Observed": true
+}

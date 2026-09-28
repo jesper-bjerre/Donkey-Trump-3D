@@ -1,0 +1,140 @@
+diff --git a/specs/002-app-store-release/contracts/moderation-api.md b/specs/002-app-store-release/contracts/moderation-api.md
+index 88bd538..2b61357 100644
+--- a/specs/002-app-store-release/contracts/moderation-api.md
++++ b/specs/002-app-store-release/contracts/moderation-api.md
+@@ -43,7 +43,10 @@ New errors supplement existing ProblemDetails `code`, `status`, title and traceI
+ | 503 `submission_unconfirmed` / `report_unconfirmed` | Possible committed write; never assert “not saved.” Scores are not replayed. A report can be checked read-only using its preallocated ID. |
+ 
+ Server deadlines: <=6 seconds for every store operation including GET/status;
+-network <=2 seconds, <=5 conditional attempts, SDK retries off. iOS uses <=8-second
++network <=2 seconds, <=5 conditional attempts, SDK retries off. A Blob read may
++retry once after a network timeout only while its original operation token remains
++active; the retry and backoff share the original deadline. Uploads are never retried
++after a timeout or lost acknowledgement. iOS uses <=8-second
+ foreground deadlines plus generation invalidation on navigation/background. No
+ background uploads, deferred report/score queue or automatic POST retry. A report
+ may be explicitly retried with the identical ID/body while its form is still active;
+diff --git a/src/backend/Highscores/BlobHighscoreStore.cs b/src/backend/Highscores/BlobHighscoreStore.cs
+index 1b38dc3..0061a75 100644
+--- a/src/backend/Highscores/BlobHighscoreStore.cs
++++ b/src/backend/Highscores/BlobHighscoreStore.cs
+@@ -23,6 +23,17 @@ public sealed class BlobHighscoreStore : IHighscoreStore, IModerationStore
+     }
+ 
+     private async Task<(HighscoreDocument Document, ETag? ETag)> ReadDocument(CancellationToken token)
++    {
++        try { return await ReadDocumentOnce(token); }
++        catch (OperationCanceledException) when (!token.IsCancellationRequested) {
++            // A per-network timeout is safe to retry for GET only. Keep the same
++            // overall operation deadline and never replay an uncertain upload.
++            await backoff(token);
++            return await ReadDocumentOnce(token);
++        }
++    }
++
++    private async Task<(HighscoreDocument Document, ETag? ETag)> ReadDocumentOnce(CancellationToken token)
+     {
+         try {
+             var response = await blob.DownloadStreamingAsync(cancellationToken: token);
+--- captured-WIP/GameEngine.swift
++++ src/DonkeyTrump3D/App/GameEngine.swift
+@@ -127,7 +127,13 @@
+             if let index = arguments.firstIndex(of: "-highscoreRunID"), index + 1 < arguments.count,
+                let supplied = UUID(uuidString: arguments[index + 1]), supplied != HighscoreRules.zeroID { id = supplied }
+             else { id = UUID() }
+-            session.completeForHighscoreFixture(HighscoreFixtureLaunch.run(for: name, id: id))
++            var run = HighscoreFixtureLaunch.run(for: name, id: id)
++            if case .integration = mode,
++               let index = arguments.firstIndex(of: "-highscoreRunScore"), index + 1 < arguments.count,
++               let score = Int(arguments[index + 1]), HighscoreRules.validScore(score) {
++                run = CompletedRun(id: id, score: score, levelReached: run.levelReached)
++            }
++            session.completeForHighscoreFixture(run)
+         }
+         #endif
+         super.init()
+--- /dev/null
++++ src/backend.tests/HighscoreTransientReadTests.cs
+@@ -0,0 +1,41 @@
++using DonkeyTrump.Highscores.Tests.Support;
++using static DonkeyTrump.Highscores.Tests.ModerationContractTests;
++namespace DonkeyTrump.Highscores.Tests;
++
++public class HighscoreTransientReadTests
++{
++    [Theory][InlineData(false)][InlineData(true)]
++    public async Task TransientReadTimeoutRecoversBeforeAnyWrite(bool publish)
++    {
++        using var http=new BlobHttpHandler();
++        http.Respond=async(request,token)=> {
++            if(request.Method==HttpMethod.Put)return BlobHttpHandler.Saved();
++            if(http.Reads==1)await Task.Delay(Timeout.Infinite,token);
++            return BlobHttpHandler.Document(ModerationMigration.Convert(HighscoreDocument.Empty).Serialize());
++        };
++        var options=new HighscoreOptions {UseAzurite=true,ContainerName="test-container",NetworkTimeoutSeconds=.05};
++        var store=http.Store(options);
++        if(publish) {
++            var id=Guid.NewGuid();
++            var result=await store.PublishAsync(new(id,"UI Score Check",2600,2),Producer,default);
++            Assert.Equal("ranked",result.Outcome);Assert.Contains(result.Entries,e=>e.EntryId==id && e.Score==2600);
++        } else Assert.Equal(10,(await store.ReadAsync(default)).Entries.Count);
++        Assert.Equal(2,http.Reads);Assert.Equal(publish?1:0,http.Writes);
++    }
++    [Fact] public async Task RepeatedReadTimeoutStopsAfterTwoReadsWithoutWriting()
++    {
++        using var http=new BlobHttpHandler();
++        http.Respond=async(_,token)=> {await Task.Delay(Timeout.Infinite,token);throw new InvalidOperationException();};
++        var options=new HighscoreOptions {UseAzurite=true,ContainerName="test-container",NetworkTimeoutSeconds=.05};
++        var error=await Assert.ThrowsAsync<HighscoreFailure>(()=>http.Store(options).PublishAsync(new(Guid.NewGuid(),"Test",2600,2),Producer,default));
++        Assert.Equal("operation_timed_out",error.Code);Assert.Equal(2,http.Reads);Assert.Equal(0,http.Writes);
++    }
++    [Fact] public async Task ExpiredOperationDoesNotStartAnotherRead()
++    {
++        using var http=new BlobHttpHandler();
++        http.Respond=async(_,token)=> {await Task.Delay(Timeout.Infinite,token);throw new InvalidOperationException();};
++        var options=new HighscoreOptions {UseAzurite=true,ContainerName="test-container",OperationTimeoutSeconds=.05,NetworkTimeoutSeconds=2};
++        await Assert.ThrowsAsync<HighscoreFailure>(()=>http.Store(options).ReadAsync(default));
++        Assert.Equal(1,http.Reads);Assert.Equal(0,http.Writes);
++    }
++}
+--- /dev/null
++++ src/DonkeyTrump3DUITests/HighscoreRealSubmissionUITests.swift
+@@ -0,0 +1,25 @@
++import XCTest
++
++@MainActor
++final class HighscoreRealSubmissionUITests: HighscoreUITestCase {
++    func test2600PointSubmissionThroughRealBackend() throws {
++        guard let origin = ProcessInfo.processInfo.environment["DT3D_SCORE_TEST_ORIGIN"],
++              let run = ProcessInfo.processInfo.environment["DT3D_SCORE_TEST_RUN"] else {
++            throw XCTSkip("Requires an explicitly owned loopback backend and run ID")
++        }
++        app.launchArguments = ["-highscoreUITest", "-highscoreIntegration", "-highscoreLocalOrigin", origin,
++                               "-highscoreCompletedRun", "-highscoreRunID", run, "-highscoreRunScore", "2600"]
++        app.launch()
++        let field = app.textFields["highscoreName"]
++        XCTAssertTrue(field.waitForExistence(timeout: 12), app.staticTexts["highscoreError"].label)
++        waitForNameFormLayout()
++        field.tap(); field.typeText("UI Score Check")
++        tapSubmit()
++        let selected = app.otherElements["highscoreSelectedRow"]
++        XCTAssertTrue(selected.waitForExistence(timeout: 12), app.staticTexts["highscoreError"].label)
++        XCTAssertTrue(selected.label.contains("2600"))
++        XCTAssertTrue(selected.label.contains("UI Score Check"))
++        let attachment = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
++        attachment.name = "real-backend-2600-submitted"; attachment.lifetime = .keepAlways; add(attachment)
++    }
++}
+diff --git a/specs/001-global-highscores/plan.md b/specs/001-global-highscores/plan.md
+index 741dc7c..020c879 100644
+--- a/specs/001-global-highscores/plan.md
++++ b/specs/001-global-highscores/plan.md
+@@ -113,7 +113,7 @@ src/
+ - `GET /api/v1/highscores` returns a complete bounded snapshot. A missing blob in an existing container returns ten deterministic cartoon starters (owner update 2026-09-27); valid lists with fewer than ten entries are filled to ten while preserving players. GET remains read-only; the next new score persists starters in the normal conditional write. Other storage problems return errors.
+ - `POST /api/v1/highscores` validates and canonicalizes input, detects an existing run, then merges/rechecks against fresh storage with conditional writes. Rank and tie order are server-owned. No caller can edit an existing ranked run.
+ - Return the successfully written candidate plus its write ETag, not a later read. `notQualified` is a normal 200 outcome. Operational failures use stable Problem Details codes, including `submission_unconfirmed` when a write may have committed.
+-- Configure six-second cancellation/deadline across reads, credentials, backoff and writes; SDK retries are disabled. Recognized CAS conflicts alone receive up to five attempts. Serialization must fit one small conditional Put Blob.
++- Configure six-second cancellation/deadline across reads, credentials, backoff and writes; SDK retries are disabled. A timed-out Blob GET may retry once while the original operation token remains active; backoff and retry share that deadline. Recognized CAS write conflicts alone receive up to five conditional-write attempts. Serialization must fit one small conditional Put Blob.
+ - Keep `/health/live` dependency-free. Storage errors affect the optional API, not liveness or existing scores. Production container creation is a deployment operation, never request-time repair.
+ - Bind/validate storage, limits and timeouts at startup. Proposed configuration keys: `Highscores:UseAzurite`, `Highscores:BlobServiceUri`, `Highscores:ContainerName`, `Highscores:BlobName`, `Highscores:ManagedIdentityClientId` (optional for user-assigned identity), and `Highscores:RateLimits:*`. Azurite mode is Development/Test only; production configuration requires a valid HTTPS storage URI.
+ 

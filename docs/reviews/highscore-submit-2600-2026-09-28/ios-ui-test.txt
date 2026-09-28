@@ -1,0 +1,7 @@
+    /Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild test -project src/DonkeyTrump3D.xcodeproj -scheme "DonkeyTrump3D Local" -destination "platform=iOS Simulator,id=31C13DEB-E27B-46F9-8598-BB36342D54A6" "-only-testing:DonkeyTrump3DUITests/HighscoreRealSubmissionUITests/test2600PointSubmissionThroughRealBackend" -resultBundlePath /tmp/dt3d-score2600-ui.xcresult
+Test Case '-[DonkeyTrump3DUITests.HighscoreRealSubmissionUITests test2600PointSubmissionThroughRealBackend]' started.
+Test Case '-[DonkeyTrump3DUITests.HighscoreRealSubmissionUITests test2600PointSubmissionThroughRealBackend]' passed (15.034 seconds).
+	 Executed 1 test, with 0 failures (0 unexpected) in 15.034 (15.044) seconds
+	 Executed 1 test, with 0 failures (0 unexpected) in 15.034 (15.047) seconds
+	 Executed 1 test, with 0 failures (0 unexpected) in 15.034 (15.049) seconds
+** TEST SUCCEEDED **
