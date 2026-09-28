@@ -43,7 +43,10 @@ New errors supplement existing ProblemDetails `code`, `status`, title and traceI
 | 503 `submission_unconfirmed` / `report_unconfirmed` | Possible committed write; never assert “not saved.” Scores are not replayed. A report can be checked read-only using its preallocated ID. |
 
 Server deadlines: <=6 seconds for every store operation including GET/status;
-network <=2 seconds, <=5 conditional attempts, SDK retries off. iOS uses <=8-second
+network <=2 seconds, <=5 conditional attempts, SDK retries off. A Blob read may
+retry once after a network timeout only while its original operation token remains
+active; the retry and backoff share the original deadline. Uploads are never retried
+after a timeout or lost acknowledgement. iOS uses <=8-second
 foreground deadlines plus generation invalidation on navigation/background. No
 background uploads, deferred report/score queue or automatic POST retry. A report
 may be explicitly retried with the identical ID/body while its form is still active;

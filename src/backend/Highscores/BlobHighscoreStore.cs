@@ -24,6 +24,17 @@ public sealed class BlobHighscoreStore : IHighscoreStore, IModerationStore
 
     private async Task<(HighscoreDocument Document, ETag? ETag)> ReadDocument(CancellationToken token)
     {
+        try { return await ReadDocumentOnce(token); }
+        catch (OperationCanceledException) when (!token.IsCancellationRequested) {
+            // A per-network timeout is safe to retry for GET only. Keep the same
+            // overall operation deadline and never replay an uncertain upload.
+            await backoff(token);
+            return await ReadDocumentOnce(token);
+        }
+    }
+
+    private async Task<(HighscoreDocument Document, ETag? ETag)> ReadDocumentOnce(CancellationToken token)
+    {
         try {
             var response = await blob.DownloadStreamingAsync(cancellationToken: token);
             using var rawResponse = response.GetRawResponse();
