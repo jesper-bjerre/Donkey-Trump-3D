@@ -79,6 +79,10 @@ reject mismatches or external overrides. Execute `/home/site/wwwroot/DonkeyTrump
 with `dotnet ... moderation <command> --target dev|prod`. The mode initializes shared
 storage/domain code and exits without HTTP hosting. Check harmless aggregate metadata
 first. Do not dump environment/MI endpoint tokens, snapshots or private names into logs.
+Operator startup pre-acquires an MI token with a separate 30-second cancellation
+deadline and reuses that credential in the Blob client. This startup phase performs
+no Blob mutation, prints/stores no token and does not change the six-second store or
+public HTTP deadlines. Local emulator commands bypass MI startup.
 No public admin route or additional hosted service. Failure to obtain a supported
 SSH session blocks cloud operator work; no human Blob credential fallback.
 

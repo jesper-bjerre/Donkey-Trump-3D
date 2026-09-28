@@ -41,6 +41,19 @@ public sealed class HighscoreOptions
 
     // Microsoft's public emulator key; never a production credential.
     public const string EmulatorKey = "Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==";
+    // Operator startup may need a cold MI token. Authenticate once before the
+    // unchanged six-second data-operation deadline; never print/persist the token.
+    public async Task<BlobServiceClient> CreateOperatorClientAsync(CancellationToken cancellationToken)
+    {
+        if (UseAzurite) return CreateClient();
+        using var startup = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        startup.CancelAfter(TimeSpan.FromSeconds(30));
+        TokenCredential identity = new ManagedIdentityCredential(string.IsNullOrEmpty(ManagedIdentityClientId)
+            ? ManagedIdentityId.SystemAssigned : ManagedIdentityId.FromUserAssignedClientId(ManagedIdentityClientId));
+        await identity.GetTokenAsync(new TokenRequestContext(["https://storage.azure.com/.default"]), startup.Token);
+        return new BlobServiceClient(new Uri(BlobServiceUri), identity, ClientOptions());
+    }
+
     public BlobServiceClient CreateClient(BlobClientOptions? options = null)
     {
         options ??= ClientOptions();

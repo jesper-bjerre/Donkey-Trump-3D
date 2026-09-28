@@ -12,9 +12,10 @@ public static class CaptureCommand
         var enabled=new CaptureOptions {Enabled=true};
         if(!enabled.IsValid(options,target=="local"?"Test":"Production",Environment.GetEnvironmentVariable("WEBSITE_SITE_NAME")) || command=="capture-seed" && !capture.Enabled)
             throw new HighscoreFailure(400,"capture_target_invalid","Capture isolation is not configured");
+        var client=await options.CreateOperatorClientAsync(cancellationToken);
         using var deadline=CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);deadline.CancelAfter(TimeSpan.FromSeconds(6));
         var token=deadline.Token;var selected=CaptureOptions.Storage(options);
-        var blob=options.CreateClient().GetBlobContainerClient(selected.ContainerName).GetBlobClient(selected.BlobName);
+        var blob=client.GetBlobContainerClient(selected.ContainerName).GetBlobClient(selected.BlobName);
         BlobProperties? previous=null;
         try {previous=(await blob.GetPropertiesAsync(cancellationToken:token)).Value;}
         catch(RequestFailedException error) when(error.Status==404 && error.ErrorCode=="BlobNotFound") { }

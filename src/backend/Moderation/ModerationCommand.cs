@@ -46,7 +46,7 @@ public static class ModerationCommand
                 await CaptureCommand.ExecuteAsync(command,args["--target"],args.ContainsKey("--apply"),options,
                     configuration.GetSection("Capture").Get<CaptureOptions>() ?? new(),output,token); return 0;
             }
-            var client=options.CreateClient();var clock=TimeProvider.System;
+            var client=await options.CreateOperatorClientAsync(token);var clock=TimeProvider.System;
             var store=new BlobHighscoreStore(client,options,clock,moderation:moderation);
             if(command=="initialize") {
                 await ModerationMigration.InitializeAsync(client,options,args.ContainsKey("--apply"),output,token);return 0;
