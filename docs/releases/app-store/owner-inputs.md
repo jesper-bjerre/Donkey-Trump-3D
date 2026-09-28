@@ -33,3 +33,17 @@ The owner explicitly approved DEV and PROD deployment, then clarified that the a
 is unreleased and only owner-tested. Keep the existing `/api/v1`, evolve app/backend
 together, and remove second-API/old-client-retirement machinery. No repeat deployment
 approval is needed. No stored-data deletion or physical test pass is implied.
+
+## Release authorization and owner test — 2026-09-28
+
+Owner instruction: “ok. release app i Connect nu. Er testet på min iPhone 13.”
+This supersedes the earlier preparation-only boundary and owner-only submission/
+manual release handoff. Submission to Apple review and release are now authorized;
+do not request the same authorization again. Apple's actual version status and
+outstanding account requirements must still be read before taking action.
+
+The owner reports testing on his physical iPhone 13. Record this as owner-reported
+device testing, not agent-executed testing. The tested version/build, OS, scenarios
+and correspondence to a processed distribution candidate were not supplied; do
+not infer them or mark all physical acceptance scenarios passed. No new agent-run
+tests were requested or performed for this release attempt.
