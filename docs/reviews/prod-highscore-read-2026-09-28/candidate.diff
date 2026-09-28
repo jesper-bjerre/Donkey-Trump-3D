@@ -1,0 +1,182 @@
+diff --git a/src/backend.tests/HighscoreBoundaryTests.cs b/src/backend.tests/HighscoreBoundaryTests.cs
+index d74e3d8..401cad9 100644
+--- a/src/backend.tests/HighscoreBoundaryTests.cs
++++ b/src/backend.tests/HighscoreBoundaryTests.cs
+@@ -20,15 +20,30 @@ public class HighscoreBoundaryTests
+         Assert.True(watch.Elapsed<TimeSpan.FromSeconds(2));
+         foreach(var response in responses) {if(response.StatusCode==HttpStatusCode.TooManyRequests) {Assert.True(int.TryParse(response.Headers.GetValues("Retry-After").Single(),out var seconds)&&seconds>=1);Assert.Equal("application/problem+json",response.Content.Headers.ContentType?.MediaType);}response.Dispose();}
+     }
+-    [Fact] public async Task SafeErrorsAndDiagnosticsDoNotExposeSubmittedDataOrExceptions() {
++    [Theory][InlineData("/api/v1/highscores")][InlineData("/api/v2/highscores")]
++    public async Task SafeErrorsAndDiagnosticsDoNotExposeSubmittedDataOrExceptions(string path) {
+         await using var factory=new HighscoreApiFactory(new Store(true));using var client=factory.CreateClient();
+         Assert.Equal("Healthy",await client.GetStringAsync("/health/live"));
+-        using var get=await client.GetAsync("/api/v1/highscores");
++        using var get=await client.GetAsync(path);
++        Assert.Equal(HttpStatusCode.InternalServerError,get.StatusCode);
++        Assert.True(get.Headers.CacheControl?.NoStore);
+         using var post=await client.PostAsJsonAsync("/api/v1/highscores",new HighscoreSubmission(Guid.NewGuid(),"PRIVATE_PLAYER",123400,42));
+         var combined=await get.Content.ReadAsStringAsync()+await post.Content.ReadAsStringAsync()+string.Join("\n",factory.Logs);
+         foreach(var excluded in new[]{"PRIVATE_PLAYER","123400","198.51.100.5","private-payload","System.Exception","secret fixture"})Assert.DoesNotContain(excluded,combined);
+         Assert.Contains(factory.Logs,line=>line.Contains("highscore_request"));
+     }
++    [Fact] public async Task BothReadVersionsShareOneRateLimitBucket() {
++        await using var factory=new HighscoreApiFactory(new Store(), new Dictionary<string,string?> {
++            ["Highscores:RateLimits:GetCapacity"]="1", ["Highscores:RateLimits:GetPerSecond"]="1"
++        });
++        using var client=factory.CreateClient();
++        var responses=await Task.WhenAll(client.GetAsync("/api/v1/highscores"),client.GetAsync("/api/v2/highscores"));
++        Assert.Single(responses,r=>r.StatusCode==HttpStatusCode.OK);
++        var rejected=Assert.Single(responses,r=>r.StatusCode==HttpStatusCode.TooManyRequests);
++        Assert.True(rejected.Headers.CacheControl?.NoStore);
++        Assert.True(int.TryParse(rejected.Headers.GetValues("Retry-After").Single(),out var seconds)&&seconds>=1);
++        foreach(var response in responses) response.Dispose();
++    }
+     [Fact] public void ProductionUsesHttpsManagedIdentityAndEmulatorIsLocalOnly() {
+         Assert.False(new HighscoreOptions {UseAzurite=true}.IsValid("Production"));
+         Assert.True(new HighscoreOptions {UseAzurite=true}.IsValid("Development"));
+diff --git a/src/backend.tests/HighscoreEndpointTests.cs b/src/backend.tests/HighscoreEndpointTests.cs
+index 8416127..349d9dc 100644
+--- a/src/backend.tests/HighscoreEndpointTests.cs
++++ b/src/backend.tests/HighscoreEndpointTests.cs
+@@ -18,14 +18,27 @@ public class HighscoreEndpointTests
+             return Task.FromResult(HighscoreResult.From(HighscoreSnapshot.From(document, "\"test\"", DateTimeOffset.UtcNow), run.SubmissionId));
+         }
+     }
+-    [Fact] public async Task LivenessDoesNotTouchStorageAndGetIsUncached() {
++    [Theory]
++    [InlineData("/api/v1/highscores")]
++    [InlineData("/api/v2/highscores")]
++    public async Task LivenessDoesNotTouchStorageAndGetIsUncached(string path) {
+         var store = new Store(); await using var factory = new HighscoreApiFactory(store); using var client = factory.CreateClient();
+         Assert.Equal("Healthy", await client.GetStringAsync("/health/live")); Assert.Equal(0, store.Calls);
+-        using var response = await client.GetAsync("/api/v1/highscores"); Assert.Equal(HttpStatusCode.OK, response.StatusCode);
++        using var response = await client.GetAsync(path); Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+         Assert.True(response.Headers.CacheControl?.NoStore); var json = await response.Content.ReadFromJsonAsync<JsonElement>();
++        Assert.Equal(new[] {"entries", "fetchedAtUtc", "revision"}, json.EnumerateObject().Select(p=>p.Name).Order().ToArray());
++        foreach (var row in json.GetProperty("entries").EnumerateArray())
++            Assert.Equal(new[] {"displayName", "entryId", "rank", "score"}, row.EnumerateObject().Select(p=>p.Name).Order().ToArray());
+         Assert.Equal(10,json.GetProperty("entries").GetArrayLength()); Assert.Equal("empty", json.GetProperty("revision").GetString());
+         Assert.Matches(@"\.\d{3}Z$", json.GetProperty("fetchedAtUtc").GetString()!);
+     }
++    [Fact] public async Task V2ReadAliasDoesNotEnableLegacyWrites() {
++        var store = new Store(); await using var factory = new HighscoreApiFactory(store); using var client = factory.CreateClient();
++        using var response = await client.PostAsJsonAsync("/api/v2/highscores", new { submissionId = Guid.NewGuid(), displayName = "Test", score = 100, levelReached = 1 });
++        Assert.Equal(HttpStatusCode.MethodNotAllowed, response.StatusCode);
++        Assert.True(response.Headers.CacheControl?.NoStore);
++        Assert.Equal(0, store.Calls);
++    }
+     [Fact] public async Task SaveReplayAndConflictUseExactPublicContract() {
+         await using var factory = new HighscoreApiFactory(new Store()); using var client = factory.CreateClient();
+         var run = new { submissionId = Guid.NewGuid(), displayName = " Løkke ", score = 0, levelReached = 1 };
+diff --git a/src/backend/Highscores/HighscoreEndpoints.cs b/src/backend/Highscores/HighscoreEndpoints.cs
+index b407e81..92810dc 100644
+--- a/src/backend/Highscores/HighscoreEndpoints.cs
++++ b/src/backend/Highscores/HighscoreEndpoints.cs
+@@ -8,7 +8,9 @@ public static class HighscoreEndpoints
+ {
+     public static void MapHighscores(this WebApplication app)
+     {
+-        app.MapGet("/api/v1/highscores", async (HttpContext context, IHighscoreStore store) => {
++        // Public snapshots have the same contract in both API versions.
++        foreach (var route in new[] { "/api/v1/highscores", "/api/v2/highscores" })
++        app.MapGet(route, async (HttpContext context, IHighscoreStore store) => {
+             try { return Results.Json(await store.ReadAsync(context.RequestAborted), HighscoreJson.Options); }
+             catch (HighscoreFailure error) { return Problem(error); }
+             catch (Exception) { return Problem(new(500, "internal_error", "Highscores are unavailable")); }
+diff --git a/src/backend/Program.cs b/src/backend/Program.cs
+index 4b871c2..e769669 100644
+--- a/src/backend/Program.cs
++++ b/src/backend/Program.cs
+@@ -36,7 +36,7 @@ builder.Services.AddOptions<RateLimiterOptions>().Configure<IOptions<HighscoreOp
+ var app = builder.Build();
+ app.UseExceptionHandler();
+ app.Use(async (context, next) => {
+-    bool highscore = context.Request.Path == "/api/v1/highscores";
++    bool highscore = context.Request.Path == "/api/v1/highscores" || context.Request.Path == "/api/v2/highscores";
+     if (highscore) context.Response.Headers.CacheControl = "no-store";
+     var started = System.Diagnostics.Stopwatch.GetTimestamp();
+     await next(context);
+diff --git a/src/scripts/backend-release-tests.py b/src/scripts/backend-release-tests.py
+index cc40fe4..114943c 100644
+--- a/src/scripts/backend-release-tests.py
++++ b/src/scripts/backend-release-tests.py
+@@ -7,6 +7,8 @@ import json
+ from pathlib import Path
+ import tempfile
+ import unittest
++from unittest.mock import patch
++import urllib.error
+ import zipfile
+ 
+ spec = importlib.util.spec_from_file_location('release', Path(__file__).with_name('backend-release.py'))
+@@ -85,4 +87,36 @@ class PromotionTests(unittest.TestCase):
+             with self.assertRaises(ValueError): release.smoke(origin)
+ 
+ 
++class SmokeVersionTests(unittest.TestCase):
++    def test_both_read_versions_are_required_before_promotion(self):
++        class Response(io.BytesIO):
++            status = 200
++            headers = {"Cache-Control": "no-store"}
++
++        class Opener:
++            def __init__(self, v2_exists):
++                self.v2_exists = v2_exists
++                self.paths = []
++            def open(self, url, timeout):
++                self.paths.append(url)
++                if url.startswith('http:'):
++                    raise urllib.error.HTTPError(url, 301, 'HTTPS', {"Location": "https://example.test/health/live"}, None)
++                if url.endswith('/health/live'):
++                    return Response(b'Healthy')
++                if url.endswith('/api/v2/highscores') and not self.v2_exists:
++                    raise urllib.error.HTTPError(url, 404, 'Missing', {}, None)
++                return Response(b'{"entries":[],"revision":"fixture"}')
++
++        for exists in (False, True):
++            opener = Opener(exists)
++            with self.subTest(v2_exists=exists), patch.object(release.urllib.request, 'build_opener', return_value=opener), contextlib.redirect_stdout(io.StringIO()):
++                if exists:
++                    release.smoke('https://example.test', attempts=1)
++                else:
++                    with self.assertRaisesRegex(RuntimeError, 'smoke failed'):
++                        release.smoke('https://example.test', attempts=1)
++                self.assertIn('https://example.test/api/v1/highscores', opener.paths)
++                self.assertIn('https://example.test/api/v2/highscores', opener.paths)
++
++
+ if __name__ == '__main__': unittest.main()
+diff --git a/src/scripts/backend-release.py b/src/scripts/backend-release.py
+index 3a063ed..92f8ee9 100644
+--- a/src/scripts/backend-release.py
++++ b/src/scripts/backend-release.py
+@@ -73,12 +73,13 @@ def smoke(origin, attempts=20):
+             with opener.open(origin + "/health/live", timeout=15) as response:
+                 if response.status != 200 or response.read(1024).decode().strip() != "Healthy":
+                     raise ValueError("Liveness contract failed")
+-            with opener.open(origin + "/api/v1/highscores", timeout=15) as response:
+-                if response.status != 200 or response.headers.get("Cache-Control") != "no-store":
+-                    raise ValueError("Snapshot status/cache contract failed")
+-                data = json.loads(response.read(262145))
+-                if not isinstance(data.get("entries"), list) or len(data["entries"]) > 100 or not data.get("revision"):
+-                    raise ValueError("Snapshot contract failed")
++            for path in ("/api/v1/highscores", "/api/v2/highscores"):
++                with opener.open(origin + path, timeout=15) as response:
++                    if response.status != 200 or response.headers.get("Cache-Control") != "no-store":
++                        raise ValueError("Snapshot status/cache contract failed")
++                    data = json.loads(response.read(262145))
++                    if not isinstance(data.get("entries"), list) or len(data["entries"]) > 100 or not data.get("revision"):
++                        raise ValueError("Snapshot contract failed")
+             break
+         except (urllib.error.URLError, TimeoutError, ValueError, OSError):
+             # Never emit the response body, exceptions, player names or network addresses.
+@@ -93,7 +94,7 @@ def smoke(origin, attempts=20):
+             raise RuntimeError("Expected platform HTTPS redirect") from None
+     else:
+         raise RuntimeError("HTTP did not redirect to HTTPS")
+-    print("PASS: process liveness, authenticated storage snapshot, no-store and HTTPS redirect")
++    print("PASS: process liveness, authenticated storage snapshots (v1 and v2), no-store and HTTPS redirect")
+ 
+ 
+ def main():

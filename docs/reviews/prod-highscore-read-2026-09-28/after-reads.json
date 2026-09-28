@@ -1,0 +1,53 @@
+{
+  "utc": "2026-09-28T10:32:42.591480+00:00",
+  "reads": [
+    {
+      "version": 1,
+      "response": "200 0.184775",
+      "entries": 10,
+      "errorCode": null,
+      "noStore": true,
+      "revision": "empty"
+    },
+    {
+      "version": 2,
+      "response": "200 0.171371",
+      "entries": 10,
+      "errorCode": null,
+      "noStore": true,
+      "revision": "empty"
+    },
+    {
+      "version": 1,
+      "response": "200 0.131202",
+      "entries": 10,
+      "errorCode": null,
+      "noStore": true,
+      "revision": "empty"
+    },
+    {
+      "version": 2,
+      "response": "200 0.133902",
+      "entries": 10,
+      "errorCode": null,
+      "noStore": true,
+      "revision": "empty"
+    },
+    {
+      "version": 1,
+      "response": "200 0.136490",
+      "entries": 10,
+      "errorCode": null,
+      "noStore": true,
+      "revision": "empty"
+    },
+    {
+      "version": 2,
+      "response": "200 0.166207",
+      "entries": 10,
+      "errorCode": null,
+      "noStore": true,
+      "revision": "empty"
+    }
+  ]
+}

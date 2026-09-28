@@ -1,0 +1,8 @@
+{
+  "src/DonkeyTrump3D/Core/CompletedRun.swift": "200ffdd97f56638373e5d903ccac604fec51951fe7c58cd841fe5218e15635ba",
+  "src/DonkeyTrump3D/Highscores/HighscoreService.swift": "eb9c8507c397ea46d7d307ab0f0f6869f26e5b778b30e2070d447807c3fbb023",
+  "src/DonkeyTrump3D/Highscores/HighscoreModels.swift": "c055b14cb09a3882d6d0ea95eeac18fac56c47986552cda42ca17d40dd7b48e2",
+  "src/DonkeyTrump3D/Highscores/HighscoreConfiguration.swift": "281e5dc3f0f7d707fb02bce813cca34333b1860cf7bef4b148b67d98d77c8532",
+  "src/DonkeyTrump3D/Highscores/InstallationCredentialStore.swift": "f54f62096ea1f2cae73e6c56755cc6bf023672d2d407d96d369e84d541a62c4e",
+  "src/DonkeyTrump3D/Highscores/URLSessionHighscoreService.swift": "7cf3166cf4286af6cc6d45d1d867d771ab93bc8b1bd7f9e9e64108ef065f39d0"
+}

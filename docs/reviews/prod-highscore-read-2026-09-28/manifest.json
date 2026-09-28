@@ -1,0 +1,8 @@
+{
+  "src/backend.tests/HighscoreBoundaryTests.cs": "0265fe73a7fdff72a60c222e0b89164b5a5337c34548350ff8289591404ab0db",
+  "src/backend.tests/HighscoreEndpointTests.cs": "97b9326a6c31e73013ee80308ff0319208db46f62432c2684b7b58c70181ac55",
+  "src/backend/Highscores/HighscoreEndpoints.cs": "7502d29c4dc1727352812688ac1c9f16a82ba9c37bc45bb2a956c683464c53e5",
+  "src/backend/Program.cs": "eaa26ddd2677707b188dff53ba831975bdb7f901a51db6ee0a9feb6139e8ba23",
+  "src/scripts/backend-release-tests.py": "2ec5783810f14e48d3e35b2d7b52fbf0b5ff2ef84832d3aff84e766408d3d6ca",
+  "src/scripts/backend-release.py": "28f162c5c25e046ad75a6d5d130a0c8d3bf998f96137ebb9dd3c8cdb77150afa"
+}

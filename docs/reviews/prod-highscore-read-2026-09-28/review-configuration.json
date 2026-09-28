@@ -1,0 +1,15 @@
+{
+  "tool": "Claude Code 2.1.283",
+  "vendor": "Anthropic",
+  "model": "claude-opus-5-5",
+  "effort": "high (explicit CLI and environment; text probe had no cap warning; provider does not separately attest effort)",
+  "sessionId": "c74216c6-e6b7-452e-86b5-ffdd614b9b2a",
+  "provider": "firstParty",
+  "outputTokens": 8816,
+  "probeSessionId": "b68f99b1-ebe1-4b36-89d7-dd5efe0ee569",
+  "packetSha256": "0029beed2badfdce9952467de4ecddc28a9a11060e8d0daa66259c502406f248",
+  "exitCode": 0,
+  "verdict": "APPROVE",
+  "leadAgreement": true,
+  "firstAttempt": "Rejected: text fabricated tool invocations/results although tools were disabled. Terminated, no accepted verdict; not counted as review evidence."
+}

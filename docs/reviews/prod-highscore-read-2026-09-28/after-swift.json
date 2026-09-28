@@ -1,0 +1,23 @@
+{
+  "utc": "2026-09-28T10:32:54.759035+00:00",
+  "checks": [
+    {
+      "attempt": 1,
+      "exitCode": 0,
+      "stdout": "PASS: actual Swift URLSession highscore client decoded PROD v2; rows=10, no POST, no player names logged",
+      "stderr": ""
+    },
+    {
+      "attempt": 2,
+      "exitCode": 0,
+      "stdout": "PASS: actual Swift URLSession highscore client decoded PROD v2; rows=10, no POST, no player names logged",
+      "stderr": ""
+    },
+    {
+      "attempt": 3,
+      "exitCode": 0,
+      "stdout": "PASS: actual Swift URLSession highscore client decoded PROD v2; rows=10, no POST, no player names logged",
+      "stderr": ""
+    }
+  ]
+}

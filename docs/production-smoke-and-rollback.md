@@ -157,3 +157,15 @@ A rollback changes the API/app revision while preserving the private ranking blo
 The initial deployment does not configure Blob versioning or a protected backup.
 Any data-recovery operation must first establish an explicitly authorized protected
 copy; the rollback pipeline only restores API code and never rewrites scores.
+
+### v2 read compatibility hotfix — 2026-09-28
+
+The PROD iPhone client reads `/api/v2/highscores`. Backend release
+`75cd63253b21e47927b1c620ff88bfea8460598a` (DEV run `36408244479`) adds that
+read-only alias without changing storage schema or legacy writes. Deployment smoke
+checks now require both v1 and v2 GET routes. Rolling back to a package without the
+v2 read route reintroduces the iPhone failure and the current smoke check will fail
+after deployment; prefer a retained, verified package with v2 read compatibility.
+This is not permission to restore a schema1 artifact after the separately planned
+moderation migration: its schema2 recovery rules still apply. Artifact retention
+is 30 days; verify availability and compatibility before any rollback.

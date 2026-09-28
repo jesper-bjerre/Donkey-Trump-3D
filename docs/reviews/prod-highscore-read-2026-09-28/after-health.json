@@ -1,0 +1,29 @@
+{
+  "utc": "2026-09-28T10:32:56.361125+00:00",
+  "checks": [
+    {
+      "app": "donkeytrump-api-d",
+      "path": "/health/live",
+      "response": "200 0.349786",
+      "exitCode": 0
+    },
+    {
+      "app": "donkeytrump-api-p",
+      "path": "/health/live",
+      "response": "200 0.110288",
+      "exitCode": 0
+    },
+    {
+      "app": "byensgaader-api-d",
+      "path": "/health",
+      "response": "200 0.888164",
+      "exitCode": 0
+    },
+    {
+      "app": "byensgaader-api-p",
+      "path": "/health",
+      "response": "200 0.141919",
+      "exitCode": 0
+    }
+  ]
+}
