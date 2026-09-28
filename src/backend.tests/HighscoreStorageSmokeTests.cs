@@ -13,9 +13,9 @@ public class HighscoreStorageSmokeTests(AzuriteFixture fixture) : IClassFixture<
         var firstStore = new BlobHighscoreStore(fixture.Options.CreateClient(), fixture.Options, TimeProvider.System);
         var secondStore = new BlobHighscoreStore(fixture.Options.CreateClient(), fixture.Options, TimeProvider.System);
         await using var first = new HighscoreApiFactory(firstStore); await using var second = new HighscoreApiFactory(secondStore);
-        using var a = first.CreateClient(); using var b = second.CreateClient();
+        using var a = first.CreateClient(); a.DefaultRequestHeaders.Authorization = new("Bearer", new string('A',43)); using var b = second.CreateClient(); b.DefaultRequestHeaders.Authorization = new("Bearer", new string('A',43));
         var initial = await a.GetFromJsonAsync<JsonElement>("/api/v1/highscores"); Assert.Equal(10,initial.GetProperty("entries").GetArrayLength());
-        Assert.False(await fixture.Container.GetBlobClient(fixture.Options.BlobName).ExistsAsync());
+        Assert.True(await fixture.Container.GetBlobClient(fixture.Options.BlobName).ExistsAsync());
         var run = new { submissionId = Guid.NewGuid(), displayName = "Løkke", score = 0, levelReached = 1 };
         using var saved = await a.PostAsJsonAsync("/api/v1/highscores", run); saved.EnsureSuccessStatusCode();
         var written = await saved.Content.ReadFromJsonAsync<JsonElement>(); Assert.Equal("ranked", written.GetProperty("outcome").GetString());

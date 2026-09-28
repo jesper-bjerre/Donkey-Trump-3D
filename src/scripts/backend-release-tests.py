@@ -44,6 +44,7 @@ class PromotionTests(unittest.TestCase):
         self.source = Path(self.temp.name) / 'publish'; self.source.mkdir()
         self.output = Path(self.temp.name) / 'release'
         (self.source / 'DonkeyTrump.Highscores.Api.dll').write_bytes(b'test-assembly')
+        (self.source / 'storage-contract.json').write_text(json.dumps({'readSchemas':[1,2],'writeSchemas':[2],'rollbackFloor':2}))
         (self.source / 'appsettings.Development.json').write_text('{"UseAzurite":true}')
         with contextlib.redirect_stdout(io.StringIO()):
             release.package(self.source, self.output, SHA)
@@ -81,21 +82,30 @@ class PromotionTests(unittest.TestCase):
         self.change_archive({'publish/DonkeyTrump.Highscores.Api.dll': b'x'})
         with self.assertRaisesRegex(ValueError, 'root'): release.validate_package(self.output, SHA)
 
+    def test_schema1_only_or_missing_support_is_never_promotable(self):
+        manifest=json.loads((self.output / 'release.json').read_text())
+        for schemas in [None, {'readSchemas':[1],'writeSchemas':[1],'rollbackFloor':1}]:
+            changed=dict(manifest)
+            if schemas is None: changed.pop('storageContract',None)
+            else: changed['storageContract']=schemas
+            (self.output / 'release.json').write_text(json.dumps(changed))
+            with self.assertRaises(ValueError): release.validate_package(self.output,SHA)
+
     def test_smoke_rejects_non_https_or_credential_bearing_targets(self):
         for origin in ['http://example.test', 'https://user:password@example.test',
                        'https://example.test?token=anything', 'https://example.test/path']:
             with self.assertRaises(ValueError): release.smoke(origin)
 
 
-class SmokeVersionTests(unittest.TestCase):
-    def test_both_read_versions_are_required_before_promotion(self):
+class SmokeRouteTests(unittest.TestCase):
+    def test_current_read_route_is_required_before_promotion(self):
         class Response(io.BytesIO):
             status = 200
             headers = {"Cache-Control": "no-store"}
 
         class Opener:
-            def __init__(self, v2_exists):
-                self.v2_exists = v2_exists
+            def __init__(self, route_exists):
+                self.route_exists = route_exists
                 self.paths = []
             def open(self, url, timeout):
                 self.paths.append(url)
@@ -103,20 +113,20 @@ class SmokeVersionTests(unittest.TestCase):
                     raise urllib.error.HTTPError(url, 301, 'HTTPS', {"Location": "https://example.test/health/live"}, None)
                 if url.endswith('/health/live'):
                     return Response(b'Healthy')
-                if url.endswith('/api/v2/highscores') and not self.v2_exists:
+                if url.endswith('/api/v1/highscores') and not self.route_exists:
                     raise urllib.error.HTTPError(url, 404, 'Missing', {}, None)
                 return Response(b'{"entries":[],"revision":"fixture"}')
 
         for exists in (False, True):
             opener = Opener(exists)
-            with self.subTest(v2_exists=exists), patch.object(release.urllib.request, 'build_opener', return_value=opener), contextlib.redirect_stdout(io.StringIO()):
+            with self.subTest(route_exists=exists), patch.object(release.urllib.request, 'build_opener', return_value=opener), contextlib.redirect_stdout(io.StringIO()):
                 if exists:
                     release.smoke('https://example.test', attempts=1)
                 else:
                     with self.assertRaisesRegex(RuntimeError, 'smoke failed'):
                         release.smoke('https://example.test', attempts=1)
                 self.assertIn('https://example.test/api/v1/highscores', opener.paths)
-                self.assertIn('https://example.test/api/v2/highscores', opener.paths)
+                self.assertNotIn('https://example.test/api/v2/highscores', opener.paths)
 
 
 if __name__ == '__main__': unittest.main()

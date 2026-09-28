@@ -1,44 +1,22 @@
 using System.Diagnostics;
-using System.Text.Json;
-using Microsoft.Extensions.Options;
 
 namespace DonkeyTrump.Highscores;
 
 public static class HighscoreEndpoints
 {
-    public static void MapHighscores(this WebApplication app)
+    public static void MapHighscores(this WebApplication app, string prefix = "")
     {
-        // Public snapshots have the same contract in both API versions.
-        foreach (var route in new[] { "/api/v1/highscores", "/api/v2/highscores" })
-        app.MapGet(route, async (HttpContext context, IHighscoreStore store) => {
-            try { return Results.Json(await store.ReadAsync(context.RequestAborted), HighscoreJson.Options); }
-            catch (HighscoreFailure error) { return Problem(error); }
-            catch (Exception) { return Problem(new(500, "internal_error", "Highscores are unavailable")); }
-        }).RequireRateLimiting("highscore-reads");
-
-        app.MapPost("/api/v1/highscores", async (HttpContext context, IHighscoreStore store, IOptions<HighscoreOptions> options, TimeProvider clock) => {
-            using var deadline = new CancellationTokenSource(TimeSpan.FromSeconds(options.Value.OperationTimeoutSeconds), clock);
-            using var linked = CancellationTokenSource.CreateLinkedTokenSource(context.RequestAborted, deadline.Token);
-            try {
-                var request = context.Request;
-                if (!string.Equals(request.ContentType?.Split(';')[0].Trim(), "application/json", StringComparison.OrdinalIgnoreCase))
-                    return Problem(new(415, "unsupported_media_type", "Use application/json"));
-                if (request.ContentLength > 4096) return Problem(new(413, "payload_too_large", "Submission is too large"));
-                byte[] body;
-                try { body = await BlobHighscoreStore.BoundedRead(request.Body, 4096, linked.Token); }
-                catch (HighscoreFailure) { return Problem(new(413, "payload_too_large", "Submission is too large")); }
-                using var json = JsonDocument.Parse(body, new JsonDocumentOptions { MaxDepth = 16 });
-                var submission = HighscoreValidation.Parse(json.RootElement);
-                return Results.Json(await store.SubmitAsync(submission, linked.Token), HighscoreJson.Options);
-            } catch (JsonException) { return Problem(HighscoreFailure.Malformed()); }
-            catch (HighscoreFailure error) { return Problem(error); }
-            catch (OperationCanceledException) { return Problem(new(503, "operation_timed_out", "Highscores timed out")); }
-            catch (Exception) { return Problem(new(500, "internal_error", "Highscores are unavailable")); }
-        }).RequireRateLimiting("highscore-posts");
+        app.MapGet(prefix + "/api/v1/highscores",(HttpContext context,IHighscoreStore store)=>ModerationEndpoints.Guard(async()=>
+                Results.Json(await CaptureOptions.Store(context,store,prefix != "").ReadAsync(context.RequestAborted),HighscoreJson.Options))).RequireRateLimiting("highscore-reads");
+        app.MapPost(prefix + "/api/v1/highscores",(HttpContext context,IModerationStore store,TimeProvider clock)=>ModerationEndpoints.Guard(async()=> {
+            using var deadline=new CancellationTokenSource(TimeSpan.FromSeconds(6),clock);
+            using var linked=CancellationTokenSource.CreateLinkedTokenSource(context.RequestAborted,deadline.Token);
+            var hash=ModerationEndpoints.Credential(context);
+            using var json=await ModerationEndpoints.Body(context.Request,linked.Token);
+            return Results.Json(await CaptureOptions.Store(context,store,prefix != "").PublishAsync(HighscoreValidation.Parse(json.RootElement),hash,linked.Token),HighscoreJson.Options);
+        })).RequireRateLimiting("highscore-posts");
     }
-
-    public static IResult Problem(HighscoreFailure error) => Results.Problem(type: "about:blank", title: error.Title,
-        statusCode: error.Status, extensions: new Dictionary<string, object?> {
-            ["code"] = error.Code, ["errors"] = error.Errors, ["traceId"] = Activity.Current?.Id
-        }.Where(kv => kv.Value is not null).ToDictionary(kv => kv.Key, kv => kv.Value));
+    public static IResult Problem(HighscoreFailure error) => Results.Problem(type:"about:blank",title:error.Title,statusCode:error.Status,
+        extensions:new Dictionary<string,object?> { ["code"]=error.Code,["errors"]=error.Errors,["traceId"]=Activity.Current?.Id }
+            .Where(kv=>kv.Value is not null).ToDictionary(kv=>kv.Key,kv=>kv.Value));
 }

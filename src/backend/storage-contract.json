@@ -1,0 +1,10 @@
+{
+  "readSchemas": [
+    1,
+    2
+  ],
+  "writeSchemas": [
+    2
+  ],
+  "rollbackFloor": 2
+}

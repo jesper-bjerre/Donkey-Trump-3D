@@ -1,0 +1,27 @@
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  DonkeyTrump.Highscores.Api -> /Users/jesperhyldenbrandtbjerre/Documents/Development/Donkey-Trump-3D/src/backend/bin/Release/net10.0/DonkeyTrump.Highscores.Api.dll
+  DonkeyTrump.Highscores.Api.Tests -> /Users/jesperhyldenbrandtbjerre/Documents/Development/Donkey-Trump-3D/src/backend.tests/bin/Release/net10.0/DonkeyTrump.Highscores.Api.Tests.dll
+Test run for /Users/jesperhyldenbrandtbjerre/Documents/Development/Donkey-Trump-3D/src/backend.tests/bin/Release/net10.0/DonkeyTrump.Highscores.Api.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:   109, Skipped:     0, Total:   109, Duration: 2 s - DonkeyTrump.Highscores.Api.Tests.dll (net10.0)
+
+test_embedded_wrong_commit_is_rejected_even_with_matching_digest (__main__.PromotionTests) ... ok
+test_manual_main_dev_run_is_accepted (__main__.PromotionTests) ... ok
+test_modified_package_is_rejected (__main__.PromotionTests) ... ok
+test_nested_publish_folder_is_rejected (__main__.PromotionTests) ... ok
+test_only_successful_expected_dev_run_is_accepted (__main__.PromotionTests) ... ok
+test_package_roundtrip_keeps_root_and_excludes_development_profile (__main__.PromotionTests) ... ok
+test_schema1_only_or_missing_support_is_never_promotable (__main__.PromotionTests) ... ok
+test_smoke_rejects_non_https_or_credential_bearing_targets (__main__.PromotionTests) ... ok
+test_unsafe_archive_paths_are_rejected (__main__.PromotionTests) ... ok
+test_wrong_source_commit_is_rejected (__main__.PromotionTests) ... ok
+test_current_read_route_is_required_before_promotion (__main__.SmokeRouteTests) ... ok
+
+----------------------------------------------------------------------
+Ran 11 tests in 0.020s
+
+OK
+
+PASS: owned schema1 migration, v1 publication, report, operator acknowledgement/removal/block, private receipt and minimum-ten continuity.

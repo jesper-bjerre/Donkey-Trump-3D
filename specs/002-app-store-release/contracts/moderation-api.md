@@ -8,12 +8,10 @@ See [data model](../data-model.md) for storage fields/retention.
 
 | Route | Authentication | Request / successful result |
 |---|---|---|
-| `GET /api/v1/highscores` | Public | Existing snapshot unchanged: entries(entryId, rank, displayName, score), revision, fetchedAtUtc. No private fields. Read-only. |
-| `GET /api/v2/highscores` | Public | Same public snapshot schema and top-100/min-ten rules. |
-| `POST /api/v1/highscores` | None accepted | Always 426 `update_required`; no parsing/storage mutation that can bypass v2 safeguards. |
-| `POST /api/v2/highscores` | Installation secret | Existing strict submission body (`submissionId`, `displayName`, `score`, `levelReached`) and existing `ranked`/`notQualified` result shape. Enforce moderation before every conditional write. |
-| `POST /api/v2/highscore-reports` | Installation secret | `{reportId, entryId, reason}`. 201 newly accepted / 200 identical replay with `{reportId, status, createdAtUtc, acknowledgedAtUtc?, resolvedAtUtc?, disposition?}`. |
-| `GET /api/v2/highscore-reports/{reportId}` | Same reporter secret | Same receipt. Other reporter, unknown or expired ID returns 404. Never returns producer identity or offending name. |
+| `GET /api/v1/highscores` | Public | Existing snapshot unchanged: entries(entryId, rank, displayName, score), revision, fetchedAtUtc. No private fields. GET is read-only. |
+| `POST /api/v1/highscores` | Installation secret | Existing strict submission body (`submissionId`, `displayName`, `score`, `levelReached`) and existing `ranked`/`notQualified` result shape. Enforce moderation before every conditional write. |
+| `POST /api/v1/highscore-reports` | Installation secret | `{reportId, entryId, reason}`. 201 newly accepted / 200 identical replay with `{reportId, status, createdAtUtc, acknowledgedAtUtc?, resolvedAtUtc?, disposition?}`. |
+| `GET /api/v1/highscore-reports/{reportId}` | Same reporter secret | Same receipt. Other reporter, unknown or expired ID returns 404. Never returns producer identity or offending name. |
 | `GET /support`, `GET /privacy` | Public | Accessible English HTML, correct contact/app/data practices, no login/cookies/analytics. |
 
 Authorization: `Bearer <43-character unpadded base64url encoding of 32 random bytes>`.
@@ -39,7 +37,6 @@ New errors supplement existing ProblemDetails `code`, `status`, title and traceI
 | 409 `submission_removed` | Removed-ID guard; no publication/retry opportunity for that run. |
 | 409 `submission_conflict` / `report_conflict` | Conflicting identity/payload; do not silently change IDs and resend. |
 | 404 `entry_not_found` / `report_not_found` | Target no longer available, receipt not owned or expired; no false success. |
-| 426 `update_required` | Older writer unsupported; local gameplay remains available. |
 | 429 `rate_limited` | Bounded failure; Retry-After is not authority to schedule an upload. |
 | 503 `service_maintenance` | Rejected before writes during maintenance or before schema migration; definite no-write, no deferred retry. |
 | 503 `moderation_capacity` / `storage_invalid` / `operation_timed_out` | Honest unavailability. If a write may have committed, map instead to the operation's unconfirmed result. |
@@ -132,6 +129,7 @@ Commands:
   metric with no content. Worker uses MI/ETags, pauses for migration maintenance;
   verify PROD Always On and recover missed cleanup on startup. Outages delay physical
   deletion beyond the normal one-hour bound, explicitly disclosed in privacy/evidence.
+- `initialize`: explicit first provisioning of a verified unused empty container only; preview then `--apply`, refuse any current/deleted/versioned/snapshot Blob and conditionally create the original three-field schema-1 document. Never call from startup/public requests or use for missing-data recovery. Existing deployment remains readable until conversion.
 - `migrate --expected-etag ETAG`: validate/convert schema 1 using conditional replace,
   or verify already-migrated schema 2 and exit without rewriting it.
 
@@ -159,8 +157,8 @@ is not successful delivery. Public contact remains available when reports fail.
 1. Test migration/removal/block/report/ambiguous-ack cases against isolated Azurite,
    then DEV, preserving unrelated rows and minimum-ten projection.
 2. Produce the schema-2-aware backend artifact through the existing DEV pipeline.
-   This code can serve validated schema-1 reads but returns 503 for v2 writes until
-   migration; v1 POST is already 426. Record supported storage schema in the release
+   This code can serve validated schema-1 reads but returns 503 for credentialed writes until
+   migration. There is no old-client retirement response. Record supported storage schema in the release
    manifest and enforce it in PROD promotion/rollback checks.
 3. Before each migration, record target resource identity, current schema/ETag,
    count and sequence evidence privately; verify versioning/soft delete/backups policy.
@@ -172,7 +170,7 @@ is not successful delivery. Public contact remains available when reports fail.
 4. Enable `Moderation__Maintenance=true` only on this game's app, deploy the verified
    schema-aware artifact and restart this app to terminate old workers. This mode
    keeps HTTP validated reads/SSH running but rejects every public write with503 and
-   pauses background mutations; v1 POST remains426. Verify running artifact/config
+   pauses background mutations. Verify running artifact/config
    on every configured instance, no old workers, and wait for the <=6s in-flight
    deadline before backup/migration. Operator migration alone may mutate during this
    gate. Never stop/resize the shared plan/neighbor; no deployment slot assumption.
@@ -184,7 +182,7 @@ is not successful delivery. Public contact remains available when reports fail.
 6. Verify schema/migration and remove the backup, then clear maintenance/restart only
    this API and verify current artifact/schema, GET and new credentialed
    publication using only test-owned results. Rehearse in DEV before PROD. Existing
-   byensgaader apps must pass before/after availability checks; update cost/capacity
+   byensgaader apps must pass before/after availability checks; update capacity
    evidence and immutable DEV-to-PROD artifact identity.
 7. After migration, rollback ONLY to a tested schema-2-aware artifact. The first
    migrated release must retain its schema-aware read/maintenance mode as recovery
@@ -195,5 +193,5 @@ is not successful delivery. Public contact remains available when reports fail.
 
 Legacy entries remain removable but retrospectively blocking their original
 installation is impossible: v1 never recorded identity. Document this limitation;
-credential-free v1 writes are retired, and all new release publications have identity.
+the unreleased app and backend change together so publication requires installation identity on the existing API. No old-app compatibility or version-retirement mechanism is required.
 Do not claim that migrated rows acquired enforceable original-device attribution.

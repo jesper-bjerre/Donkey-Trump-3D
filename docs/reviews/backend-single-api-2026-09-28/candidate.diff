@@ -1,0 +1,1173 @@
+diff --git a/.github/workflows/backend-ci.yml b/.github/workflows/backend-ci.yml
+index 9df708a..6a0aa17 100644
+--- a/.github/workflows/backend-ci.yml
++++ b/.github/workflows/backend-ci.yml
+@@ -1,10 +1,10 @@
+ name: Backend CI
+ on:
+   pull_request:
+-    paths: ['src/backend/**', 'src/backend.tests/**', 'src/scripts/backend-release*', 'infra/**', 'global.json', '.github/workflows/backend-*.yml']
++    paths: ['src/backend/**', 'src/backend.tests/**', 'src/scripts/backend-release*', 'src/scripts/release-moderation-smoke.py', 'src/tests/support/azurite_owned.py', 'infra/**', 'global.json', '.github/workflows/backend-*.yml']
+   push:
+     branches: [main]
+-    paths: ['src/backend/**', 'src/backend.tests/**', 'src/scripts/backend-release*', 'infra/**', 'global.json', '.github/workflows/backend-*.yml']
++    paths: ['src/backend/**', 'src/backend.tests/**', 'src/scripts/backend-release*', 'src/scripts/release-moderation-smoke.py', 'src/tests/support/azurite_owned.py', 'infra/**', 'global.json', '.github/workflows/backend-*.yml']
+   workflow_dispatch:
+ permissions:
+   contents: read
+@@ -28,6 +28,8 @@ jobs:
+           global-json-file: global.json
+       - name: Release pipeline checks
+         run: python3 src/scripts/backend-release-tests.py -v
++      - name: Owned local moderation and migration rehearsal
++        run: python3 src/scripts/release-moderation-smoke.py
+       - name: Build and test API with real Azurite
+         env:
+           HighscoresTests__UseAzurite: 'true'
+diff --git a/.github/workflows/backend-deploy-dev.yml b/.github/workflows/backend-deploy-dev.yml
+index 6400ea3..3ad171d 100644
+--- a/.github/workflows/backend-deploy-dev.yml
++++ b/.github/workflows/backend-deploy-dev.yml
+@@ -2,7 +2,7 @@ name: Backend Deploy DEV
+ on:
+   push:
+     branches: [main]
+-    paths: ['src/backend/**', 'src/backend.tests/**', 'src/scripts/backend-release*', 'infra/**', 'global.json', '.github/workflows/backend-*.yml']
++    paths: ['src/backend/**', 'src/backend.tests/**', 'src/scripts/backend-release*', 'src/scripts/release-moderation-smoke.py', 'src/tests/support/azurite_owned.py', 'infra/**', 'global.json', '.github/workflows/backend-*.yml']
+   workflow_dispatch:
+ permissions:
+   contents: read
+@@ -27,6 +27,8 @@ jobs:
+           global-json-file: global.json
+       - name: Release pipeline checks
+         run: python3 src/scripts/backend-release-tests.py -v
++      - name: Owned local moderation and migration rehearsal
++        run: python3 src/scripts/release-moderation-smoke.py
+       - name: Build and test API with real Azurite
+         env:
+           HighscoresTests__UseAzurite: 'true'
+@@ -71,6 +73,8 @@ jobs:
+         run: |
+           APP=$(python3 -c 'import json; print(json.load(open("infra/backend-environments.json"))["environments"]["development"]["appName"])')
+           GROUP=$(python3 -c 'import json; print(json.load(open("infra/backend-environments.json"))["appResourceGroup"])')
++          # Only this game's API enters maintenance. Operator migration/readback clears it later.
++          az webapp config appsettings set --resource-group "$GROUP" --name "$APP" --settings Moderation__Maintenance=true --only-show-errors --output none
+           az webapp deploy --resource-group "$GROUP" --name "$APP" --src-path "$RUNNER_TEMP/release/app.zip" --type zip --clean true --restart true --only-show-errors --output none
+           HOST=$(az webapp show --resource-group "$GROUP" --name "$APP" --query defaultHostName -o tsv)
+           echo "origin=https://$HOST" >> "$GITHUB_OUTPUT"
+diff --git a/.github/workflows/backend-deploy-prod.yml b/.github/workflows/backend-deploy-prod.yml
+index 269c07a..97888e0 100644
+--- a/.github/workflows/backend-deploy-prod.yml
++++ b/.github/workflows/backend-deploy-prod.yml
+@@ -63,6 +63,8 @@ jobs:
+         run: |
+           APP=$(python3 -c 'import json; print(json.load(open("infra/backend-environments.json"))["environments"]["production"]["appName"])')
+           GROUP=$(python3 -c 'import json; print(json.load(open("infra/backend-environments.json"))["appResourceGroup"])')
++          # Only this game's API enters maintenance. Operator migration/readback clears it later.
++          az webapp config appsettings set --resource-group "$GROUP" --name "$APP" --settings Moderation__Maintenance=true --only-show-errors --output none
+           az webapp deploy --resource-group "$GROUP" --name "$APP" --src-path "$RUNNER_TEMP/release/app.zip" --type zip --clean true --restart true --only-show-errors --output none
+           HOST=$(az webapp show --resource-group "$GROUP" --name "$APP" --query defaultHostName -o tsv)
+           echo "origin=https://$HOST" >> "$GITHUB_OUTPUT"
+diff --git a/specs/002-app-store-release/contracts/moderation-api.md b/specs/002-app-store-release/contracts/moderation-api.md
+index 931f663..1a46c0d 100644
+--- a/specs/002-app-store-release/contracts/moderation-api.md
++++ b/specs/002-app-store-release/contracts/moderation-api.md
+@@ -8,12 +8,10 @@ See [data model](../data-model.md) for storage fields/retention.
+ 
+ | Route | Authentication | Request / successful result |
+ |---|---|---|
+-| `GET /api/v1/highscores` | Public | Existing snapshot unchanged: entries(entryId, rank, displayName, score), revision, fetchedAtUtc. No private fields. Read-only. |
+-| `GET /api/v2/highscores` | Public | Same public snapshot schema and top-100/min-ten rules. |
+-| `POST /api/v1/highscores` | None accepted | Always 426 `update_required`; no parsing/storage mutation that can bypass v2 safeguards. |
+-| `POST /api/v2/highscores` | Installation secret | Existing strict submission body (`submissionId`, `displayName`, `score`, `levelReached`) and existing `ranked`/`notQualified` result shape. Enforce moderation before every conditional write. |
+-| `POST /api/v2/highscore-reports` | Installation secret | `{reportId, entryId, reason}`. 201 newly accepted / 200 identical replay with `{reportId, status, createdAtUtc, acknowledgedAtUtc?, resolvedAtUtc?, disposition?}`. |
+-| `GET /api/v2/highscore-reports/{reportId}` | Same reporter secret | Same receipt. Other reporter, unknown or expired ID returns 404. Never returns producer identity or offending name. |
++| `GET /api/v1/highscores` | Public | Existing snapshot unchanged: entries(entryId, rank, displayName, score), revision, fetchedAtUtc. No private fields. GET is read-only. |
++| `POST /api/v1/highscores` | Installation secret | Existing strict submission body (`submissionId`, `displayName`, `score`, `levelReached`) and existing `ranked`/`notQualified` result shape. Enforce moderation before every conditional write. |
++| `POST /api/v1/highscore-reports` | Installation secret | `{reportId, entryId, reason}`. 201 newly accepted / 200 identical replay with `{reportId, status, createdAtUtc, acknowledgedAtUtc?, resolvedAtUtc?, disposition?}`. |
++| `GET /api/v1/highscore-reports/{reportId}` | Same reporter secret | Same receipt. Other reporter, unknown or expired ID returns 404. Never returns producer identity or offending name. |
+ | `GET /support`, `GET /privacy` | Public | Accessible English HTML, correct contact/app/data practices, no login/cookies/analytics. |
+ 
+ Authorization: `Bearer <43-character unpadded base64url encoding of 32 random bytes>`.
+@@ -39,7 +37,6 @@ New errors supplement existing ProblemDetails `code`, `status`, title and traceI
+ | 409 `submission_removed` | Removed-ID guard; no publication/retry opportunity for that run. |
+ | 409 `submission_conflict` / `report_conflict` | Conflicting identity/payload; do not silently change IDs and resend. |
+ | 404 `entry_not_found` / `report_not_found` | Target no longer available, receipt not owned or expired; no false success. |
+-| 426 `update_required` | Older writer unsupported; local gameplay remains available. |
+ | 429 `rate_limited` | Bounded failure; Retry-After is not authority to schedule an upload. |
+ | 503 `service_maintenance` | Rejected before writes during maintenance or before schema migration; definite no-write, no deferred retry. |
+ | 503 `moderation_capacity` / `storage_invalid` / `operation_timed_out` | Honest unavailability. If a write may have committed, map instead to the operation's unconfirmed result. |
+@@ -132,6 +129,7 @@ Commands:
+   metric with no content. Worker uses MI/ETags, pauses for migration maintenance;
+   verify PROD Always On and recover missed cleanup on startup. Outages delay physical
+   deletion beyond the normal one-hour bound, explicitly disclosed in privacy/evidence.
++- `initialize`: explicit first provisioning of a verified unused empty container only; preview then `--apply`, refuse any current/deleted/versioned/snapshot Blob and conditionally create the original three-field schema-1 document. Never call from startup/public requests or use for missing-data recovery. Existing deployment remains readable until conversion.
+ - `migrate --expected-etag ETAG`: validate/convert schema 1 using conditional replace,
+   or verify already-migrated schema 2 and exit without rewriting it.
+ 
+@@ -159,8 +157,8 @@ is not successful delivery. Public contact remains available when reports fail.
+ 1. Test migration/removal/block/report/ambiguous-ack cases against isolated Azurite,
+    then DEV, preserving unrelated rows and minimum-ten projection.
+ 2. Produce the schema-2-aware backend artifact through the existing DEV pipeline.
+-   This code can serve validated schema-1 reads but returns 503 for v2 writes until
+-   migration; v1 POST is already 426. Record supported storage schema in the release
++   This code can serve validated schema-1 reads but returns 503 for credentialed writes until
++   migration. There is no old-client retirement response. Record supported storage schema in the release
+    manifest and enforce it in PROD promotion/rollback checks.
+ 3. Before each migration, record target resource identity, current schema/ETag,
+    count and sequence evidence privately; verify versioning/soft delete/backups policy.
+@@ -172,7 +170,7 @@ is not successful delivery. Public contact remains available when reports fail.
+ 4. Enable `Moderation__Maintenance=true` only on this game's app, deploy the verified
+    schema-aware artifact and restart this app to terminate old workers. This mode
+    keeps HTTP validated reads/SSH running but rejects every public write with503 and
+-   pauses background mutations; v1 POST remains426. Verify running artifact/config
++   pauses background mutations. Verify running artifact/config
+    on every configured instance, no old workers, and wait for the <=6s in-flight
+    deadline before backup/migration. Operator migration alone may mutate during this
+    gate. Never stop/resize the shared plan/neighbor; no deployment slot assumption.
+@@ -184,7 +182,7 @@ is not successful delivery. Public contact remains available when reports fail.
+ 6. Verify schema/migration and remove the backup, then clear maintenance/restart only
+    this API and verify current artifact/schema, GET and new credentialed
+    publication using only test-owned results. Rehearse in DEV before PROD. Existing
+-   byensgaader apps must pass before/after availability checks; update cost/capacity
++   byensgaader apps must pass before/after availability checks; update capacity
+    evidence and immutable DEV-to-PROD artifact identity.
+ 7. After migration, rollback ONLY to a tested schema-2-aware artifact. The first
+    migrated release must retain its schema-aware read/maintenance mode as recovery
+@@ -195,5 +193,5 @@ is not successful delivery. Public contact remains available when reports fail.
+ 
+ Legacy entries remain removable but retrospectively blocking their original
+ installation is impossible: v1 never recorded identity. Document this limitation;
+-credential-free v1 writes are retired, and all new release publications have identity.
++the unreleased app and backend change together so publication requires installation identity on the existing API. No old-app compatibility or version-retirement mechanism is required.
+ Do not claim that migrated rows acquired enforceable original-device attribution.
+diff --git a/specs/002-app-store-release/data-model.md b/specs/002-app-store-release/data-model.md
+index 927631f..72b4c08 100644
+--- a/specs/002-app-store-release/data-model.md
++++ b/specs/002-app-store-release/data-model.md
+@@ -86,7 +86,7 @@ idle periods and expired backup Blobs using MI/ETags. Deletion due within one ho
+ service/storage are available; outages defer to recovery and are recorded as retention
+ exceptions. No report content in App Service backup/logs. Version history and soft delete
+ stay disabled; inventory old versions/deleted copies/exported backups, confirm cleanup
+-and capture actual retention/cost before release. Backup lifecycle rule is secondary,
++and capture actual retention before release. Backup lifecycle rule is secondary,
+ not a timing guarantee. See research for current management-plane observations.
+ 
+ Max aggregate serialized UTF-8 size 1 MiB; max 4,096 tombstones/1,024 blocks. At 3,800
+diff --git a/src/DonkeyTrump3D/Highscores/HighscoreConfiguration.swift b/src/DonkeyTrump3D/Highscores/HighscoreConfiguration.swift
+index c2d840e..daa47c8 100644
+--- a/src/DonkeyTrump3D/Highscores/HighscoreConfiguration.swift
++++ b/src/DonkeyTrump3D/Highscores/HighscoreConfiguration.swift
+@@ -1,10 +1,15 @@
+ import Foundation
++#if APPSTORE_CAPTURE && !targetEnvironment(simulator)
++#error("AppStoreCapture cannot run on a device or be distributed")
++#endif
+ 
+ struct HighscoreConfiguration: Sendable {
+     let baseURL: URL
+     let isLocalIntegration: Bool
+     var endpoint: URL { baseURL.appendingPathComponent("api/v1/highscores") }
+ 
++    var reportEndpoint: URL { baseURL.appendingPathComponent("api/v1/highscore-reports") }
++
+     init(baseURL: URL) throws {
+         guard baseURL.scheme == "https", let host = baseURL.host, !host.isEmpty,
+               baseURL.user == nil, baseURL.password == nil, baseURL.query == nil, baseURL.fragment == nil else {
+@@ -27,6 +32,11 @@ struct HighscoreConfiguration: Sendable {
+         #if DEBUG
+         if url.scheme == "http" { return try? Self(localOrigin: url) }
+         #endif
++        #if APPSTORE_CAPTURE
++        guard text == "https://donkeytrump-api-d.azurewebsites.net/capture" else { return nil }
++        #elseif !DEBUG
++        guard text == "https://donkeytrump-api-p.azurewebsites.net" else { return nil }
++        #endif
+         return try? Self(baseURL: url)
+     }
+ }
+diff --git a/src/DonkeyTrump3D/Highscores/URLSessionHighscoreService.swift b/src/DonkeyTrump3D/Highscores/URLSessionHighscoreService.swift
+index 34af0b5..981eb21 100644
+--- a/src/DonkeyTrump3D/Highscores/URLSessionHighscoreService.swift
++++ b/src/DonkeyTrump3D/Highscores/URLSessionHighscoreService.swift
+@@ -1,7 +1,7 @@
+ import Foundation
+ 
+ /// A separate delegate has no reference back to the session. Never replay a POST through a redirect.
+-private final class HighscoreRedirectPolicy: NSObject, URLSessionTaskDelegate, @unchecked Sendable {
++final class HighscoreRedirectPolicy: NSObject, URLSessionTaskDelegate, @unchecked Sendable {
+     func urlSession(_ session: URLSession, task: URLSessionTask, willPerformHTTPRedirection response: HTTPURLResponse,
+                     newRequest request: URLRequest, completionHandler: @escaping (URLRequest?) -> Void) {
+         completionHandler(nil)
+@@ -10,9 +10,10 @@ private final class HighscoreRedirectPolicy: NSObject, URLSessionTaskDelegate, @
+ 
+ final class URLSessionHighscoreService: HighscoreService, @unchecked Sendable {
+     private let configuration: HighscoreConfiguration
++    private let credential: any InstallationCredentialProviding
+     private let session: URLSession
+-    init(configuration: HighscoreConfiguration, sessionConfiguration: URLSessionConfiguration? = nil) {
+-        self.configuration = configuration
++    init(configuration: HighscoreConfiguration, sessionConfiguration: URLSessionConfiguration? = nil, credential: any InstallationCredentialProviding = InstallationCredentialStore.shared) {
++        self.configuration = configuration; self.credential = credential
+         let transport = sessionConfiguration ?? .ephemeral
+         transport.waitsForConnectivity = false
+         transport.timeoutIntervalForRequest = 8
+@@ -31,6 +32,7 @@ final class URLSessionHighscoreService: HighscoreService, @unchecked Sendable {
+         request.setValue("application/json", forHTTPHeaderField: "Accept")
+         request.setValue("no-store", forHTTPHeaderField: "Cache-Control")
+         if let submission {
++            request.setValue(try await credential.authorization(), forHTTPHeaderField: "Authorization")
+             request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+             request.httpBody = try JSONEncoder().encode(submission)
+         }
+diff --git a/src/backend.tests/BlobHighscoreStoreTests.cs b/src/backend.tests/BlobHighscoreStoreTests.cs
+index 3be7ca4..173cd00 100644
+--- a/src/backend.tests/BlobHighscoreStoreTests.cs
++++ b/src/backend.tests/BlobHighscoreStoreTests.cs
+@@ -1,4 +1,5 @@
+ using System.Diagnostics;
++using static DonkeyTrump.Highscores.Tests.ModerationContractTests;
+ using System.Net;
+ using System.Text;
+ using System.Text.Json;
+@@ -13,48 +14,50 @@ public class BlobHighscoreStoreTests
+     public async Task ConditionalWriteUsesSameReadEtagAndReturnsSavedCandidateWithoutReread(bool missing) {
+         using var http=new BlobHttpHandler();byte[]? uploaded=null;
+         http.Respond=async(request,_)=> {
+-            if(request.Method==HttpMethod.Get) return missing?BlobHttpHandler.Error(404,"BlobNotFound"):BlobHttpHandler.Document(HighscoreDocument.Empty.Serialize());
++            if(request.Method==HttpMethod.Get) return missing?BlobHttpHandler.Error(404,"BlobNotFound"):BlobHttpHandler.Document(ModerationMigration.Convert(HighscoreDocument.Empty).Serialize());
+             uploaded=await request.Content!.ReadAsByteArrayAsync();return BlobHttpHandler.Saved();
+         };
+-        var run=Run();var result=await http.Store().SubmitAsync(run,default);
++        var run=Run();
++        if(missing) { Assert.Equal("storage_invalid",(await Assert.ThrowsAsync<HighscoreFailure>(()=>http.Store().PublishAsync(run,Producer,default))).Code); Assert.Equal(0,http.Writes); return; }
++        var result=await http.Store().PublishAsync(run,Producer,default);
+         Assert.Equal("ranked",result.Outcome);Assert.Equal("\"saved\"",result.Revision);Assert.Equal(11,result.Entries.Count);Assert.Contains(result.Entries,e=>e.EntryId==run.SubmissionId);
+         Assert.Equal(1,http.Reads);Assert.Equal(1,http.Writes);Assert.NotNull(uploaded);
+         var condition=Assert.Single(http.Conditions);Assert.Equal(missing?null:"\"v1\"",condition.Match);Assert.Equal(missing?"*":null,condition.NoneMatch);Assert.Equal("",condition.Query);
+     }
+-    [Theory][InlineData(412,"ConditionNotMet")][InlineData(409,"BlobAlreadyExists")]
++    [Theory][InlineData(412,"ConditionNotMet")]
+     public async Task RecognizedConflictRereadsAndRecomputes(int status,string code) {
+         using var http=new BlobHttpHandler();var competitor=Run(200);var current=Add(HighscoreDocument.Empty,competitor);var backoffs=0;
+         http.Respond=(request,_)=>Task.FromResult(request.Method==HttpMethod.Get
+-            ? http.Reads==1?BlobHttpHandler.Error(404,"BlobNotFound"):BlobHttpHandler.Document(current.Serialize(),"\"competitor\"")
++            ? http.Reads==1?BlobHttpHandler.Document(ModerationMigration.Convert(HighscoreDocument.Empty).Serialize()):BlobHttpHandler.Document(ModerationMigration.Convert(current).Serialize(),"\"competitor\"")
+             :http.Writes==1?BlobHttpHandler.Error(status,code):BlobHttpHandler.Saved());
+-        var result=await http.Store(backoff:_=>{backoffs++;return Task.CompletedTask;}).SubmitAsync(Run(),default);
++        var result=await http.Store(backoff:_=>{backoffs++;return Task.CompletedTask;}).PublishAsync(Run(),Producer,default);
+         Assert.Equal(2,http.Reads);Assert.Equal(2,http.Writes);Assert.Equal(1,backoffs);Assert.Equal(11,result.Entries.Count);
+         Assert.Contains(result.Entries,e=>e.EntryId==competitor.SubmissionId);Assert.Equal("\"competitor\"",http.Conditions[1].Match);
+     }
+     [Fact] public async Task ContentionStopsAtFiveUploadsAndFourBackoffs() {
+         using var http=new BlobHttpHandler();int backoffs=0;
+-        http.Respond=(request,_)=>Task.FromResult(request.Method==HttpMethod.Get?BlobHttpHandler.Document(HighscoreDocument.Empty.Serialize()):BlobHttpHandler.Error(412,"ConditionNotMet"));
+-        var failure=await Assert.ThrowsAsync<HighscoreFailure>(()=>http.Store(backoff:_=>{backoffs++;return Task.CompletedTask;}).SubmitAsync(Run(),default));
++        http.Respond=(request,_)=>Task.FromResult(request.Method==HttpMethod.Get?BlobHttpHandler.Document(ModerationMigration.Convert(HighscoreDocument.Empty).Serialize()):BlobHttpHandler.Error(412,"ConditionNotMet"));
++        var failure=await Assert.ThrowsAsync<HighscoreFailure>(()=>http.Store(backoff:_=>{backoffs++;return Task.CompletedTask;}).PublishAsync(Run(),Producer,default));
+         Assert.Equal("contention_exhausted",failure.Code);Assert.Equal(5,http.Writes);Assert.Equal(5,http.Reads);Assert.Equal(4,backoffs);
+     }
+     [Theory][InlineData(412,"LeaseIdMissing")][InlineData(409,"BlobAlreadyExists")][InlineData(500,"InternalError")]
+     public async Task UnrecognizedWriteFailureNeverRetries(int status,string code) {
+-        using var http=new BlobHttpHandler();http.Respond=(request,_)=>Task.FromResult(request.Method==HttpMethod.Get?BlobHttpHandler.Document(HighscoreDocument.Empty.Serialize()):BlobHttpHandler.Error(status,code));
+-        var failure=await Assert.ThrowsAsync<HighscoreFailure>(()=>http.Store().SubmitAsync(Run(),default));
++        using var http=new BlobHttpHandler();http.Respond=(request,_)=>Task.FromResult(request.Method==HttpMethod.Get?BlobHttpHandler.Document(ModerationMigration.Convert(HighscoreDocument.Empty).Serialize()):BlobHttpHandler.Error(status,code));
++        var failure=await Assert.ThrowsAsync<HighscoreFailure>(()=>http.Store().PublishAsync(Run(),Producer,default));
+         Assert.Equal("submission_unconfirmed",failure.Code);Assert.Equal(1,http.Writes);Assert.Equal(1,http.Reads);
+     }
+     [Fact] public async Task CommitThenLostAcknowledgementNeverRetriesOrRereads() {
+         using var http=new BlobHttpHandler();byte[]? committed=null;
+         http.Respond=async(request,_)=> {
+-            if(request.Method==HttpMethod.Get)return BlobHttpHandler.Error(404,"BlobNotFound");
++            if(request.Method==HttpMethod.Get)return BlobHttpHandler.Document(ModerationMigration.Convert(HighscoreDocument.Empty).Serialize());
+             committed=await request.Content!.ReadAsByteArrayAsync();throw new HttpRequestException("Lost acknowledgement");
+         };
+-        var failure=await Assert.ThrowsAsync<HighscoreFailure>(()=>http.Store().SubmitAsync(Run(),default));
++        var failure=await Assert.ThrowsAsync<HighscoreFailure>(()=>http.Store().PublishAsync(Run(),Producer,default));
+         Assert.Equal("submission_unconfirmed",failure.Code);Assert.NotNull(committed);Assert.Equal(1,http.Writes);Assert.Equal(1,http.Reads);
+     }
+     public static IEnumerable<object[]> InvalidDocuments() {
+         yield return [Encoding.UTF8.GetBytes("{"),false];
+-        yield return [Encoding.UTF8.GetBytes("{\"schemaVersion\":2,\"nextSequence\":1,\"entries\":[]}"),false];
++        yield return [Encoding.UTF8.GetBytes("{\"schemaVersion\":3,\"nextSequence\":1,\"entries\":[]}"),false];
+         yield return [new byte[HighscoreDocument.MaximumBytes+1],false];
+         yield return [new byte[HighscoreDocument.MaximumBytes+1],true];
+         var document=Add(Add(HighscoreDocument.Empty,Run()),Run(200));
+@@ -62,28 +65,28 @@ public class BlobHighscoreStoreTests
+             document with {Entries=[document.Entries[0],document.Entries[1] with {Sequence=document.Entries[0].Sequence}]},
+             document with {Entries=document.Entries.AsEnumerable().Reverse().ToList()},
+             HighscoreDocument.Empty with {NextSequence=long.MaxValue}})
+-            yield return [JsonSerializer.SerializeToUtf8Bytes(invalid,HighscoreJson.Options),false];
++            yield return [JsonSerializer.SerializeToUtf8Bytes(invalid.NextSequence==long.MaxValue ? invalid with {SchemaVersion=2} : invalid,HighscoreJson.Options),false];
+     }
+     [Theory][MemberData(nameof(InvalidDocuments))]
+     public async Task InvalidDocumentFailsClosedWithoutOverwrite(byte[] bytes,bool chunked) {
+         using var http=new BlobHttpHandler();http.Respond=(_,_)=>Task.FromResult(BlobHttpHandler.Document(bytes,chunked:chunked));
+-        var failure=await Assert.ThrowsAsync<HighscoreFailure>(()=>http.Store().SubmitAsync(Run(),default));
++        var failure=await Assert.ThrowsAsync<HighscoreFailure>(()=>http.Store().PublishAsync(Run(),Producer,default));
+         Assert.Equal("storage_invalid",failure.Code);Assert.Equal(0,http.Writes);
+     }
+     [Theory][InlineData(404,"ContainerNotFound")][InlineData(403,"AuthorizationFailure")]
+     public async Task MissingContainerAndAuthFailureNeverCreateEmptyRanking(int status,string code) {
+         using var http=new BlobHttpHandler();http.Respond=(_,_)=>Task.FromResult(BlobHttpHandler.Error(status,code));
+         var store=http.Store();Assert.Equal("service_unavailable",(await Assert.ThrowsAsync<HighscoreFailure>(()=>store.ReadAsync(default))).Code);
+-        await Assert.ThrowsAsync<HighscoreFailure>(()=>store.SubmitAsync(Run(),default));Assert.Equal(0,http.Writes);
++        await Assert.ThrowsAsync<HighscoreFailure>(()=>store.PublishAsync(Run(),Producer,default));Assert.Equal(0,http.Writes);
+     }
+     [Theory][InlineData(false)][InlineData(true)]
+     public async Task TotalDeadlineBoundsReadsAndWrites(bool duringWrite) {
+         using var http=new BlobHttpHandler();http.Respond=async(request,token)=> {
+-            if(duringWrite && request.Method==HttpMethod.Get)return BlobHttpHandler.Document(HighscoreDocument.Empty.Serialize());
++            if(duringWrite && request.Method==HttpMethod.Get)return BlobHttpHandler.Document(ModerationMigration.Convert(HighscoreDocument.Empty).Serialize());
+             await Task.Delay(Timeout.Infinite,token);throw new InvalidOperationException();
+         };
+         var options=new HighscoreOptions {UseAzurite=true,ContainerName="test-container",OperationTimeoutSeconds=.1,NetworkTimeoutSeconds=.1};
+-        var watch=Stopwatch.StartNew();var error=await Assert.ThrowsAsync<HighscoreFailure>(()=>http.Store(options).SubmitAsync(Run(),default));
++        var watch=Stopwatch.StartNew();var error=await Assert.ThrowsAsync<HighscoreFailure>(()=>http.Store(options).PublishAsync(Run(),Producer,default));
+         Assert.Equal(duringWrite?"submission_unconfirmed":"operation_timed_out",error.Code);Assert.True(watch.Elapsed<TimeSpan.FromSeconds(1));Assert.Equal(duringWrite?1:0,http.Writes);
+     }
+ }
+diff --git a/src/backend.tests/HighscoreBoundaryTests.cs b/src/backend.tests/HighscoreBoundaryTests.cs
+index 401cad9..e79051d 100644
+--- a/src/backend.tests/HighscoreBoundaryTests.cs
++++ b/src/backend.tests/HighscoreBoundaryTests.cs
+@@ -8,11 +8,11 @@ public class HighscoreBoundaryTests
+ {
+     private sealed class Store(bool throws=false) : IHighscoreStore {
+         public Task<HighscoreSnapshot> ReadAsync(CancellationToken token) => throws?throw new Exception("secret fixture 198.51.100.5 private-payload"):Task.FromResult(HighscoreSnapshot.From(HighscoreDocument.Empty,"empty",DateTimeOffset.UtcNow));
+-        public Task<HighscoreResult> SubmitAsync(HighscoreSubmission submission,CancellationToken token) => throws?throw new Exception(submission.DisplayName):Task.FromResult(HighscoreResult.From(HighscoreSnapshot.From(HighscoreRanking.Evaluate(HighscoreDocument.Empty,submission,DateTimeOffset.UtcNow).Document,"saved",DateTimeOffset.UtcNow),submission.SubmissionId));
++        public Task<HighscoreResult> PublishAsync(HighscoreSubmission submission,string hash,CancellationToken token) => throws?throw new Exception(submission.DisplayName):Task.FromResult(HighscoreResult.From(HighscoreSnapshot.From(HighscoreRanking.Evaluate(HighscoreDocument.Empty,submission,DateTimeOffset.UtcNow).Document,"saved",DateTimeOffset.UtcNow),submission.SubmissionId));
+     }
+     [Theory][InlineData(false,40)][InlineData(true,10)]
+     public async Task ConfiguredBucketsRejectImmediatelyWithIntegerRetryAfter(bool post,int capacity) {
+-        await using var factory=new HighscoreApiFactory(new Store());using var client=factory.CreateClient();
++        await using var factory=new HighscoreApiFactory(new Store());using var client=factory.CreateClient(); client.DefaultRequestHeaders.Authorization = new("Bearer", new string('A',43));
+         var watch=Stopwatch.StartNew();
+         // Concurrent requests exhaust the configured burst before replenishment; no test-only limits.
+         var responses=await Task.WhenAll(Enumerable.Range(0,capacity+40).Select(_=>post?client.PostAsJsonAsync("/api/v1/highscores",new HighscoreSubmission(Guid.NewGuid(),"Burst",100,1)):client.GetAsync("/api/v1/highscores")));
+@@ -20,30 +20,15 @@ public class HighscoreBoundaryTests
+         Assert.True(watch.Elapsed<TimeSpan.FromSeconds(2));
+         foreach(var response in responses) {if(response.StatusCode==HttpStatusCode.TooManyRequests) {Assert.True(int.TryParse(response.Headers.GetValues("Retry-After").Single(),out var seconds)&&seconds>=1);Assert.Equal("application/problem+json",response.Content.Headers.ContentType?.MediaType);}response.Dispose();}
+     }
+-    [Theory][InlineData("/api/v1/highscores")][InlineData("/api/v2/highscores")]
+-    public async Task SafeErrorsAndDiagnosticsDoNotExposeSubmittedDataOrExceptions(string path) {
+-        await using var factory=new HighscoreApiFactory(new Store(true));using var client=factory.CreateClient();
++    [Fact] public async Task SafeErrorsAndDiagnosticsDoNotExposeSubmittedDataOrExceptions() {
++        await using var factory=new HighscoreApiFactory(new Store(true));using var client=factory.CreateClient(); client.DefaultRequestHeaders.Authorization = new("Bearer", new string('A',43));
+         Assert.Equal("Healthy",await client.GetStringAsync("/health/live"));
+-        using var get=await client.GetAsync(path);
+-        Assert.Equal(HttpStatusCode.InternalServerError,get.StatusCode);
+-        Assert.True(get.Headers.CacheControl?.NoStore);
++        using var get=await client.GetAsync("/api/v1/highscores");
+         using var post=await client.PostAsJsonAsync("/api/v1/highscores",new HighscoreSubmission(Guid.NewGuid(),"PRIVATE_PLAYER",123400,42));
+         var combined=await get.Content.ReadAsStringAsync()+await post.Content.ReadAsStringAsync()+string.Join("\n",factory.Logs);
+         foreach(var excluded in new[]{"PRIVATE_PLAYER","123400","198.51.100.5","private-payload","System.Exception","secret fixture"})Assert.DoesNotContain(excluded,combined);
+         Assert.Contains(factory.Logs,line=>line.Contains("highscore_request"));
+     }
+-    [Fact] public async Task BothReadVersionsShareOneRateLimitBucket() {
+-        await using var factory=new HighscoreApiFactory(new Store(), new Dictionary<string,string?> {
+-            ["Highscores:RateLimits:GetCapacity"]="1", ["Highscores:RateLimits:GetPerSecond"]="1"
+-        });
+-        using var client=factory.CreateClient();
+-        var responses=await Task.WhenAll(client.GetAsync("/api/v1/highscores"),client.GetAsync("/api/v2/highscores"));
+-        Assert.Single(responses,r=>r.StatusCode==HttpStatusCode.OK);
+-        var rejected=Assert.Single(responses,r=>r.StatusCode==HttpStatusCode.TooManyRequests);
+-        Assert.True(rejected.Headers.CacheControl?.NoStore);
+-        Assert.True(int.TryParse(rejected.Headers.GetValues("Retry-After").Single(),out var seconds)&&seconds>=1);
+-        foreach(var response in responses) response.Dispose();
+-    }
+     [Fact] public void ProductionUsesHttpsManagedIdentityAndEmulatorIsLocalOnly() {
+         Assert.False(new HighscoreOptions {UseAzurite=true}.IsValid("Production"));
+         Assert.True(new HighscoreOptions {UseAzurite=true}.IsValid("Development"));
+diff --git a/src/backend.tests/HighscoreConcurrencyTests.cs b/src/backend.tests/HighscoreConcurrencyTests.cs
+index eb9e349..9c24be1 100644
+--- a/src/backend.tests/HighscoreConcurrencyTests.cs
++++ b/src/backend.tests/HighscoreConcurrencyTests.cs
+@@ -1,4 +1,5 @@
+ using Azure.Core;
++using static DonkeyTrump.Highscores.Tests.ModerationContractTests;
+ using System.Collections.Concurrent;
+ using System.Text.Json;
+ using DonkeyTrump.Highscores.Tests.Support;
+@@ -16,34 +17,35 @@ public class HighscoreConcurrencyTests(AzuriteFixture fixture,ITestOutputHelper
+     [Theory][InlineData(false)][InlineData(true)]
+     public async Task TwoInstancesRaceOnSameReadAndBothSucceed(bool existing) {
+         var options=Options();var baseline=Store(options);
+-        if(existing)await baseline.SubmitAsync(new(Guid.NewGuid(),"Seed",0,1),default);
++        await fixture.Container.GetBlobClient(options.BlobName).UploadAsync(BinaryData.FromBytes(ModerationMigration.Convert(HighscoreDocument.Empty).Serialize()));
++        if(existing)await baseline.PublishAsync(new(Guid.NewGuid(),"Seed",0,1),Producer,default);
+         var barrier=new AsyncBarrier(2);int readsA=0,readsB=0;
+         var aTransport=new BlobFaultTransport {After=async message=>{if(message.Request.Method==RequestMethod.Get && Interlocked.Increment(ref readsA)==1)await barrier.ArriveAsync(message.CancellationToken);}};
+         var bTransport=new BlobFaultTransport {After=async message=>{if(message.Request.Method==RequestMethod.Get && Interlocked.Increment(ref readsB)==1)await barrier.ArriveAsync(message.CancellationToken);}};
+         var a=new HighscoreSubmission(Guid.NewGuid(),"Equal",100,1);var b=new HighscoreSubmission(Guid.NewGuid(),"Equal",100,1);
+-        var results=await Task.WhenAll(Store(options,aTransport).SubmitAsync(a,default),Store(options,bTransport).SubmitAsync(b,default));
++        var results=await Task.WhenAll(Store(options,aTransport).PublishAsync(a,Producer,default),Store(options,bTransport).PublishAsync(b,Producer,default));
+         Assert.All(results,r=>Assert.Equal("ranked",r.Outcome));var final=await baseline.ReadAsync(default);
+         Assert.Equal(existing?13:12,final.Entries.Count);Assert.Contains(final.Entries,e=>e.EntryId==a.SubmissionId);Assert.Contains(final.Entries,e=>e.EntryId==b.SubmissionId);
+         var firstResult=results.Single(r=>r.Entries.Count==(existing?12:11));Assert.Equal(firstResult.EntryId,final.Entries.First(e=>e.EntryId==a.SubmissionId || e.EntryId==b.SubmissionId).EntryId);
+-        var replay=await Store(options).SubmitAsync(a,default);Assert.Equal(final.Revision,replay.Revision);
++        var replay=await Store(options).PublishAsync(a,Producer,default);Assert.Equal(final.Revision,replay.Revision);
+         var restarted=await Store(options).ReadAsync(default);Assert.Equal(final.Entries,restarted.Entries);Assert.Equal(final.Revision,restarted.Revision);
+     }
+     [Fact] public async Task HundredConcurrentWritersMatchOracleIncludingCommittedUnconfirmedWrite() {
+         var options=Options();var seed=Enumerable.Range(1,100).Select(i=>new HighscoreSubmission(Guid.NewGuid(),"Seed",i*100,1)).ToList();
+         var doc=HighscoreDocument.Empty;foreach(var run in seed)doc=HighscoreRanking.Evaluate(doc,run,DateTimeOffset.UtcNow).Document;
+-        await fixture.Container.GetBlobClient(options.BlobName).UploadAsync(BinaryData.FromBytes(doc.Serialize()));
++        await fixture.Container.GetBlobClient(options.BlobName).UploadAsync(BinaryData.FromBytes(ModerationMigration.Convert(doc).Serialize()));
+         var lostRun=new HighscoreSubmission(Guid.NewGuid(),"Unconfirmed",25_000,1);int lostPuts=0;
+         var lostTransport=new BlobFaultTransport {After=message=> {
+             if(message.Request.Method==RequestMethod.Put && message.Response.Status==201) {Interlocked.Increment(ref lostPuts);throw new IOException("Lost acknowledgement after committed emulator write");}
+             return ValueTask.CompletedTask;
+         }};
+-        Assert.Equal("submission_unconfirmed",(await Assert.ThrowsAsync<HighscoreFailure>(()=>Store(options,lostTransport).SubmitAsync(lostRun,default))).Code);
++        Assert.Equal("submission_unconfirmed",(await Assert.ThrowsAsync<HighscoreFailure>(()=>Store(options,lostTransport).PublishAsync(lostRun,Producer,default))).Code);
+         Assert.Equal(1,lostPuts);Assert.Contains((await Store(options).ReadAsync(default)).Entries,e=>e.EntryId==lostRun.SubmissionId);
+         var stores=new[]{Store(options),Store(options)};
+         ConcurrentBag<HighscoreSubmission> acknowledged=[];ConcurrentBag<string> rejected=[];
+         var writers=Enumerable.Range(101,100).Select(i=>new HighscoreSubmission(Guid.NewGuid(),"Concurrent",i*100,1)).ToArray();
+         await Task.WhenAll(writers.Select(async (run,i)=> {
+-            try {var result=await stores[i%2].SubmitAsync(run,default);Assert.Equal("ranked",result.Outcome);acknowledged.Add(run);}
++            try {var result=await stores[i%2].PublishAsync(run,Producer,default);Assert.Equal("ranked",result.Outcome);acknowledged.Add(run);}
+             catch(HighscoreFailure failure) {rejected.Add(failure.Code);}
+         }));
+         Assert.True(acknowledged.Count>=2,"A contention test must demonstrate real progress by multiple writers.");
+diff --git a/src/backend.tests/HighscoreEndpointTests.cs b/src/backend.tests/HighscoreEndpointTests.cs
+index 349d9dc..4e06398 100644
+--- a/src/backend.tests/HighscoreEndpointTests.cs
++++ b/src/backend.tests/HighscoreEndpointTests.cs
+@@ -13,34 +13,21 @@ public class HighscoreEndpointTests
+         public int Calls;
+         private HighscoreDocument document = HighscoreStarters.Fill(HighscoreDocument.Empty);
+         public Task<HighscoreSnapshot> ReadAsync(CancellationToken token) { Calls++; return Task.FromResult(HighscoreSnapshot.From(document, "empty", DateTimeOffset.UtcNow)); }
+-        public Task<HighscoreResult> SubmitAsync(HighscoreSubmission run, CancellationToken token) {
++        public Task<HighscoreResult> PublishAsync(HighscoreSubmission run,string hash,CancellationToken token) {
+             Calls++; document = HighscoreRanking.Evaluate(document, run, DateTimeOffset.UtcNow).Document;
+             return Task.FromResult(HighscoreResult.From(HighscoreSnapshot.From(document, "\"test\"", DateTimeOffset.UtcNow), run.SubmissionId));
+         }
+     }
+-    [Theory]
+-    [InlineData("/api/v1/highscores")]
+-    [InlineData("/api/v2/highscores")]
+-    public async Task LivenessDoesNotTouchStorageAndGetIsUncached(string path) {
+-        var store = new Store(); await using var factory = new HighscoreApiFactory(store); using var client = factory.CreateClient();
++    [Fact] public async Task LivenessDoesNotTouchStorageAndGetIsUncached() {
++        var store = new Store(); await using var factory = new HighscoreApiFactory(store); using var client = factory.CreateClient(); client.DefaultRequestHeaders.Authorization = new("Bearer", new string('A',43));
+         Assert.Equal("Healthy", await client.GetStringAsync("/health/live")); Assert.Equal(0, store.Calls);
+-        using var response = await client.GetAsync(path); Assert.Equal(HttpStatusCode.OK, response.StatusCode);
++        using var response = await client.GetAsync("/api/v1/highscores"); Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+         Assert.True(response.Headers.CacheControl?.NoStore); var json = await response.Content.ReadFromJsonAsync<JsonElement>();
+-        Assert.Equal(new[] {"entries", "fetchedAtUtc", "revision"}, json.EnumerateObject().Select(p=>p.Name).Order().ToArray());
+-        foreach (var row in json.GetProperty("entries").EnumerateArray())
+-            Assert.Equal(new[] {"displayName", "entryId", "rank", "score"}, row.EnumerateObject().Select(p=>p.Name).Order().ToArray());
+         Assert.Equal(10,json.GetProperty("entries").GetArrayLength()); Assert.Equal("empty", json.GetProperty("revision").GetString());
+         Assert.Matches(@"\.\d{3}Z$", json.GetProperty("fetchedAtUtc").GetString()!);
+     }
+-    [Fact] public async Task V2ReadAliasDoesNotEnableLegacyWrites() {
+-        var store = new Store(); await using var factory = new HighscoreApiFactory(store); using var client = factory.CreateClient();
+-        using var response = await client.PostAsJsonAsync("/api/v2/highscores", new { submissionId = Guid.NewGuid(), displayName = "Test", score = 100, levelReached = 1 });
+-        Assert.Equal(HttpStatusCode.MethodNotAllowed, response.StatusCode);
+-        Assert.True(response.Headers.CacheControl?.NoStore);
+-        Assert.Equal(0, store.Calls);
+-    }
+     [Fact] public async Task SaveReplayAndConflictUseExactPublicContract() {
+-        await using var factory = new HighscoreApiFactory(new Store()); using var client = factory.CreateClient();
++        await using var factory = new HighscoreApiFactory(new Store()); using var client = factory.CreateClient(); client.DefaultRequestHeaders.Authorization = new("Bearer", new string('A',43));
+         var run = new { submissionId = Guid.NewGuid(), displayName = " Løkke ", score = 0, levelReached = 1 };
+         for (int i=0;i<2;i++) {
+             using var response = await client.PostAsJsonAsync("/api/v1/highscores", run); Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+@@ -57,7 +44,7 @@ public class HighscoreEndpointTests
+     [InlineData("{", "application/json",400,"malformed_request")]
+     [InlineData("{}", "text/plain",415,"unsupported_media_type")]
+     public async Task InvalidRequestIsRejectedBeforeStorage(string body,string media,int status,string code) {
+-        var store = new Store(); await using var factory = new HighscoreApiFactory(store); using var client = factory.CreateClient();
++        var store = new Store(); await using var factory = new HighscoreApiFactory(store); using var client = factory.CreateClient(); client.DefaultRequestHeaders.Authorization = new("Bearer", new string('A',43));
+         using var response = await client.PostAsync("/api/v1/highscores",new StringContent(body,Encoding.UTF8,media));
+         Assert.Equal(status,(int)response.StatusCode);Assert.Equal(0,store.Calls);
+         Assert.Equal("application/problem+json",response.Content.Headers.ContentType?.MediaType);
+@@ -65,7 +52,7 @@ public class HighscoreEndpointTests
+     }
+     [Theory][InlineData(false)][InlineData(true)]
+     public async Task OversizedKnownOrStreamingBodyIsBounded(bool chunked) {
+-        var store = new Store(); await using var factory = new HighscoreApiFactory(store); using var client = factory.CreateClient();
++        var store = new Store(); await using var factory = new HighscoreApiFactory(store); using var client = factory.CreateClient(); client.DefaultRequestHeaders.Authorization = new("Bearer", new string('A',43));
+         HttpContent content = chunked ? new UnknownLengthContent(new string(' ',4097)) : new StringContent(new string(' ',4097),Encoding.UTF8,"application/json");
+         using var response = await client.PostAsync("/api/v1/highscores",content);
+         Assert.Equal(HttpStatusCode.RequestEntityTooLarge,response.StatusCode);Assert.Equal(0,store.Calls);
+diff --git a/src/backend.tests/HighscoreReadContractTests.cs b/src/backend.tests/HighscoreReadContractTests.cs
+index f76235a..4e8678c 100644
+--- a/src/backend.tests/HighscoreReadContractTests.cs
++++ b/src/backend.tests/HighscoreReadContractTests.cs
+@@ -8,7 +8,7 @@ public class HighscoreReadContractTests
+ {
+     private sealed class Store(Func<CancellationToken,Task<HighscoreSnapshot>> read) : IHighscoreStore {
+         public Task<HighscoreSnapshot> ReadAsync(CancellationToken token) => read(token);
+-        public Task<HighscoreResult> SubmitAsync(HighscoreSubmission submission,CancellationToken token) => throw new NotSupportedException();
++        public Task<HighscoreResult> PublishAsync(HighscoreSubmission submission,string hash,CancellationToken token) => throw new NotSupportedException();
+     }
+     [Theory][InlineData("storage_invalid")][InlineData("service_unavailable")][InlineData("operation_timed_out")]
+     public async Task FailedReadIsNeverAValidEmptyList(string code) {
+diff --git a/src/backend.tests/HighscoreStarterTests.cs b/src/backend.tests/HighscoreStarterTests.cs
+index fadaf66..393d5b2 100644
+--- a/src/backend.tests/HighscoreStarterTests.cs
++++ b/src/backend.tests/HighscoreStarterTests.cs
+@@ -63,6 +63,7 @@ public class HighscoreStarterTests
+         var player=new HighscoreSubmission(Guid.NewGuid(),"Existing player",0,1);
+         var existing=HighscoreRanking.Evaluate(HighscoreDocument.Empty,player,DateTimeOffset.UtcNow).Document;
+         http.Respond=(_,_)=>Task.FromResult(missing?BlobHttpHandler.Error(404,"BlobNotFound"):BlobHttpHandler.Document(existing.Serialize()));
++        if(missing) { Assert.Equal("storage_invalid",(await Assert.ThrowsAsync<HighscoreFailure>(()=>http.Store().ReadAsync(default))).Code); Assert.Equal(0,http.Writes); return; }
+         var first=await http.Store().ReadAsync(default);
+         var second=await http.Store().ReadAsync(default);
+         Assert.Equal(10,first.Entries.Count);Assert.Equal(first.Entries,second.Entries);
+diff --git a/src/backend.tests/HighscoreStorageSmokeTests.cs b/src/backend.tests/HighscoreStorageSmokeTests.cs
+index 280e30e..25eff60 100644
+--- a/src/backend.tests/HighscoreStorageSmokeTests.cs
++++ b/src/backend.tests/HighscoreStorageSmokeTests.cs
+@@ -13,9 +13,9 @@ public class HighscoreStorageSmokeTests(AzuriteFixture fixture) : IClassFixture<
+         var firstStore = new BlobHighscoreStore(fixture.Options.CreateClient(), fixture.Options, TimeProvider.System);
+         var secondStore = new BlobHighscoreStore(fixture.Options.CreateClient(), fixture.Options, TimeProvider.System);
+         await using var first = new HighscoreApiFactory(firstStore); await using var second = new HighscoreApiFactory(secondStore);
+-        using var a = first.CreateClient(); using var b = second.CreateClient();
++        using var a = first.CreateClient(); a.DefaultRequestHeaders.Authorization = new("Bearer", new string('A',43)); using var b = second.CreateClient(); b.DefaultRequestHeaders.Authorization = new("Bearer", new string('A',43));
+         var initial = await a.GetFromJsonAsync<JsonElement>("/api/v1/highscores"); Assert.Equal(10,initial.GetProperty("entries").GetArrayLength());
+-        Assert.False(await fixture.Container.GetBlobClient(fixture.Options.BlobName).ExistsAsync());
++        Assert.True(await fixture.Container.GetBlobClient(fixture.Options.BlobName).ExistsAsync());
+         var run = new { submissionId = Guid.NewGuid(), displayName = "Løkke", score = 0, levelReached = 1 };
+         using var saved = await a.PostAsJsonAsync("/api/v1/highscores", run); saved.EnsureSuccessStatusCode();
+         var written = await saved.Content.ReadFromJsonAsync<JsonElement>(); Assert.Equal("ranked", written.GetProperty("outcome").GetString());
+diff --git a/src/backend.tests/Support/AzuriteFixture.cs b/src/backend.tests/Support/AzuriteFixture.cs
+index 40a0927..066e0ea 100644
+--- a/src/backend.tests/Support/AzuriteFixture.cs
++++ b/src/backend.tests/Support/AzuriteFixture.cs
+@@ -17,6 +17,7 @@ public sealed class AzuriteFixture : IAsyncLifetime
+         if (!Options.IsValid("Test")) throw new InvalidOperationException("Tests require an isolated loopback Azurite endpoint.");
+         Container = Options.CreateClient().GetBlobContainerClient(Options.ContainerName);
+         await Container.CreateAsync(cancellationToken: new CancellationTokenSource(TimeSpan.FromSeconds(6)).Token);
++        await Container.GetBlobClient(Options.BlobName).UploadAsync(BinaryData.FromBytes(ModerationMigration.Convert(HighscoreDocument.Empty).Serialize()));
+     }
+     public async Task DisposeAsync()
+     {
+diff --git a/src/backend.tests/Support/HighscoreApiFactory.cs b/src/backend.tests/Support/HighscoreApiFactory.cs
+index 0968ab9..7ae9dd3 100644
+--- a/src/backend.tests/Support/HighscoreApiFactory.cs
++++ b/src/backend.tests/Support/HighscoreApiFactory.cs
+@@ -20,7 +20,19 @@ public sealed class HighscoreApiFactory(IHighscoreStore? store = null, IDictiona
+             ["Highscores:UseAzurite"] = "true", ["Highscores:ContainerName"] = "highscores-test"
+         }).AddInMemoryCollection(settings ?? new Dictionary<string, string?>()));
+         builder.ConfigureServices(services => {
+-            if (store is not null) { services.RemoveAll<IHighscoreStore>(); services.AddSingleton(store); }
++            services.RemoveAll<Microsoft.Extensions.Hosting.IHostedService>();
++            if (store is not null) { services.RemoveAll<IHighscoreStore>(); services.AddSingleton(store);
++                services.RemoveAll<IModerationStore>(); services.AddSingleton<IModerationStore>(store as IModerationStore ?? new EndpointTestAdapter(store)); }
+         });
+     }
+ }
++
++// Existing endpoint contract fakes exercise validation/DTO boundaries without storage.
++internal sealed class EndpointTestAdapter(IHighscoreStore store) : IModerationStore
++{
++    public Task<HighscoreResult> PublishAsync(HighscoreSubmission run,string hash,CancellationToken token)=>store.PublishAsync(run,hash,token);
++    public Task<AggregateRead> ReadAggregateAsync(CancellationToken token)=>throw new NotSupportedException();
++    public Task<(ReportReceipt Receipt,bool Created)> ReportAsync(ReportSubmission run,string hash,CancellationToken token)=>throw new NotSupportedException();
++    public Task<ReportReceipt> ReceiptAsync(Guid id,string hash,CancellationToken token)=>throw new NotSupportedException();
++    public Task<AggregateRead> MutateAsync(Func<HighscoreDocument,DateTimeOffset,HighscoreDocument> change,string code,CancellationToken token,bool migration=false,string? expectedETag=null)=>throw new NotSupportedException();
++}
+diff --git a/src/backend/DonkeyTrump.Highscores.Api.csproj b/src/backend/DonkeyTrump.Highscores.Api.csproj
+index 28f582d..cd6e88f 100644
+--- a/src/backend/DonkeyTrump.Highscores.Api.csproj
++++ b/src/backend/DonkeyTrump.Highscores.Api.csproj
+@@ -6,6 +6,7 @@
+     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+   </PropertyGroup>
+   <ItemGroup>
++    <EmbeddedResource Include="../../infra/backend-environments.json" LogicalName="BackendEnvironments.json" />
+     <PackageReference Include="Azure.Storage.Blobs" Version="12.29.2" />
+     <PackageReference Include="Azure.Identity" Version="1.21.0" />
+   </ItemGroup>
+diff --git a/src/backend/Highscores/BlobHighscoreStore.cs b/src/backend/Highscores/BlobHighscoreStore.cs
+index e6d99f9..1b38dc3 100644
+--- a/src/backend/Highscores/BlobHighscoreStore.cs
++++ b/src/backend/Highscores/BlobHighscoreStore.cs
+@@ -5,17 +5,19 @@ using System.Text.Json;
+ 
+ namespace DonkeyTrump.Highscores;
+ 
+-public sealed class BlobHighscoreStore : IHighscoreStore
++public sealed class BlobHighscoreStore : IHighscoreStore, IModerationStore
+ {
++    private readonly ModerationOptions moderation;
+     private readonly HighscoreDiagnostics? diagnostics;
+     private readonly BlobClient blob;
+     private readonly HighscoreOptions options;
+     private readonly TimeProvider clock;
+     private readonly Func<CancellationToken, Task> backoff;
+     public BlobHighscoreStore(BlobServiceClient client, HighscoreOptions options, TimeProvider clock,
+-        Func<CancellationToken, Task>? backoff = null, HighscoreDiagnostics? diagnostics = null)
++        Func<CancellationToken, Task>? backoff = null, HighscoreDiagnostics? diagnostics = null, ModerationOptions? moderation = null)
+     {
+         blob = client.GetBlobContainerClient(options.ContainerName).GetBlobClient(options.BlobName);
++        this.moderation = moderation ?? new();
+         this.options = options; this.clock = clock; this.diagnostics = diagnostics;
+         this.backoff = backoff ?? (token => Task.Delay(TimeSpan.FromMilliseconds(Random.Shared.Next(25, 101)), clock, token));
+     }
+@@ -29,11 +31,12 @@ public sealed class BlobHighscoreStore : IHighscoreStore
+             using var content = response.Value.Content;
+             var bytes = await BoundedRead(content, HighscoreDocument.MaximumBytes, token);
+             HighscoreDocument document;
+-            try { document = JsonSerializer.Deserialize<HighscoreDocument>(bytes, HighscoreJson.Options) ?? throw HighscoreFailure.InvalidStorage(); }
++            try { document = HighscoreDocument.Deserialize(bytes); }
+             catch (JsonException) { throw HighscoreFailure.InvalidStorage(); }
+-            return (HighscoreStarters.Fill(document), response.Value.Details.ETag);
++            document.Validate();
++            return (document, response.Value.Details.ETag);
+         } catch (RequestFailedException e) when (e.Status == 404 && e.ErrorCode == "BlobNotFound") {
+-            return (HighscoreStarters.Fill(HighscoreDocument.Empty), null);
++            throw HighscoreFailure.InvalidStorage();
+         }
+     }
+ 
+@@ -55,48 +58,72 @@ public sealed class BlobHighscoreStore : IHighscoreStore
+         using var linked = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, deadline.Token);
+         try {
+             var (document, tag) = await ReadDocument(linked.Token);
+-            return HighscoreSnapshot.From(document, tag?.ToString() ?? "empty", clock.GetUtcNow());
++            return HighscoreSnapshot.From(HighscoreStarters.Fill(document), tag?.ToString() ?? "empty", clock.GetUtcNow());
+         } catch (HighscoreFailure error) { diagnostics?.Failure(error.Code); throw; }
+         catch (OperationCanceledException) { diagnostics?.Failure("operation_timed_out"); throw new HighscoreFailure(503, "operation_timed_out", "Highscores timed out"); }
+         catch (Exception) { diagnostics?.Failure("service_unavailable"); throw new HighscoreFailure(503, "service_unavailable", "Highscores are unavailable"); }
+     }
+ 
+-    public async Task<HighscoreResult> SubmitAsync(HighscoreSubmission run, CancellationToken cancellationToken)
++    public async Task<AggregateRead> ReadAggregateAsync(CancellationToken cancellationToken)
+     {
+         using var deadline = new CancellationTokenSource(TimeSpan.FromSeconds(options.OperationTimeoutSeconds), clock);
+         using var linked = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, deadline.Token);
+-        var token = linked.Token;
+-        bool uncertainWrite = false;
+         try {
+-            for (int attempt = 1; attempt <= options.MaxWriteAttempts; attempt++) {
+-                token.ThrowIfCancellationRequested();
+-                var (current, tag) = await ReadDocument(token);
+-                var decision = HighscoreRanking.Evaluate(current, run, clock.GetUtcNow());
+-                if (!decision.RequiresWrite)
+-                    return HighscoreResult.From(HighscoreSnapshot.From(current, tag?.ToString() ?? "empty", clock.GetUtcNow()), run.SubmissionId);
+-                var bytes = decision.Document.Serialize();
+-                var conditions = tag is { } etag ? new BlobRequestConditions { IfMatch = etag } : new BlobRequestConditions { IfNoneMatch = ETag.All };
+-                token.ThrowIfCancellationRequested();
+-                diagnostics?.WriteAttempt(attempt);
+-                uncertainWrite = true;
++            var (d,tag)=await ReadDocument(linked.Token);
++            return new(d,tag!.Value.ToString());
++        } catch(HighscoreFailure) { throw; }
++        catch(OperationCanceledException) { throw new HighscoreFailure(503,"operation_timed_out","Highscores timed out"); }
++        catch(Exception) { throw new HighscoreFailure(503,"service_unavailable","Highscores are unavailable"); }
++    }
++
++    public async Task<AggregateRead> MutateAsync(Func<HighscoreDocument,DateTimeOffset,HighscoreDocument> transition,string unconfirmedCode,
++        CancellationToken cancellationToken,bool migration=false,string? expectedETag=null)
++    {
++        if(moderation.Maintenance && !migration) throw new HighscoreFailure(503,"service_maintenance","Highscores are being maintained");
++        if(migration && !moderation.Maintenance) throw new HighscoreFailure(409,"maintenance_required","Enable maintenance before migration");
++        using var deadline=new CancellationTokenSource(TimeSpan.FromSeconds(options.OperationTimeoutSeconds),clock);
++        using var linked=CancellationTokenSource.CreateLinkedTokenSource(cancellationToken,deadline.Token);
++        var token=linked.Token; bool uncertain=false;
++        try {
++            for(int attempt=1;attempt<=options.MaxWriteAttempts;attempt++) {
++                var (current,tag)=await ReadDocument(token);
++                if(expectedETag is not null && tag.ToString()!=expectedETag) throw new HighscoreFailure(409,"revision_changed","Aggregate revision changed");
++                if(current.SchemaVersion!=2 && !migration) throw new HighscoreFailure(503,"service_maintenance","Highscores are being maintained");
++                var next=transition(ModerationRetention.Purge(current,clock.GetUtcNow()),clock.GetUtcNow());
++                var bytes=next.Serialize();
++                if(current.Serialize().AsSpan().SequenceEqual(bytes)) return new(current,tag!.Value.ToString());
++                token.ThrowIfCancellationRequested(); uncertain=true;
+                 try {
+-                    // A bounded byte payload uses a single Put Blob, never staged blocks.
+-                    var write = await blob.UploadAsync(BinaryData.FromBytes(bytes), new BlobUploadOptions {
+-                        Conditions = conditions, HttpHeaders = new BlobHttpHeaders { ContentType = "application/json" }
+-                    }, token);
+-                    uncertainWrite = false;
+-                    return HighscoreResult.From(HighscoreSnapshot.From(decision.Document, write.Value.ETag.ToString(), clock.GetUtcNow()), run.SubmissionId);
+-                } catch (RequestFailedException e) when (
+-                    e.Status == 412 && e.ErrorCode == "ConditionNotMet" ||
+-                    tag is null && e.Status == 409 && e.ErrorCode == "BlobAlreadyExists") {
+-                    uncertainWrite = false; // This response proves this conditional write was rejected.
+-                    if (attempt < options.MaxWriteAttempts) await backoff(token);
++                    var response=await blob.UploadAsync(BinaryData.FromBytes(bytes),new BlobUploadOptions {
++                        Conditions=new BlobRequestConditions {IfMatch=tag}, HttpHeaders=new BlobHttpHeaders {ContentType="application/json"}
++                    },token);
++                    uncertain=false; return new(next,response.Value.ETag.ToString());
++                } catch(RequestFailedException e) when(e.Status==412 && e.ErrorCode=="ConditionNotMet") {
++                    uncertain=false; if(attempt<options.MaxWriteAttempts) await backoff(token);
+                 }
+             }
+-            throw new HighscoreFailure(503, "contention_exhausted", "Highscores are busy; please play again");
+-        } catch (Exception) when (uncertainWrite) { diagnostics?.Failure("submission_unconfirmed"); throw HighscoreFailure.Unconfirmed(); }
+-        catch (HighscoreFailure error) { diagnostics?.Failure(error.Code); throw; }
+-        catch (OperationCanceledException) { diagnostics?.Failure("operation_timed_out"); throw new HighscoreFailure(503, "operation_timed_out", "Highscores timed out"); }
+-        catch (Exception) { diagnostics?.Failure("service_unavailable"); throw new HighscoreFailure(503, "service_unavailable", "Highscores are unavailable"); }
++            throw new HighscoreFailure(503,"contention_exhausted","Highscores are busy");
++        } catch(Exception) when(uncertain) { throw new HighscoreFailure(503,unconfirmedCode,"The operation could not be confirmed"); }
++        catch(HighscoreFailure) { throw; }
++        catch(OperationCanceledException) { throw new HighscoreFailure(503,"operation_timed_out","Highscores timed out"); }
++        catch(Exception) { throw new HighscoreFailure(503,"service_unavailable","Highscores are unavailable"); }
++    }
++
++    public async Task<HighscoreResult> PublishAsync(HighscoreSubmission run,string hash,CancellationToken token)
++    {
++        var saved=await MutateAsync((d,now)=>ModerationService.Submit(d,run,hash,now),"submission_unconfirmed",token);
++        return HighscoreResult.From(HighscoreSnapshot.From(HighscoreStarters.Fill(saved.Document),saved.ETag,clock.GetUtcNow()),run.SubmissionId);
++    }
++    public async Task<(ReportReceipt Receipt,bool Created)> ReportAsync(ReportSubmission report,string hash,CancellationToken token)
++    {
++        ReportDecision? decision=null;
++        await MutateAsync((d,now)=> {decision=ModerationService.Report(d,report,hash,now);return decision.Document;},"report_unconfirmed",token);
++        return (decision!.Receipt,decision.Created);
+     }
++    public async Task<ReportReceipt> ReceiptAsync(Guid id,string hash,CancellationToken token)
++    {
++        var current=await ReadAggregateAsync(token);
++        return ModerationService.Receipt(current.Document,id,hash,clock.GetUtcNow());
++    }
++
+ }
+diff --git a/src/backend/Highscores/HighscoreDocument.cs b/src/backend/Highscores/HighscoreDocument.cs
+index 97d960b..d947fa0 100644
+--- a/src/backend/Highscores/HighscoreDocument.cs
++++ b/src/backend/Highscores/HighscoreDocument.cs
+@@ -9,12 +9,18 @@ public sealed record HighscoreDocument
+     public required int SchemaVersion { get; init; }
+     public required long NextSequence { get; init; }
+     public required List<StoredEntry> Entries { get; init; }
+-    public const int MaximumBytes = 256 * 1024;
++    public const int MaximumBytes = ModerationLimits.MaximumBytes;
++    public List<Guid> RemovedSubmissionIds { get; init; } = [];
++    public List<InstallationBlock> BlockedInstallations { get; init; } = [];
++    public List<ModerationReport> Reports { get; init; } = [];
++    public List<SpamReceipt> SpamReceipts { get; init; } = [];
++    public List<OperatorAudit> OperatorAudit { get; init; } = [];
+     public static HighscoreDocument Empty => new() { SchemaVersion = 1, NextSequence = 1, Entries = [] };
+ 
+     public void Validate()
+     {
+-        if (SchemaVersion != 1 || NextSequence < 1 || Entries is null || Entries.Count > 100) throw HighscoreFailure.InvalidStorage();
++        if (SchemaVersion is not (1 or 2) || NextSequence < 1 || Entries is null || Entries.Count > 100) throw HighscoreFailure.InvalidStorage();
++        ValidateModeration();
+         HashSet<Guid> ids = []; HashSet<long> sequences = [];
+         StoredEntry? previous = null;
+         foreach (var entry in Entries)
+@@ -27,10 +33,64 @@ public sealed record HighscoreDocument
+                 throw HighscoreFailure.InvalidStorage();
+             if (previous is not null && (entry.Score > previous.Score || entry.Score == previous.Score && entry.Sequence < previous.Sequence))
+                 throw HighscoreFailure.InvalidStorage();
++            if (SchemaVersion == 2 && (!ValidOrigin(entry.Origin, entry.InstallationHash) || RemovedSubmissionIds.Contains(entry.SubmissionId) ||
++                entry.Origin == "installation" && BlockedInstallations.Any(b => b.InstallationHash == entry.InstallationHash))) throw HighscoreFailure.InvalidStorage();
++            if (SchemaVersion == 1 && (entry.Origin is not null || entry.InstallationHash is not null)) throw HighscoreFailure.InvalidStorage();
+             previous = entry;
+         }
+     }
+ 
++    public static bool ValidOrigin(string? origin, string? hash) => origin == "installation" ? InstallationCredential.ValidHash(hash) : origin is "legacy" or "starter" && hash is null;
++    private static bool Utc(DateTimeOffset time) => time != default && time.Offset == TimeSpan.Zero;
++    private void ValidateModeration()
++    {
++        static void Require(bool condition) { if (!condition) throw HighscoreFailure.InvalidStorage(); }
++        Require(RemovedSubmissionIds is not null && BlockedInstallations is not null && Reports is not null && SpamReceipts is not null && OperatorAudit is not null);
++        if (SchemaVersion == 1) {
++            Require(RemovedSubmissionIds!.Count + BlockedInstallations!.Count + Reports!.Count + SpamReceipts!.Count + OperatorAudit!.Count == 0); return;
++        }
++        Require(RemovedSubmissionIds!.Count <= ModerationLimits.MaximumRemoved && RemovedSubmissionIds.All(id=>id!=Guid.Empty) && RemovedSubmissionIds.Distinct().Count()==RemovedSubmissionIds.Count);
++        Require(BlockedInstallations!.Count <= ModerationLimits.MaximumBlocks && BlockedInstallations.All(b=>b is not null && InstallationCredential.ValidHash(b.InstallationHash) && Utc(b.BlockedAtUtc) && b.BlockId!=Guid.Empty));
++        Require(BlockedInstallations.Select(b=>b.InstallationHash).Distinct().Count()==BlockedInstallations.Count && BlockedInstallations.Select(b=>b.BlockId).Distinct().Count()==BlockedInstallations.Count);
++        Require(Reports!.Count<=ModerationLimits.MaximumReports && Reports.All(r=>r is not null) && Reports.Count(r=>r.Status!="resolved")<=ModerationLimits.MaximumPending);
++        Require(Reports.Select(r=>r.ReportId).Distinct().Count()==Reports.Count);
++        foreach(var r in Reports) {
++            Require(r.ReportId!=Guid.Empty && r.EntryId!=Guid.Empty && InstallationCredential.ValidHash(r.ReporterHash) && ModerationReport.ValidReason(r.Reason) && Utc(r.CreatedAtUtc) &&
++                r.DisplayName is not null && HighscoreValidation.NormalizeName(r.DisplayName)==r.DisplayName && ValidOrigin(r.Origin,r.InstallationHash));
++            Require(r.Status is "pending" or "acknowledged" or "resolved");
++            Require(r.AcknowledgedAtUtc is null || Utc(r.AcknowledgedAtUtc.Value) && r.AcknowledgedAtUtc>=r.CreatedAtUtc);
++            if(r.Status=="resolved") Require(r.ResolvedAtUtc is not null && Utc(r.ResolvedAtUtc.Value) && r.ResolvedAtUtc>=r.CreatedAtUtc && (r.AcknowledgedAtUtc is null || r.ResolvedAtUtc>=r.AcknowledgedAtUtc) &&
++                r.ResolvedOperationId is not null && r.ResolvedOperationId!=Guid.Empty && r.Disposition is "removed" or "removedAndBlocked" or "noAction" or "legacyRemoved" or "starterRemoved");
++            else Require(r.ResolvedAtUtc is null && r.Disposition is null && r.ResolvedOperationId is null &&
++                (r.Status=="acknowledged" ? r.AcknowledgedAtUtc is not null : r.AcknowledgedAtUtc is null));
++        }
++        var pending=Reports.Where(r=>r.Status!="resolved").ToList();
++        Require(pending.Select(r=>(r.ReporterHash,r.EntryId)).Distinct().Count()==pending.Count);
++        Require(SpamReceipts!.Count<=ModerationLimits.MaximumSpam && SpamReceipts.All(r=>r is not null && r.ReportId!=Guid.Empty && InstallationCredential.ValidHash(r.ReporterHash) && r.Status=="resolved" && Utc(r.ResolvedAtUtc) && r.OperationId!=Guid.Empty));
++        Require(Reports.Select(r=>r.ReportId).Concat(SpamReceipts.Select(r=>r.ReportId)).Distinct().Count()==Reports.Count+SpamReceipts.Count);
++        Require(OperatorAudit!.Count<=ModerationLimits.MaximumAudit && OperatorAudit.All(a=>a is not null && a.OperationId!=Guid.Empty && Utc(a.CreatedAtUtc) && a.AffectedCount>=0 &&
++            a.Action is "acknowledge" or "resolve" or "remove" or "unblock" or "dismiss-spam"));
++        Require(OperatorAudit.Select(a=>a.OperationId).Distinct().Count()==OperatorAudit.Count);
++    }
++
++    public static HighscoreDocument Deserialize(byte[] bytes)
++    {
++        try {
++            using var json=JsonDocument.Parse(bytes,new JsonDocumentOptions {MaxDepth=16});
++            static void NoDuplicates(JsonElement element) {
++                if(element.ValueKind==JsonValueKind.Object) {
++                    HashSet<string> names=[];
++                    foreach(var p in element.EnumerateObject()) {if(!names.Add(p.Name)) throw HighscoreFailure.InvalidStorage(); NoDuplicates(p.Value);}
++                } else if(element.ValueKind==JsonValueKind.Array) foreach(var item in element.EnumerateArray()) NoDuplicates(item);
++            }
++            NoDuplicates(json.RootElement);
++            var d=JsonSerializer.Deserialize<HighscoreDocument>(bytes,HighscoreJson.Options) ?? throw HighscoreFailure.InvalidStorage();
++            if(d.SchemaVersion==2) foreach(var field in new[]{"removedSubmissionIds","blockedInstallations","reports","spamReceipts","operatorAudit"})
++                if(!json.RootElement.TryGetProperty(field,out _)) throw HighscoreFailure.InvalidStorage();
++            d.Validate(); return d;
++        } catch(JsonException) {throw HighscoreFailure.InvalidStorage();}
++    }
++
+     public byte[] Serialize()
+     {
+         Validate();
+@@ -43,6 +103,8 @@ public sealed record HighscoreDocument
+ [JsonUnmappedMemberHandling(JsonUnmappedMemberHandling.Disallow)]
+ public sealed record StoredEntry
+ {
++    public string? Origin { get; init; }
++    public string? InstallationHash { get; init; }
+     public required Guid SubmissionId { get; init; }
+     public required string DisplayName { get; init; }
+     public required int Score { get; init; }
+diff --git a/src/backend/Highscores/HighscoreEndpoints.cs b/src/backend/Highscores/HighscoreEndpoints.cs
+index 92810dc..53070c1 100644
+--- a/src/backend/Highscores/HighscoreEndpoints.cs
++++ b/src/backend/Highscores/HighscoreEndpoints.cs
+@@ -1,44 +1,22 @@
+ using System.Diagnostics;
+-using System.Text.Json;
+-using Microsoft.Extensions.Options;
+ 
+ namespace DonkeyTrump.Highscores;
+ 
+ public static class HighscoreEndpoints
+ {
+-    public static void MapHighscores(this WebApplication app)
++    public static void MapHighscores(this WebApplication app, string prefix = "")
+     {
+-        // Public snapshots have the same contract in both API versions.
+-        foreach (var route in new[] { "/api/v1/highscores", "/api/v2/highscores" })
+-        app.MapGet(route, async (HttpContext context, IHighscoreStore store) => {
+-            try { return Results.Json(await store.ReadAsync(context.RequestAborted), HighscoreJson.Options); }
+-            catch (HighscoreFailure error) { return Problem(error); }
+-            catch (Exception) { return Problem(new(500, "internal_error", "Highscores are unavailable")); }
+-        }).RequireRateLimiting("highscore-reads");
+-
+-        app.MapPost("/api/v1/highscores", async (HttpContext context, IHighscoreStore store, IOptions<HighscoreOptions> options, TimeProvider clock) => {
+-            using var deadline = new CancellationTokenSource(TimeSpan.FromSeconds(options.Value.OperationTimeoutSeconds), clock);
+-            using var linked = CancellationTokenSource.CreateLinkedTokenSource(context.RequestAborted, deadline.Token);
+-            try {
+-                var request = context.Request;
+-                if (!string.Equals(request.ContentType?.Split(';')[0].Trim(), "application/json", StringComparison.OrdinalIgnoreCase))
+-                    return Problem(new(415, "unsupported_media_type", "Use application/json"));
+-                if (request.ContentLength > 4096) return Problem(new(413, "payload_too_large", "Submission is too large"));
+-                byte[] body;
+-                try { body = await BlobHighscoreStore.BoundedRead(request.Body, 4096, linked.Token); }
+-                catch (HighscoreFailure) { return Problem(new(413, "payload_too_large", "Submission is too large")); }
+-                using var json = JsonDocument.Parse(body, new JsonDocumentOptions { MaxDepth = 16 });
+-                var submission = HighscoreValidation.Parse(json.RootElement);
+-                return Results.Json(await store.SubmitAsync(submission, linked.Token), HighscoreJson.Options);
+-            } catch (JsonException) { return Problem(HighscoreFailure.Malformed()); }
+-            catch (HighscoreFailure error) { return Problem(error); }
+-            catch (OperationCanceledException) { return Problem(new(503, "operation_timed_out", "Highscores timed out")); }
+-            catch (Exception) { return Problem(new(500, "internal_error", "Highscores are unavailable")); }
+-        }).RequireRateLimiting("highscore-posts");
++        app.MapGet(prefix + "/api/v1/highscores",(HttpContext context,IHighscoreStore store)=>ModerationEndpoints.Guard(async()=>
++                Results.Json(await CaptureOptions.Store(context,store,prefix != "").ReadAsync(context.RequestAborted),HighscoreJson.Options))).RequireRateLimiting("highscore-reads");
++        app.MapPost(prefix + "/api/v1/highscores",(HttpContext context,IModerationStore store,TimeProvider clock)=>ModerationEndpoints.Guard(async()=> {
++            using var deadline=new CancellationTokenSource(TimeSpan.FromSeconds(6),clock);
++            using var linked=CancellationTokenSource.CreateLinkedTokenSource(context.RequestAborted,deadline.Token);
++            var hash=ModerationEndpoints.Credential(context);
++            using var json=await ModerationEndpoints.Body(context.Request,linked.Token);
++            return Results.Json(await CaptureOptions.Store(context,store,prefix != "").PublishAsync(HighscoreValidation.Parse(json.RootElement),hash,linked.Token),HighscoreJson.Options);
++        })).RequireRateLimiting("highscore-posts");
+     }
+-
+-    public static IResult Problem(HighscoreFailure error) => Results.Problem(type: "about:blank", title: error.Title,
+-        statusCode: error.Status, extensions: new Dictionary<string, object?> {
+-            ["code"] = error.Code, ["errors"] = error.Errors, ["traceId"] = Activity.Current?.Id
+-        }.Where(kv => kv.Value is not null).ToDictionary(kv => kv.Key, kv => kv.Value));
++    public static IResult Problem(HighscoreFailure error) => Results.Problem(type:"about:blank",title:error.Title,statusCode:error.Status,
++        extensions:new Dictionary<string,object?> { ["code"]=error.Code,["errors"]=error.Errors,["traceId"]=Activity.Current?.Id }
++            .Where(kv=>kv.Value is not null).ToDictionary(kv=>kv.Key,kv=>kv.Value));
+ }
+diff --git a/src/backend/Highscores/HighscoreRanking.cs b/src/backend/Highscores/HighscoreRanking.cs
+index 76b03b7..4579332 100644
+--- a/src/backend/Highscores/HighscoreRanking.cs
++++ b/src/backend/Highscores/HighscoreRanking.cs
+@@ -3,7 +3,7 @@ namespace DonkeyTrump.Highscores;
+ public sealed record RankingDecision(HighscoreDocument Document, bool RequiresWrite);
+ public static class HighscoreRanking
+ {
+-    public static RankingDecision Evaluate(HighscoreDocument document, HighscoreSubmission run, DateTimeOffset now)
++    public static RankingDecision Evaluate(HighscoreDocument document, HighscoreSubmission run, DateTimeOffset now, string? installationHash = null)
+     {
+         document.Validate();
+         if (run.SubmissionId == Guid.Empty || !HighscoreValidation.ValidScore(run.Score) || run.LevelReached < 1 ||
+@@ -18,9 +18,10 @@ public static class HighscoreRanking
+         if (document.NextSequence == long.MaxValue) throw HighscoreFailure.InvalidStorage();
+         var entries = new List<StoredEntry>(document.Entries) {
+             new() { SubmissionId = run.SubmissionId, DisplayName = run.DisplayName, Score = run.Score,
++                Origin = document.SchemaVersion == 2 ? "installation" : null, InstallationHash = installationHash,
+                 LevelReached = run.LevelReached, Sequence = document.NextSequence, AcceptedAtUtc = now.ToUniversalTime() }
+         };
+-        return new(new HighscoreDocument { SchemaVersion = 1, NextSequence = document.NextSequence + 1,
++        return new(document with { NextSequence = document.NextSequence + 1,
+             Entries = entries.OrderByDescending(e => e.Score).ThenBy(e => e.Sequence).Take(100).ToList() }, true);
+     }
+ }
+diff --git a/src/backend/Highscores/HighscoreStarters.cs b/src/backend/Highscores/HighscoreStarters.cs
+index 97f894a..b64cf4e 100644
+--- a/src/backend/Highscores/HighscoreStarters.cs
++++ b/src/backend/Highscores/HighscoreStarters.cs
+@@ -7,10 +7,14 @@ public static class HighscoreStarters
+     public const int MinimumEntries = 10;
+     private static readonly string[] Names = [
+         "Bugs Bunny", "Daffy Duck", "Scooby-Doo", "Fred Flintstone", "Garfield",
+-        "Snoopy", "Popeye", "Tom", "Jerry", "Tweety"
++        "Snoopy", "Popeye", "Tom", "Jerry", "Tweety", "Pluto", "Goofy", "Donald Duck", "Daisy Duck", "Mickey Mouse", "Minnie Mouse",
++        "Winnie the Pooh", "Tigger", "Piglet", "Eeyore", "Bambi", "Thumper", "Dumbo", "Pinocchio", "Jiminy Cricket", "Felix the Cat",
++        "Betty Boop", "Mr Magoo", "Yogi Bear", "Boo Boo", "Top Cat", "Benny the Ball"
+     ];
+     private static readonly DateTimeOffset AcceptedAt = new(2026, 9, 27, 0, 0, 0, TimeSpan.Zero);
+ 
++    public static readonly IReadOnlyList<Guid> ReservedIds = Array.AsReadOnly(Enumerable.Range(1, Names.Length).Select(i => Guid.Parse($"d7c30000-0000-4000-8000-{i:D12}")).ToArray());
++
+     public static HighscoreDocument Fill(HighscoreDocument document)
+     {
+         // Never disguise corrupt storage as a fresh starter list.
+@@ -20,14 +24,16 @@ public static class HighscoreStarters
+         var next = document.NextSequence;
+         for (int i = 0; i < Names.Length && entries.Count < MinimumEntries; i++)
+         {
+-            var id = Guid.Parse($"d7c30000-0000-4000-8000-{i + 1:D12}");
+-            if (entries.Any(e => e.SubmissionId == id)) continue;
++            var id = ReservedIds[i];
++            if (entries.Any(e => e.SubmissionId == id) || document.RemovedSubmissionIds.Contains(id) || !NameModerationPolicy.Allowed(Names[i])) continue;
+             if (next == long.MaxValue) throw HighscoreFailure.InvalidStorage();
+             entries.Add(new StoredEntry {
+-                SubmissionId = id, DisplayName = Names[i], Score = (MinimumEntries - i) * 100,
++                SubmissionId = id, DisplayName = Names[i], Score = Math.Max(100, (MinimumEntries - i) * 100),
++                Origin = document.SchemaVersion == 2 ? "starter" : null,
+                 LevelReached = 1, Sequence = next++, AcceptedAtUtc = AcceptedAt
+             });
+         }
++        if (entries.Count < MinimumEntries) throw ModerationLimits.Capacity();
+         return document with {
+             NextSequence = next,
+             Entries = entries.OrderByDescending(e => e.Score).ThenBy(e => e.Sequence).ToList()
+diff --git a/src/backend/Highscores/IHighscoreStore.cs b/src/backend/Highscores/IHighscoreStore.cs
+index cd48d3e..2f29d0a 100644
+--- a/src/backend/Highscores/IHighscoreStore.cs
++++ b/src/backend/Highscores/IHighscoreStore.cs
+@@ -3,5 +3,5 @@ namespace DonkeyTrump.Highscores;
+ public interface IHighscoreStore
+ {
+     Task<HighscoreSnapshot> ReadAsync(CancellationToken cancellationToken);
+-    Task<HighscoreResult> SubmitAsync(HighscoreSubmission submission, CancellationToken cancellationToken);
++    Task<HighscoreResult> PublishAsync(HighscoreSubmission submission, string installationHash, CancellationToken cancellationToken);
+ }
+diff --git a/src/backend/Program.cs b/src/backend/Program.cs
+index e769669..c1fae0b 100644
+--- a/src/backend/Program.cs
++++ b/src/backend/Program.cs
+@@ -4,6 +4,11 @@ using Microsoft.AspNetCore.RateLimiting;
+ using System.Threading.RateLimiting;
+ using Azure.Storage.Blobs;
+ 
++if (args.FirstOrDefault() == "moderation") {
++    var operatorBuilder = WebApplication.CreateBuilder(Array.Empty<string>());
++    Environment.ExitCode = await ModerationCommand.RunAsync(args.Skip(1).ToArray(), operatorBuilder.Configuration, Console.Out, CancellationToken.None);
++    return;
++}
+ var builder = WebApplication.CreateBuilder(args);
+ builder.Logging.AddFilter("Microsoft.AspNetCore", LogLevel.Warning);
+ builder.Services.AddProblemDetails();
+@@ -14,8 +19,19 @@ builder.Services.AddOptions<HighscoreOptions>().BindConfiguration("Highscores")
+     .ValidateOnStart();
+ builder.Services.AddSingleton(sp => sp.GetRequiredService<IOptions<HighscoreOptions>>().Value.CreateClient());
+ builder.Services.AddSingleton(TimeProvider.System);
+-builder.Services.AddSingleton<IHighscoreStore>(sp => new BlobHighscoreStore(sp.GetRequiredService<BlobServiceClient>(),
+-    sp.GetRequiredService<IOptions<HighscoreOptions>>().Value, sp.GetRequiredService<TimeProvider>(), diagnostics: sp.GetRequiredService<HighscoreDiagnostics>()));
++builder.Services.AddSingleton(builder.Configuration.GetSection("Moderation").Get<ModerationOptions>() ?? new());
++builder.Services.AddSingleton<BlobHighscoreStore>(sp => new BlobHighscoreStore(sp.GetRequiredService<BlobServiceClient>(),
++    sp.GetRequiredService<IOptions<HighscoreOptions>>().Value, sp.GetRequiredService<TimeProvider>(), diagnostics: sp.GetRequiredService<HighscoreDiagnostics>(), moderation: sp.GetRequiredService<ModerationOptions>()));
++builder.Services.AddSingleton<IHighscoreStore>(sp => sp.GetRequiredService<BlobHighscoreStore>());
++builder.Services.AddSingleton<IModerationStore>(sp => sp.GetRequiredService<BlobHighscoreStore>());
++builder.Services.AddOptions<CaptureOptions>().BindConfiguration("Capture")
++    .Validate<IOptions<HighscoreOptions>>((capture,storage)=>capture.IsValid(storage.Value,builder.Environment.EnvironmentName,Environment.GetEnvironmentVariable("WEBSITE_SITE_NAME")), "Invalid capture isolation configuration")
++    .ValidateOnStart();
++builder.Services.AddKeyedSingleton<BlobHighscoreStore>("capture",(sp,_)=>new BlobHighscoreStore(sp.GetRequiredService<BlobServiceClient>(),
++    CaptureOptions.Storage(sp.GetRequiredService<IOptions<HighscoreOptions>>().Value),sp.GetRequiredService<TimeProvider>(),moderation:sp.GetRequiredService<ModerationOptions>()));
++builder.Services.AddKeyedSingleton<IHighscoreStore>("capture",(sp,_)=>sp.GetRequiredKeyedService<BlobHighscoreStore>("capture"));
++builder.Services.AddKeyedSingleton<IModerationStore>("capture",(sp,_)=>sp.GetRequiredKeyedService<BlobHighscoreStore>("capture"));
++builder.Services.AddHostedService<ModerationRetentionWorker>();
+ builder.Services.AddRateLimiter();
+ builder.Services.AddOptions<RateLimiterOptions>().Configure<IOptions<HighscoreOptions>>((limiter, config) => {
+     var limits = config.Value.RateLimits;
+@@ -27,6 +43,10 @@ builder.Services.AddOptions<RateLimiterOptions>().Configure<IOptions<HighscoreOp
+         bucket.TokenLimit = limits.PostCapacity; bucket.TokensPerPeriod = limits.PostPerSecond;
+         bucket.ReplenishmentPeriod = TimeSpan.FromSeconds(1); bucket.AutoReplenishment = true; bucket.QueueLimit = 0;
+     });
++    limiter.AddTokenBucketLimiter("highscore-reports", bucket => {
++        bucket.TokenLimit=5; bucket.TokensPerPeriod=1; bucket.ReplenishmentPeriod=TimeSpan.FromSeconds(1);
++        bucket.AutoReplenishment=true; bucket.QueueLimit=0;
++    });
+     limiter.OnRejected = async (context, _) => {
+         var seconds = context.Lease.TryGetMetadata(MetadataName.RetryAfter, out var delay) ? Math.Max(1, (int)Math.Ceiling(delay.TotalSeconds)) : 1;
+         context.HttpContext.Response.Headers.RetryAfter = seconds.ToString(System.Globalization.CultureInfo.InvariantCulture);
+@@ -36,7 +56,7 @@ builder.Services.AddOptions<RateLimiterOptions>().Configure<IOptions<HighscoreOp
+ var app = builder.Build();
+ app.UseExceptionHandler();
+ app.Use(async (context, next) => {
+-    bool highscore = context.Request.Path == "/api/v1/highscores" || context.Request.Path == "/api/v2/highscores";
++    bool highscore = context.Request.Path.StartsWithSegments("/api/v1") || context.Request.Path.StartsWithSegments("/capture/api");
+     if (highscore) context.Response.Headers.CacheControl = "no-store";
+     var started = System.Diagnostics.Stopwatch.GetTimestamp();
+     await next(context);
+@@ -45,7 +65,13 @@ app.Use(async (context, next) => {
+         System.Diagnostics.Stopwatch.GetElapsedTime(started).TotalMilliseconds);
+ });
+ app.UseRateLimiter();
++app.UseDefaultFiles();
++app.UseStaticFiles();
+ app.MapHealthChecks("/health/live");
+ app.MapHighscores();
++app.MapModeration();
++if(app.Services.GetRequiredService<IOptions<CaptureOptions>>().Value.Enabled) {
++    app.MapHighscores("/capture"); app.MapModeration("/capture");
++}
+ app.Run();
+ public partial class Program { }
+diff --git a/src/scripts/backend-release-tests.py b/src/scripts/backend-release-tests.py
+index 114943c..9192b0e 100644
+--- a/src/scripts/backend-release-tests.py
++++ b/src/scripts/backend-release-tests.py
+@@ -44,6 +44,7 @@ class PromotionTests(unittest.TestCase):
+         self.source = Path(self.temp.name) / 'publish'; self.source.mkdir()
+         self.output = Path(self.temp.name) / 'release'
+         (self.source / 'DonkeyTrump.Highscores.Api.dll').write_bytes(b'test-assembly')
++        (self.source / 'storage-contract.json').write_text(json.dumps({'readSchemas':[1,2],'writeSchemas':[2],'rollbackFloor':2}))
+         (self.source / 'appsettings.Development.json').write_text('{"UseAzurite":true}')
+         with contextlib.redirect_stdout(io.StringIO()):
+             release.package(self.source, self.output, SHA)
+@@ -81,21 +82,30 @@ class PromotionTests(unittest.TestCase):
+         self.change_archive({'publish/DonkeyTrump.Highscores.Api.dll': b'x'})
+         with self.assertRaisesRegex(ValueError, 'root'): release.validate_package(self.output, SHA)
+ 
++    def test_schema1_only_or_missing_support_is_never_promotable(self):
++        manifest=json.loads((self.output / 'release.json').read_text())
++        for schemas in [None, {'readSchemas':[1],'writeSchemas':[1],'rollbackFloor':1}]:
++            changed=dict(manifest)
++            if schemas is None: changed.pop('storageContract',None)
++            else: changed['storageContract']=schemas
++            (self.output / 'release.json').write_text(json.dumps(changed))
++            with self.assertRaises(ValueError): release.validate_package(self.output,SHA)
++
+     def test_smoke_rejects_non_https_or_credential_bearing_targets(self):
+         for origin in ['http://example.test', 'https://user:password@example.test',
+                        'https://example.test?token=anything', 'https://example.test/path']:
+             with self.assertRaises(ValueError): release.smoke(origin)
+ 
+ 
+-class SmokeVersionTests(unittest.TestCase):
+-    def test_both_read_versions_are_required_before_promotion(self):
++class SmokeRouteTests(unittest.TestCase):
++    def test_current_read_route_is_required_before_promotion(self):
+         class Response(io.BytesIO):
+             status = 200
+             headers = {"Cache-Control": "no-store"}
+ 
+         class Opener:
+-            def __init__(self, v2_exists):
+-                self.v2_exists = v2_exists
++            def __init__(self, route_exists):
++                self.route_exists = route_exists
+                 self.paths = []
+             def open(self, url, timeout):
+                 self.paths.append(url)
+@@ -103,20 +113,20 @@ class SmokeVersionTests(unittest.TestCase):
+                     raise urllib.error.HTTPError(url, 301, 'HTTPS', {"Location": "https://example.test/health/live"}, None)
+                 if url.endswith('/health/live'):
+                     return Response(b'Healthy')
+-                if url.endswith('/api/v2/highscores') and not self.v2_exists:
++                if url.endswith('/api/v1/highscores') and not self.route_exists:
+                     raise urllib.error.HTTPError(url, 404, 'Missing', {}, None)
+                 return Response(b'{"entries":[],"revision":"fixture"}')
+ 
+         for exists in (False, True):
+             opener = Opener(exists)
+-            with self.subTest(v2_exists=exists), patch.object(release.urllib.request, 'build_opener', return_value=opener), contextlib.redirect_stdout(io.StringIO()):
++            with self.subTest(route_exists=exists), patch.object(release.urllib.request, 'build_opener', return_value=opener), contextlib.redirect_stdout(io.StringIO()):
+                 if exists:
+                     release.smoke('https://example.test', attempts=1)
+                 else:
+                     with self.assertRaisesRegex(RuntimeError, 'smoke failed'):
+                         release.smoke('https://example.test', attempts=1)
+                 self.assertIn('https://example.test/api/v1/highscores', opener.paths)
+-                self.assertIn('https://example.test/api/v2/highscores', opener.paths)
++                self.assertNotIn('https://example.test/api/v2/highscores', opener.paths)
+ 
+ 
+ if __name__ == '__main__': unittest.main()
+diff --git a/src/scripts/backend-release.py b/src/scripts/backend-release.py
+index 92f8ee9..648fddc 100644
+--- a/src/scripts/backend-release.py
++++ b/src/scripts/backend-release.py
+@@ -23,6 +23,9 @@ def validate_dev_run(run, repository, workflow_id):
+     return run["head_sha"]
+ 
+ 
++STORAGE_CONTRACT = {"readSchemas": [1, 2], "writeSchemas": [2], "rollbackFloor": 2}
++
++
+ def validate_package(directory, commit):
+     directory = Path(directory)
+     manifest = json.loads((directory / "release.json").read_text())
+@@ -38,6 +41,10 @@ def validate_package(directory, commit):
+             raise ValueError("Unsafe archive path")
+         if json.loads(archive.read("deployment.json"))["commit"] != commit:
+             raise ValueError("Embedded release identity mismatch")
++        embedded = json.loads(archive.read("deployment.json"))
++        published = json.loads(archive.read("storage-contract.json")) if "storage-contract.json" in archive.namelist() else None
++        if manifest.get("storageContract") != STORAGE_CONTRACT or embedded.get("storageContract") != STORAGE_CONTRACT or published != STORAGE_CONTRACT:
++            raise ValueError("Artifact lacks the required schema2-aware migration/rollback contract")
+     return digest
+ 
+ 
+@@ -46,13 +53,16 @@ def package(source, output, commit):
+         raise ValueError("A full commit SHA is required")
+     source, output = Path(source), Path(output)
+     output.mkdir(parents=True, exist_ok=True)
+-    (source / "deployment.json").write_text(json.dumps({"commit": commit}) + "\n")
++    contract = json.loads((source / "storage-contract.json").read_text())
++    if contract != STORAGE_CONTRACT:
++        raise ValueError("Published storage contract is not schema2-aware")
++    (source / "deployment.json").write_text(json.dumps({"commit": commit, "storageContract": contract}) + "\n")
+     with zipfile.ZipFile(output / "app.zip", "w", zipfile.ZIP_DEFLATED) as archive:
+         for path in sorted(source.rglob("*")):
+             if path.is_file() and path.name != "appsettings.Development.json":
+                 archive.write(path, path.relative_to(source))
+     digest = hashlib.sha256((output / "app.zip").read_bytes()).hexdigest()
+-    (output / "release.json").write_text(json.dumps({"commit": commit, "sha256": digest}, indent=2) + "\n")
++    (output / "release.json").write_text(json.dumps({"commit": commit, "sha256": digest, "storageContract": contract}, indent=2) + "\n")
+     validate_package(output, commit)
+     print(f"Packaged commit {commit}; SHA-256 {digest}")
+ 
+@@ -73,7 +83,7 @@ def smoke(origin, attempts=20):
+             with opener.open(origin + "/health/live", timeout=15) as response:
+                 if response.status != 200 or response.read(1024).decode().strip() != "Healthy":
+                     raise ValueError("Liveness contract failed")
+-            for path in ("/api/v1/highscores", "/api/v2/highscores"):
++            for path in ("/api/v1/highscores",):
+                 with opener.open(origin + path, timeout=15) as response:
+                     if response.status != 200 or response.headers.get("Cache-Control") != "no-store":
+                         raise ValueError("Snapshot status/cache contract failed")
+@@ -94,7 +104,7 @@ def smoke(origin, attempts=20):
+             raise RuntimeError("Expected platform HTTPS redirect") from None
+     else:
+         raise RuntimeError("HTTP did not redirect to HTTPS")
+-    print("PASS: process liveness, authenticated storage snapshots (v1 and v2), no-store and HTTPS redirect")
++    print("PASS: process liveness, authenticated storage snapshot, no-store and HTTPS redirect")
+ 
+ 
+ def main():

@@ -8,7 +8,7 @@ public class HighscoreReadContractTests
 {
     private sealed class Store(Func<CancellationToken,Task<HighscoreSnapshot>> read) : IHighscoreStore {
         public Task<HighscoreSnapshot> ReadAsync(CancellationToken token) => read(token);
-        public Task<HighscoreResult> SubmitAsync(HighscoreSubmission submission,CancellationToken token) => throw new NotSupportedException();
+        public Task<HighscoreResult> PublishAsync(HighscoreSubmission submission,string hash,CancellationToken token) => throw new NotSupportedException();
     }
     [Theory][InlineData("storage_invalid")][InlineData("service_unavailable")][InlineData("operation_timed_out")]
     public async Task FailedReadIsNeverAValidEmptyList(string code) {

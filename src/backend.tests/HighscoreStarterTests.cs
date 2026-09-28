@@ -63,6 +63,7 @@ public class HighscoreStarterTests
         var player=new HighscoreSubmission(Guid.NewGuid(),"Existing player",0,1);
         var existing=HighscoreRanking.Evaluate(HighscoreDocument.Empty,player,DateTimeOffset.UtcNow).Document;
         http.Respond=(_,_)=>Task.FromResult(missing?BlobHttpHandler.Error(404,"BlobNotFound"):BlobHttpHandler.Document(existing.Serialize()));
+        if(missing) { Assert.Equal("storage_invalid",(await Assert.ThrowsAsync<HighscoreFailure>(()=>http.Store().ReadAsync(default))).Code); Assert.Equal(0,http.Writes); return; }
         var first=await http.Store().ReadAsync(default);
         var second=await http.Store().ReadAsync(default);
         Assert.Equal(10,first.Entries.Count);Assert.Equal(first.Entries,second.Entries);

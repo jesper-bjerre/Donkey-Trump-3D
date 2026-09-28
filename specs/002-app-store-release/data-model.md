@@ -86,7 +86,7 @@ idle periods and expired backup Blobs using MI/ETags. Deletion due within one ho
 service/storage are available; outages defer to recovery and are recorded as retention
 exceptions. No report content in App Service backup/logs. Version history and soft delete
 stay disabled; inventory old versions/deleted copies/exported backups, confirm cleanup
-and capture actual retention/cost before release. Backup lifecycle rule is secondary,
+and capture actual retention before release. Backup lifecycle rule is secondary,
 not a timing guarantee. See research for current management-plane observations.
 
 Max aggregate serialized UTF-8 size 1 MiB; max 4,096 tombstones/1,024 blocks. At 3,800

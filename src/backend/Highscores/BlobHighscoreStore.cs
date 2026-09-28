@@ -5,17 +5,19 @@ using System.Text.Json;
 
 namespace DonkeyTrump.Highscores;
 
-public sealed class BlobHighscoreStore : IHighscoreStore
+public sealed class BlobHighscoreStore : IHighscoreStore, IModerationStore
 {
+    private readonly ModerationOptions moderation;
     private readonly HighscoreDiagnostics? diagnostics;
     private readonly BlobClient blob;
     private readonly HighscoreOptions options;
     private readonly TimeProvider clock;
     private readonly Func<CancellationToken, Task> backoff;
     public BlobHighscoreStore(BlobServiceClient client, HighscoreOptions options, TimeProvider clock,
-        Func<CancellationToken, Task>? backoff = null, HighscoreDiagnostics? diagnostics = null)
+        Func<CancellationToken, Task>? backoff = null, HighscoreDiagnostics? diagnostics = null, ModerationOptions? moderation = null)
     {
         blob = client.GetBlobContainerClient(options.ContainerName).GetBlobClient(options.BlobName);
+        this.moderation = moderation ?? new();
         this.options = options; this.clock = clock; this.diagnostics = diagnostics;
         this.backoff = backoff ?? (token => Task.Delay(TimeSpan.FromMilliseconds(Random.Shared.Next(25, 101)), clock, token));
     }
@@ -29,11 +31,12 @@ public sealed class BlobHighscoreStore : IHighscoreStore
             using var content = response.Value.Content;
             var bytes = await BoundedRead(content, HighscoreDocument.MaximumBytes, token);
             HighscoreDocument document;
-            try { document = JsonSerializer.Deserialize<HighscoreDocument>(bytes, HighscoreJson.Options) ?? throw HighscoreFailure.InvalidStorage(); }
+            try { document = HighscoreDocument.Deserialize(bytes); }
             catch (JsonException) { throw HighscoreFailure.InvalidStorage(); }
-            return (HighscoreStarters.Fill(document), response.Value.Details.ETag);
+            document.Validate();
+            return (document, response.Value.Details.ETag);
         } catch (RequestFailedException e) when (e.Status == 404 && e.ErrorCode == "BlobNotFound") {
-            return (HighscoreStarters.Fill(HighscoreDocument.Empty), null);
+            throw HighscoreFailure.InvalidStorage();
         }
     }
 
@@ -55,48 +58,72 @@ public sealed class BlobHighscoreStore : IHighscoreStore
         using var linked = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, deadline.Token);
         try {
             var (document, tag) = await ReadDocument(linked.Token);
-            return HighscoreSnapshot.From(document, tag?.ToString() ?? "empty", clock.GetUtcNow());
+            return HighscoreSnapshot.From(HighscoreStarters.Fill(document), tag?.ToString() ?? "empty", clock.GetUtcNow());
         } catch (HighscoreFailure error) { diagnostics?.Failure(error.Code); throw; }
         catch (OperationCanceledException) { diagnostics?.Failure("operation_timed_out"); throw new HighscoreFailure(503, "operation_timed_out", "Highscores timed out"); }
         catch (Exception) { diagnostics?.Failure("service_unavailable"); throw new HighscoreFailure(503, "service_unavailable", "Highscores are unavailable"); }
     }
 
-    public async Task<HighscoreResult> SubmitAsync(HighscoreSubmission run, CancellationToken cancellationToken)
+    public async Task<AggregateRead> ReadAggregateAsync(CancellationToken cancellationToken)
     {
         using var deadline = new CancellationTokenSource(TimeSpan.FromSeconds(options.OperationTimeoutSeconds), clock);
         using var linked = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, deadline.Token);
-        var token = linked.Token;
-        bool uncertainWrite = false;
         try {
-            for (int attempt = 1; attempt <= options.MaxWriteAttempts; attempt++) {
-                token.ThrowIfCancellationRequested();
-                var (current, tag) = await ReadDocument(token);
-                var decision = HighscoreRanking.Evaluate(current, run, clock.GetUtcNow());
-                if (!decision.RequiresWrite)
-                    return HighscoreResult.From(HighscoreSnapshot.From(current, tag?.ToString() ?? "empty", clock.GetUtcNow()), run.SubmissionId);
-                var bytes = decision.Document.Serialize();
-                var conditions = tag is { } etag ? new BlobRequestConditions { IfMatch = etag } : new BlobRequestConditions { IfNoneMatch = ETag.All };
-                token.ThrowIfCancellationRequested();
-                diagnostics?.WriteAttempt(attempt);
-                uncertainWrite = true;
+            var (d,tag)=await ReadDocument(linked.Token);
+            return new(d,tag!.Value.ToString());
+        } catch(HighscoreFailure) { throw; }
+        catch(OperationCanceledException) { throw new HighscoreFailure(503,"operation_timed_out","Highscores timed out"); }
+        catch(Exception) { throw new HighscoreFailure(503,"service_unavailable","Highscores are unavailable"); }
+    }
+
+    public async Task<AggregateRead> MutateAsync(Func<HighscoreDocument,DateTimeOffset,HighscoreDocument> transition,string unconfirmedCode,
+        CancellationToken cancellationToken,bool migration=false,string? expectedETag=null)
+    {
+        if(moderation.Maintenance && !migration) throw new HighscoreFailure(503,"service_maintenance","Highscores are being maintained");
+        if(migration && !moderation.Maintenance) throw new HighscoreFailure(409,"maintenance_required","Enable maintenance before migration");
+        using var deadline=new CancellationTokenSource(TimeSpan.FromSeconds(options.OperationTimeoutSeconds),clock);
+        using var linked=CancellationTokenSource.CreateLinkedTokenSource(cancellationToken,deadline.Token);
+        var token=linked.Token; bool uncertain=false;
+        try {
+            for(int attempt=1;attempt<=options.MaxWriteAttempts;attempt++) {
+                var (current,tag)=await ReadDocument(token);
+                if(expectedETag is not null && tag.ToString()!=expectedETag) throw new HighscoreFailure(409,"revision_changed","Aggregate revision changed");
+                if(current.SchemaVersion!=2 && !migration) throw new HighscoreFailure(503,"service_maintenance","Highscores are being maintained");
+                var next=transition(ModerationRetention.Purge(current,clock.GetUtcNow()),clock.GetUtcNow());
+                var bytes=next.Serialize();
+                if(current.Serialize().AsSpan().SequenceEqual(bytes)) return new(current,tag!.Value.ToString());
+                token.ThrowIfCancellationRequested(); uncertain=true;
                 try {
-                    // A bounded byte payload uses a single Put Blob, never staged blocks.
-                    var write = await blob.UploadAsync(BinaryData.FromBytes(bytes), new BlobUploadOptions {
-                        Conditions = conditions, HttpHeaders = new BlobHttpHeaders { ContentType = "application/json" }
-                    }, token);
-                    uncertainWrite = false;
-                    return HighscoreResult.From(HighscoreSnapshot.From(decision.Document, write.Value.ETag.ToString(), clock.GetUtcNow()), run.SubmissionId);
-                } catch (RequestFailedException e) when (
-                    e.Status == 412 && e.ErrorCode == "ConditionNotMet" ||
-                    tag is null && e.Status == 409 && e.ErrorCode == "BlobAlreadyExists") {
-                    uncertainWrite = false; // This response proves this conditional write was rejected.
-                    if (attempt < options.MaxWriteAttempts) await backoff(token);
+                    var response=await blob.UploadAsync(BinaryData.FromBytes(bytes),new BlobUploadOptions {
+                        Conditions=new BlobRequestConditions {IfMatch=tag}, HttpHeaders=new BlobHttpHeaders {ContentType="application/json"}
+                    },token);
+                    uncertain=false; return new(next,response.Value.ETag.ToString());
+                } catch(RequestFailedException e) when(e.Status==412 && e.ErrorCode=="ConditionNotMet") {
+                    uncertain=false; if(attempt<options.MaxWriteAttempts) await backoff(token);
                 }
             }
-            throw new HighscoreFailure(503, "contention_exhausted", "Highscores are busy; please play again");
-        } catch (Exception) when (uncertainWrite) { diagnostics?.Failure("submission_unconfirmed"); throw HighscoreFailure.Unconfirmed(); }
-        catch (HighscoreFailure error) { diagnostics?.Failure(error.Code); throw; }
-        catch (OperationCanceledException) { diagnostics?.Failure("operation_timed_out"); throw new HighscoreFailure(503, "operation_timed_out", "Highscores timed out"); }
-        catch (Exception) { diagnostics?.Failure("service_unavailable"); throw new HighscoreFailure(503, "service_unavailable", "Highscores are unavailable"); }
+            throw new HighscoreFailure(503,"contention_exhausted","Highscores are busy");
+        } catch(Exception) when(uncertain) { throw new HighscoreFailure(503,unconfirmedCode,"The operation could not be confirmed"); }
+        catch(HighscoreFailure) { throw; }
+        catch(OperationCanceledException) { throw new HighscoreFailure(503,"operation_timed_out","Highscores timed out"); }
+        catch(Exception) { throw new HighscoreFailure(503,"service_unavailable","Highscores are unavailable"); }
     }
+
+    public async Task<HighscoreResult> PublishAsync(HighscoreSubmission run,string hash,CancellationToken token)
+    {
+        var saved=await MutateAsync((d,now)=>ModerationService.Submit(d,run,hash,now),"submission_unconfirmed",token);
+        return HighscoreResult.From(HighscoreSnapshot.From(HighscoreStarters.Fill(saved.Document),saved.ETag,clock.GetUtcNow()),run.SubmissionId);
+    }
+    public async Task<(ReportReceipt Receipt,bool Created)> ReportAsync(ReportSubmission report,string hash,CancellationToken token)
+    {
+        ReportDecision? decision=null;
+        await MutateAsync((d,now)=> {decision=ModerationService.Report(d,report,hash,now);return decision.Document;},"report_unconfirmed",token);
+        return (decision!.Receipt,decision.Created);
+    }
+    public async Task<ReportReceipt> ReceiptAsync(Guid id,string hash,CancellationToken token)
+    {
+        var current=await ReadAggregateAsync(token);
+        return ModerationService.Receipt(current.Document,id,hash,clock.GetUtcNow());
+    }
+
 }

@@ -23,6 +23,9 @@ def validate_dev_run(run, repository, workflow_id):
     return run["head_sha"]
 
 
+STORAGE_CONTRACT = {"readSchemas": [1, 2], "writeSchemas": [2], "rollbackFloor": 2}
+
+
 def validate_package(directory, commit):
     directory = Path(directory)
     manifest = json.loads((directory / "release.json").read_text())
@@ -38,6 +41,10 @@ def validate_package(directory, commit):
             raise ValueError("Unsafe archive path")
         if json.loads(archive.read("deployment.json"))["commit"] != commit:
             raise ValueError("Embedded release identity mismatch")
+        embedded = json.loads(archive.read("deployment.json"))
+        published = json.loads(archive.read("storage-contract.json")) if "storage-contract.json" in archive.namelist() else None
+        if manifest.get("storageContract") != STORAGE_CONTRACT or embedded.get("storageContract") != STORAGE_CONTRACT or published != STORAGE_CONTRACT:
+            raise ValueError("Artifact lacks the required schema2-aware migration/rollback contract")
     return digest
 
 
@@ -46,13 +53,16 @@ def package(source, output, commit):
         raise ValueError("A full commit SHA is required")
     source, output = Path(source), Path(output)
     output.mkdir(parents=True, exist_ok=True)
-    (source / "deployment.json").write_text(json.dumps({"commit": commit}) + "\n")
+    contract = json.loads((source / "storage-contract.json").read_text())
+    if contract != STORAGE_CONTRACT:
+        raise ValueError("Published storage contract is not schema2-aware")
+    (source / "deployment.json").write_text(json.dumps({"commit": commit, "storageContract": contract}) + "\n")
     with zipfile.ZipFile(output / "app.zip", "w", zipfile.ZIP_DEFLATED) as archive:
         for path in sorted(source.rglob("*")):
             if path.is_file() and path.name != "appsettings.Development.json":
                 archive.write(path, path.relative_to(source))
     digest = hashlib.sha256((output / "app.zip").read_bytes()).hexdigest()
-    (output / "release.json").write_text(json.dumps({"commit": commit, "sha256": digest}, indent=2) + "\n")
+    (output / "release.json").write_text(json.dumps({"commit": commit, "sha256": digest, "storageContract": contract}, indent=2) + "\n")
     validate_package(output, commit)
     print(f"Packaged commit {commit}; SHA-256 {digest}")
 
@@ -73,7 +83,7 @@ def smoke(origin, attempts=20):
             with opener.open(origin + "/health/live", timeout=15) as response:
                 if response.status != 200 or response.read(1024).decode().strip() != "Healthy":
                     raise ValueError("Liveness contract failed")
-            for path in ("/api/v1/highscores", "/api/v2/highscores"):
+            for path in ("/api/v1/highscores",):
                 with opener.open(origin + path, timeout=15) as response:
                     if response.status != 200 or response.headers.get("Cache-Control") != "no-store":
                         raise ValueError("Snapshot status/cache contract failed")
@@ -94,7 +104,7 @@ def smoke(origin, attempts=20):
             raise RuntimeError("Expected platform HTTPS redirect") from None
     else:
         raise RuntimeError("HTTP did not redirect to HTTPS")
-    print("PASS: process liveness, authenticated storage snapshots (v1 and v2), no-store and HTTPS redirect")
+    print("PASS: process liveness, authenticated storage snapshot, no-store and HTTPS redirect")
 
 
 def main():

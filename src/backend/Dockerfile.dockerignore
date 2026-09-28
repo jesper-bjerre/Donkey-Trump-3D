@@ -1,5 +1,7 @@
 **
 !global.json
+!infra/
+!infra/backend-environments.json
 !src/
 !src/backend/
 !src/backend/**

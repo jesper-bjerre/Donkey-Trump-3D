@@ -17,6 +17,7 @@ public sealed class AzuriteFixture : IAsyncLifetime
         if (!Options.IsValid("Test")) throw new InvalidOperationException("Tests require an isolated loopback Azurite endpoint.");
         Container = Options.CreateClient().GetBlobContainerClient(Options.ContainerName);
         await Container.CreateAsync(cancellationToken: new CancellationTokenSource(TimeSpan.FromSeconds(6)).Token);
+        await Container.GetBlobClient(Options.BlobName).UploadAsync(BinaryData.FromBytes(ModerationMigration.Convert(HighscoreDocument.Empty).Serialize()));
     }
     public async Task DisposeAsync()
     {

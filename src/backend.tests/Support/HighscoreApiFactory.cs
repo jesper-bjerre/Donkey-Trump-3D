@@ -20,7 +20,19 @@ public sealed class HighscoreApiFactory(IHighscoreStore? store = null, IDictiona
             ["Highscores:UseAzurite"] = "true", ["Highscores:ContainerName"] = "highscores-test"
         }).AddInMemoryCollection(settings ?? new Dictionary<string, string?>()));
         builder.ConfigureServices(services => {
-            if (store is not null) { services.RemoveAll<IHighscoreStore>(); services.AddSingleton(store); }
+            services.RemoveAll<Microsoft.Extensions.Hosting.IHostedService>();
+            if (store is not null) { services.RemoveAll<IHighscoreStore>(); services.AddSingleton(store);
+                services.RemoveAll<IModerationStore>(); services.AddSingleton<IModerationStore>(store as IModerationStore ?? new EndpointTestAdapter(store)); }
         });
     }
+}
+
+// Existing endpoint contract fakes exercise validation/DTO boundaries without storage.
+internal sealed class EndpointTestAdapter(IHighscoreStore store) : IModerationStore
+{
+    public Task<HighscoreResult> PublishAsync(HighscoreSubmission run,string hash,CancellationToken token)=>store.PublishAsync(run,hash,token);
+    public Task<AggregateRead> ReadAggregateAsync(CancellationToken token)=>throw new NotSupportedException();
+    public Task<(ReportReceipt Receipt,bool Created)> ReportAsync(ReportSubmission run,string hash,CancellationToken token)=>throw new NotSupportedException();
+    public Task<ReportReceipt> ReceiptAsync(Guid id,string hash,CancellationToken token)=>throw new NotSupportedException();
+    public Task<AggregateRead> MutateAsync(Func<HighscoreDocument,DateTimeOffset,HighscoreDocument> change,string code,CancellationToken token,bool migration=false,string? expectedETag=null)=>throw new NotSupportedException();
 }
