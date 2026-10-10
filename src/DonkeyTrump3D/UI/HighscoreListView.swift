@@ -24,7 +24,7 @@ struct HighscoreListView: View {
                                     Text("\(entry.score)").monospacedDigit()
                                     if let report {
                                         Button { report(entry.id) } label: { Image(systemName: "flag") .frame(minWidth: 44, minHeight: 44) }
-                                            .accessibilityLabel("Report name at rank \(entry.rank)")
+                                            .accessibilityLabel("Report \(entry.displayName) at rank \(entry.rank)")
                                             .accessibilityIdentifier("reportEntry\(entry.rank)")
                                     }
                                     if selected { Image(systemName: "star.fill").accessibilityHidden(true) }

@@ -66,7 +66,10 @@ enum ReportState: Equatable {
                     if problem.status == 404 && submission == nil {
                         try? await store.remove(id)
                         message = "This receipt is unavailable or expired. A missing receipt does not prove that an earlier report was not saved. Contact support if you still need help."
-                    } else if !["report_unconfirmed"].contains(problem.code) {
+                    } else if ["installation_credential_invalid", "report_conflict", "entry_not_found",
+                               "rate_limited", "service_maintenance", "moderation_capacity", "storage_invalid",
+                               "operation_timed_out", "contention_exhausted", "service_unavailable",
+                               "malformed_request", "payload_too_large", "unsupported_media_type"].contains(problem.code) {
                         message = "The request was not accepted. You can keep playing or contact support."
                     }
                 } else if case HighscoreServiceError.credentialUnavailable = error {

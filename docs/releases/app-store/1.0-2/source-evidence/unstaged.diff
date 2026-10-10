@@ -1,0 +1,183 @@
+diff --git a/src/DonkeyTrump3D.xcodeproj/project.pbxproj b/src/DonkeyTrump3D.xcodeproj/project.pbxproj
+index 86d469e..d5984fc 100644
+--- a/src/DonkeyTrump3D.xcodeproj/project.pbxproj
++++ b/src/DonkeyTrump3D.xcodeproj/project.pbxproj
+@@ -315,7 +315,7 @@
+ 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+ 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+ 				CODE_SIGN_STYLE = Automatic;
+-				CURRENT_PROJECT_VERSION = 1;
++				CURRENT_PROJECT_VERSION = 2;
+ 				DEVELOPMENT_TEAM = QHL89A7A8J;
+ 				ENABLE_PREVIEWS = YES;
+ 				GENERATE_INFOPLIST_FILE = YES;
+@@ -326,7 +326,6 @@
+ 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+ 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+ 				INFOPLIST_KEY_UIStatusBarHidden = YES;
+-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+ 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+ 				LD_RUNPATH_SEARCH_PATHS = (
+ 					"$(inherited)",
+@@ -337,7 +336,7 @@
+ 				PRODUCT_NAME = "$(TARGET_NAME)";
+ 				SWIFT_EMIT_LOC_STRINGS = YES;
+ 				SWIFT_VERSION = 5.0;
+-				TARGETED_DEVICE_FAMILY = "1,2";
++				TARGETED_DEVICE_FAMILY = 1;
+ 			};
+ 			name = Debug;
+ 		};
+@@ -348,7 +347,7 @@
+ 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+ 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+ 				CODE_SIGN_STYLE = Automatic;
+-				CURRENT_PROJECT_VERSION = 1;
++				CURRENT_PROJECT_VERSION = 2;
+ 				DEVELOPMENT_TEAM = QHL89A7A8J;
+ 				ENABLE_PREVIEWS = YES;
+ 				GENERATE_INFOPLIST_FILE = YES;
+@@ -359,7 +358,6 @@
+ 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+ 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+ 				INFOPLIST_KEY_UIStatusBarHidden = YES;
+-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+ 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+ 				LD_RUNPATH_SEARCH_PATHS = (
+ 					"$(inherited)",
+@@ -370,7 +368,7 @@
+ 				PRODUCT_NAME = "$(TARGET_NAME)";
+ 				SWIFT_EMIT_LOC_STRINGS = YES;
+ 				SWIFT_VERSION = 5.0;
+-				TARGETED_DEVICE_FAMILY = "1,2";
++				TARGETED_DEVICE_FAMILY = 1;
+ 			};
+ 			name = Release;
+ 		};
+@@ -506,7 +504,7 @@
+ 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+ 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+ 				CODE_SIGN_STYLE = Automatic;
+-				CURRENT_PROJECT_VERSION = 1;
++				CURRENT_PROJECT_VERSION = 2;
+ 				DEVELOPMENT_TEAM = QHL89A7A8J;
+ 				ENABLE_PREVIEWS = YES;
+ 				GENERATE_INFOPLIST_FILE = YES;
+@@ -517,7 +515,6 @@
+ 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+ 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+ 				INFOPLIST_KEY_UIStatusBarHidden = YES;
+-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+ 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+ 				LD_RUNPATH_SEARCH_PATHS = (
+ 					"$(inherited)",
+@@ -528,7 +525,7 @@
+ 				PRODUCT_NAME = "$(TARGET_NAME)";
+ 				SWIFT_EMIT_LOC_STRINGS = YES;
+ 				SWIFT_VERSION = 5.0;
+-				TARGETED_DEVICE_FAMILY = "1,2";
++				TARGETED_DEVICE_FAMILY = 1;
+ 			};
+ 			name = "Debug Local";
+ 		};
+@@ -539,7 +536,7 @@
+ 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+ 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+ 				CODE_SIGN_STYLE = Automatic;
+-				CURRENT_PROJECT_VERSION = 1;
++				CURRENT_PROJECT_VERSION = 2;
+ 				DEVELOPMENT_TEAM = QHL89A7A8J;
+ 				ENABLE_PREVIEWS = YES;
+ 				GENERATE_INFOPLIST_FILE = YES;
+@@ -550,7 +547,6 @@
+ 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+ 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+ 				INFOPLIST_KEY_UIStatusBarHidden = YES;
+-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+ 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+ 				LD_RUNPATH_SEARCH_PATHS = (
+ 					"$(inherited)",
+@@ -561,7 +557,7 @@
+ 				PRODUCT_NAME = "$(TARGET_NAME)";
+ 				SWIFT_EMIT_LOC_STRINGS = YES;
+ 				SWIFT_VERSION = 5.0;
+-				TARGETED_DEVICE_FAMILY = "1,2";
++				TARGETED_DEVICE_FAMILY = 1;
+ 			};
+ 			name = "Debug PROD";
+ 		};
+@@ -704,7 +700,7 @@
+ 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+ 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+ 				CODE_SIGN_STYLE = Automatic;
+-				CURRENT_PROJECT_VERSION = 1;
++				CURRENT_PROJECT_VERSION = 2;
+ 				DEVELOPMENT_TEAM = QHL89A7A8J;
+ 				ENABLE_PREVIEWS = YES;
+ 				GENERATE_INFOPLIST_FILE = YES;
+@@ -716,7 +712,6 @@
+ 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+ 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+ 				INFOPLIST_KEY_UIStatusBarHidden = YES;
+-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+ 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+ 				LD_RUNPATH_SEARCH_PATHS = (
+ 					"$(inherited)",
+@@ -728,7 +723,7 @@
+ 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) APPSTORE_CAPTURE";
+ 				SWIFT_EMIT_LOC_STRINGS = YES;
+ 				SWIFT_VERSION = 5.0;
+-				TARGETED_DEVICE_FAMILY = "1,2";
++				TARGETED_DEVICE_FAMILY = 1;
+ 			};
+ 			name = AppStoreCapture;
+ 		};
+diff --git a/src/DonkeyTrump3D/Resources/Assets.xcassets/AppIcon.appiconset/AppIcon.png b/src/DonkeyTrump3D/Resources/Assets.xcassets/AppIcon.appiconset/AppIcon.png
+deleted file mode 100644
+index f91429e..0000000
+Binary files a/src/DonkeyTrump3D/Resources/Assets.xcassets/AppIcon.appiconset/AppIcon.png and /dev/null differ
+diff --git a/src/DonkeyTrump3D/Resources/Assets.xcassets/AppIcon.appiconset/Contents.json b/src/DonkeyTrump3D/Resources/Assets.xcassets/AppIcon.appiconset/Contents.json
+index da294ba..c1a5b1c 100644
+--- a/src/DonkeyTrump3D/Resources/Assets.xcassets/AppIcon.appiconset/Contents.json
++++ b/src/DonkeyTrump3D/Resources/Assets.xcassets/AppIcon.appiconset/Contents.json
+@@ -1,4 +1,38 @@
+ {
+-  "images" : [ { "filename" : "AppIcon.png", "idiom" : "universal", "platform" : "ios", "size" : "1024x1024" } ],
+-  "info" : { "author" : "xcode", "version" : 1 }
++  "images": [
++    {
++      "filename": "AppIcon-light-1024.png",
++      "idiom": "universal",
++      "platform": "ios",
++      "size": "1024x1024"
++    },
++    {
++      "filename": "AppIcon-dark-1024.png",
++      "idiom": "universal",
++      "platform": "ios",
++      "size": "1024x1024",
++      "appearances": [
++        {
++          "appearance": "luminosity",
++          "value": "dark"
++        }
++      ]
++    },
++    {
++      "filename": "AppIcon-tinted-1024.png",
++      "idiom": "universal",
++      "platform": "ios",
++      "size": "1024x1024",
++      "appearances": [
++        {
++          "appearance": "luminosity",
++          "value": "tinted"
++        }
++      ]
++    }
++  ],
++  "info": {
++    "author": "xcode",
++    "version": 1
++  }
+ }

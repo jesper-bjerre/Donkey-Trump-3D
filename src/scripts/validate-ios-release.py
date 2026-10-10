@@ -14,7 +14,7 @@ def settings(configuration, platform, action, origin, conditions):
         if platform != 'iphonesimulator' or action not in ('build', 'analyze') or origin != CAPTURE or 'DEBUG' in flags or 'APPSTORE_CAPTURE' not in flags:
             raise ValueError('AppStoreCapture is simulator-only, uses isolated DEV HTTPS, and cannot archive/export')
     elif not configuration.startswith('Debug'):
-        if origin != PROD or 'DEBUG' in flags or 'APPSTORE_CAPTURE' in flags:
+        if configuration != 'Release' or origin != PROD or 'DEBUG' in flags or 'APPSTORE_CAPTURE' in flags:
             raise ValueError('A distribution configuration must use PROD HTTPS and exclude test/capture compilation')
 
 

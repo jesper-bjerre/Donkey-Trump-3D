@@ -1,0 +1,17 @@
+{
+  "CFBundleIdentifier": "com.hyldenbrandt.donkeytrump3d",
+  "CFBundleShortVersionString": "1.0",
+  "CFBundleSupportedPlatforms": [
+    "iPhoneOS"
+  ],
+  "CFBundleVersion": "1",
+  "HighscoreAPIBaseURL": "https://donkeytrump-api-p.azurewebsites.net",
+  "MinimumOSVersion": "26.0",
+  "UIDeviceFamily": [
+    1
+  ],
+  "UISupportedInterfaceOrientations~iphone": [
+    "UIInterfaceOrientationLandscapeLeft",
+    "UIInterfaceOrientationLandscapeRight"
+  ]
+}

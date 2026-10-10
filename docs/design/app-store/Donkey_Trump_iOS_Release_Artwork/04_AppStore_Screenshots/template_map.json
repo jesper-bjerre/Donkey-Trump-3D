@@ -1,0 +1,382 @@
+[
+  {
+    "device_group": "6.9",
+    "locale": "en",
+    "number": 1,
+    "capture_filename": "01-overview.png",
+    "canvas": [
+      2868,
+      1320
+    ],
+    "capture_rect": [
+      345,
+      258,
+      2177,
+      1002
+    ],
+    "svg": "04_AppStore_Screenshots/TEMPLATES_NOT_FOR_UPLOAD/6.9_landscape/en/01-overview.svg",
+    "preview": "04_AppStore_Screenshots/TEMPLATES_NOT_FOR_UPLOAD/6.9_landscape/en/01-overview.png",
+    "headline": "JUMP INTO THE CHAOS"
+  },
+  {
+    "device_group": "6.9",
+    "locale": "en",
+    "number": 2,
+    "capture_filename": "02-barrels.png",
+    "canvas": [
+      2868,
+      1320
+    ],
+    "capture_rect": [
+      345,
+      258,
+      2177,
+      1002
+    ],
+    "svg": "04_AppStore_Screenshots/TEMPLATES_NOT_FOR_UPLOAD/6.9_landscape/en/02-barrels.svg",
+    "preview": "04_AppStore_Screenshots/TEMPLATES_NOT_FOR_UPLOAD/6.9_landscape/en/02-barrels.png",
+    "headline": "DODGE THE BARRELS"
+  },
+  {
+    "device_group": "6.9",
+    "locale": "en",
+    "number": 3,
+    "capture_filename": "03-climb.png",
+    "canvas": [
+      2868,
+      1320
+    ],
+    "capture_rect": [
+      345,
+      258,
+      2177,
+      1002
+    ],
+    "svg": "04_AppStore_Screenshots/TEMPLATES_NOT_FOR_UPLOAD/6.9_landscape/en/03-climb.svg",
+    "preview": "04_AppStore_Screenshots/TEMPLATES_NOT_FOR_UPLOAD/6.9_landscape/en/03-climb.png",
+    "headline": "CLIMB TO THE TOP"
+  },
+  {
+    "device_group": "6.9",
+    "locale": "en",
+    "number": 4,
+    "capture_filename": "04-rescue.png",
+    "canvas": [
+      2868,
+      1320
+    ],
+    "capture_rect": [
+      345,
+      258,
+      2177,
+      1002
+    ],
+    "svg": "04_AppStore_Screenshots/TEMPLATES_NOT_FOR_UPLOAD/6.9_landscape/en/04-rescue.svg",
+    "preview": "04_AppStore_Screenshots/TEMPLATES_NOT_FOR_UPLOAD/6.9_landscape/en/04-rescue.png",
+    "headline": "RESCUE MOTZFELDT"
+  },
+  {
+    "device_group": "6.9",
+    "locale": "en",
+    "number": 5,
+    "capture_filename": "05-challenge.png",
+    "canvas": [
+      2868,
+      1320
+    ],
+    "capture_rect": [
+      345,
+      258,
+      2177,
+      1002
+    ],
+    "svg": "04_AppStore_Screenshots/TEMPLATES_NOT_FOR_UPLOAD/6.9_landscape/en/05-challenge.svg",
+    "preview": "04_AppStore_Screenshots/TEMPLATES_NOT_FOR_UPLOAD/6.9_landscape/en/05-challenge.png",
+    "headline": "DONKEY TRUMP"
+  },
+  {
+    "device_group": "6.9",
+    "locale": "da",
+    "number": 1,
+    "capture_filename": "01-overview.png",
+    "canvas": [
+      2868,
+      1320
+    ],
+    "capture_rect": [
+      345,
+      258,
+      2177,
+      1002
+    ],
+    "svg": "04_AppStore_Screenshots/TEMPLATES_NOT_FOR_UPLOAD/6.9_landscape/da/01-overview.svg",
+    "preview": "04_AppStore_Screenshots/TEMPLATES_NOT_FOR_UPLOAD/6.9_landscape/da/01-overview.png",
+    "headline": "HOP IND I KAOSSET"
+  },
+  {
+    "device_group": "6.9",
+    "locale": "da",
+    "number": 2,
+    "capture_filename": "02-barrels.png",
+    "canvas": [
+      2868,
+      1320
+    ],
+    "capture_rect": [
+      345,
+      258,
+      2177,
+      1002
+    ],
+    "svg": "04_AppStore_Screenshots/TEMPLATES_NOT_FOR_UPLOAD/6.9_landscape/da/02-barrels.svg",
+    "preview": "04_AppStore_Screenshots/TEMPLATES_NOT_FOR_UPLOAD/6.9_landscape/da/02-barrels.png",
+    "headline": "UNDVIG TØNDERNE"
+  },
+  {
+    "device_group": "6.9",
+    "locale": "da",
+    "number": 3,
+    "capture_filename": "03-climb.png",
+    "canvas": [
+      2868,
+      1320
+    ],
+    "capture_rect": [
+      345,
+      258,
+      2177,
+      1002
+    ],
+    "svg": "04_AppStore_Screenshots/TEMPLATES_NOT_FOR_UPLOAD/6.9_landscape/da/03-climb.svg",
+    "preview": "04_AppStore_Screenshots/TEMPLATES_NOT_FOR_UPLOAD/6.9_landscape/da/03-climb.png",
+    "headline": "KLATR MOD TOPPEN"
+  },
+  {
+    "device_group": "6.9",
+    "locale": "da",
+    "number": 4,
+    "capture_filename": "04-rescue.png",
+    "canvas": [
+      2868,
+      1320
+    ],
+    "capture_rect": [
+      345,
+      258,
+      2177,
+      1002
+    ],
+    "svg": "04_AppStore_Screenshots/TEMPLATES_NOT_FOR_UPLOAD/6.9_landscape/da/04-rescue.svg",
+    "preview": "04_AppStore_Screenshots/TEMPLATES_NOT_FOR_UPLOAD/6.9_landscape/da/04-rescue.png",
+    "headline": "RED MOTZFELDT"
+  },
+  {
+    "device_group": "6.9",
+    "locale": "da",
+    "number": 5,
+    "capture_filename": "05-challenge.png",
+    "canvas": [
+      2868,
+      1320
+    ],
+    "capture_rect": [
+      345,
+      258,
+      2177,
+      1002
+    ],
+    "svg": "04_AppStore_Screenshots/TEMPLATES_NOT_FOR_UPLOAD/6.9_landscape/da/05-challenge.svg",
+    "preview": "04_AppStore_Screenshots/TEMPLATES_NOT_FOR_UPLOAD/6.9_landscape/da/05-challenge.png",
+    "headline": "DONKEY TRUMP"
+  },
+  {
+    "device_group": "6.5",
+    "locale": "en",
+    "number": 1,
+    "capture_filename": "01-overview.png",
+    "canvas": [
+      2688,
+      1242
+    ],
+    "capture_rect": [
+      344,
+      258,
+      2000,
+      924
+    ],
+    "svg": "04_AppStore_Screenshots/TEMPLATES_NOT_FOR_UPLOAD/6.5_landscape/en/01-overview.svg",
+    "preview": "04_AppStore_Screenshots/TEMPLATES_NOT_FOR_UPLOAD/6.5_landscape/en/01-overview.png",
+    "headline": "JUMP INTO THE CHAOS"
+  },
+  {
+    "device_group": "6.5",
+    "locale": "en",
+    "number": 2,
+    "capture_filename": "02-barrels.png",
+    "canvas": [
+      2688,
+      1242
+    ],
+    "capture_rect": [
+      344,
+      258,
+      2000,
+      924
+    ],
+    "svg": "04_AppStore_Screenshots/TEMPLATES_NOT_FOR_UPLOAD/6.5_landscape/en/02-barrels.svg",
+    "preview": "04_AppStore_Screenshots/TEMPLATES_NOT_FOR_UPLOAD/6.5_landscape/en/02-barrels.png",
+    "headline": "DODGE THE BARRELS"
+  },
+  {
+    "device_group": "6.5",
+    "locale": "en",
+    "number": 3,
+    "capture_filename": "03-climb.png",
+    "canvas": [
+      2688,
+      1242
+    ],
+    "capture_rect": [
+      344,
+      258,
+      2000,
+      924
+    ],
+    "svg": "04_AppStore_Screenshots/TEMPLATES_NOT_FOR_UPLOAD/6.5_landscape/en/03-climb.svg",
+    "preview": "04_AppStore_Screenshots/TEMPLATES_NOT_FOR_UPLOAD/6.5_landscape/en/03-climb.png",
+    "headline": "CLIMB TO THE TOP"
+  },
+  {
+    "device_group": "6.5",
+    "locale": "en",
+    "number": 4,
+    "capture_filename": "04-rescue.png",
+    "canvas": [
+      2688,
+      1242
+    ],
+    "capture_rect": [
+      344,
+      258,
+      2000,
+      924
+    ],
+    "svg": "04_AppStore_Screenshots/TEMPLATES_NOT_FOR_UPLOAD/6.5_landscape/en/04-rescue.svg",
+    "preview": "04_AppStore_Screenshots/TEMPLATES_NOT_FOR_UPLOAD/6.5_landscape/en/04-rescue.png",
+    "headline": "RESCUE MOTZFELDT"
+  },
+  {
+    "device_group": "6.5",
+    "locale": "en",
+    "number": 5,
+    "capture_filename": "05-challenge.png",
+    "canvas": [
+      2688,
+      1242
+    ],
+    "capture_rect": [
+      344,
+      258,
+      2000,
+      924
+    ],
+    "svg": "04_AppStore_Screenshots/TEMPLATES_NOT_FOR_UPLOAD/6.5_landscape/en/05-challenge.svg",
+    "preview": "04_AppStore_Screenshots/TEMPLATES_NOT_FOR_UPLOAD/6.5_landscape/en/05-challenge.png",
+    "headline": "DONKEY TRUMP"
+  },
+  {
+    "device_group": "6.5",
+    "locale": "da",
+    "number": 1,
+    "capture_filename": "01-overview.png",
+    "canvas": [
+      2688,
+      1242
+    ],
+    "capture_rect": [
+      344,
+      258,
+      2000,
+      924
+    ],
+    "svg": "04_AppStore_Screenshots/TEMPLATES_NOT_FOR_UPLOAD/6.5_landscape/da/01-overview.svg",
+    "preview": "04_AppStore_Screenshots/TEMPLATES_NOT_FOR_UPLOAD/6.5_landscape/da/01-overview.png",
+    "headline": "HOP IND I KAOSSET"
+  },
+  {
+    "device_group": "6.5",
+    "locale": "da",
+    "number": 2,
+    "capture_filename": "02-barrels.png",
+    "canvas": [
+      2688,
+      1242
+    ],
+    "capture_rect": [
+      344,
+      258,
+      2000,
+      924
+    ],
+    "svg": "04_AppStore_Screenshots/TEMPLATES_NOT_FOR_UPLOAD/6.5_landscape/da/02-barrels.svg",
+    "preview": "04_AppStore_Screenshots/TEMPLATES_NOT_FOR_UPLOAD/6.5_landscape/da/02-barrels.png",
+    "headline": "UNDVIG TØNDERNE"
+  },
+  {
+    "device_group": "6.5",
+    "locale": "da",
+    "number": 3,
+    "capture_filename": "03-climb.png",
+    "canvas": [
+      2688,
+      1242
+    ],
+    "capture_rect": [
+      344,
+      258,
+      2000,
+      924
+    ],
+    "svg": "04_AppStore_Screenshots/TEMPLATES_NOT_FOR_UPLOAD/6.5_landscape/da/03-climb.svg",
+    "preview": "04_AppStore_Screenshots/TEMPLATES_NOT_FOR_UPLOAD/6.5_landscape/da/03-climb.png",
+    "headline": "KLATR MOD TOPPEN"
+  },
+  {
+    "device_group": "6.5",
+    "locale": "da",
+    "number": 4,
+    "capture_filename": "04-rescue.png",
+    "canvas": [
+      2688,
+      1242
+    ],
+    "capture_rect": [
+      344,
+      258,
+      2000,
+      924
+    ],
+    "svg": "04_AppStore_Screenshots/TEMPLATES_NOT_FOR_UPLOAD/6.5_landscape/da/04-rescue.svg",
+    "preview": "04_AppStore_Screenshots/TEMPLATES_NOT_FOR_UPLOAD/6.5_landscape/da/04-rescue.png",
+    "headline": "RED MOTZFELDT"
+  },
+  {
+    "device_group": "6.5",
+    "locale": "da",
+    "number": 5,
+    "capture_filename": "05-challenge.png",
+    "canvas": [
+      2688,
+      1242
+    ],
+    "capture_rect": [
+      344,
+      258,
+      2000,
+      924
+    ],
+    "svg": "04_AppStore_Screenshots/TEMPLATES_NOT_FOR_UPLOAD/6.5_landscape/da/05-challenge.svg",
+    "preview": "04_AppStore_Screenshots/TEMPLATES_NOT_FOR_UPLOAD/6.5_landscape/da/05-challenge.png",
+    "headline": "DONKEY TRUMP"
+  }
+]

@@ -14,13 +14,23 @@ class MediaTests(unittest.TestCase):
         for i in range(1,6):
             name=f'{i}.png';Image.new('RGB',(2868,1320),(i*30,0,0)).save(self.root/name)
             sha=media.digest(self.root/name)
-            entries.append(dict(order=i,file=name,source=name,sha256=sha,sourceSHA256=sha,caption=f'Scene {i}',provenance='synthetic validator fixture'))
+            editable=f'{i}.svg';(self.root/editable).write_text(f'<svg><text>Scene {i}</text></svg>')
+            entries.append(dict(order=i,file=name,source=name,sha256=sha,sourceSHA256=sha,caption=f'Scene {i}',provenance='synthetic validator fixture',editableSource=editable,editableSHA256=media.digest(self.root/editable)))
         Image.new('RGB',(1024,1024),(0,0,0)).save(self.root/'icon.png')
         self.data=dict(candidateId='fixture',configurationHash='fixture',language='en-US',screenshots=entries,icon=dict(file='icon.png',sha256=media.digest(self.root/'icon.png')))
         self.manifest=self.root/'manifest.json'
     def run_manifest(self):
         self.manifest.write_text(json.dumps(self.data));return media.validate(self.manifest)
     def test_complete_set(self):self.assertEqual(5,self.run_manifest())
+    def test_raw_alpha_is_preserved_but_export_must_be_opaque(self):
+        Image.new('RGBA',(2868,1320),(0,0,0,255)).save(self.root/'raw.png')
+        self.data['screenshots'][0].update(source='raw.png',sourceSHA256=media.digest(self.root/'raw.png'))
+        self.assertEqual(5,self.run_manifest())
+    def test_missing_or_changed_editable_source_fails(self):
+        (self.root/'1.svg').unlink()
+        with self.assertRaisesRegex(ValueError,'Editable'):self.run_manifest()
+        (self.root/'1.svg').write_text('<svg>changed</svg>')
+        with self.assertRaisesRegex(ValueError,'Editable'):self.run_manifest()
     def test_alpha_and_small_phone_are_rejected(self):
         for mode,size in [('RGBA',(2868,1320)),('RGB',(2532,1170)),('RGB',(1320,2868))]:
             Image.new(mode,size).save(self.root/'1.png')

@@ -1,0 +1,167 @@
+[
+  {
+    "path": "docs/releases/app-store/1.0-2/raw-captures/01-overview.png",
+    "sha256": "00fe6f7cf2e4cc5c288f22faef04a3e3fe95f2d9b0ef702b9339f6faa5761f13",
+    "bytes": 3459417,
+    "dimensions": [
+      2868,
+      1320
+    ],
+    "pngColorType": 6
+  },
+  {
+    "path": "docs/releases/app-store/1.0-2/raw-captures/02-barrels.png",
+    "sha256": "32cecef1d5a18f4855db1c26361861ad096ce6d8c7edf9a8d622032d0f147559",
+    "bytes": 3448046,
+    "dimensions": [
+      2868,
+      1320
+    ],
+    "pngColorType": 6
+  },
+  {
+    "path": "docs/releases/app-store/1.0-2/raw-captures/03-controls.png",
+    "sha256": "9e7032a851c3113ba4aed0eb0663ce5e9d2fb1dd010c280fc04e3eb67f91ab13",
+    "bytes": 292981,
+    "dimensions": [
+      2868,
+      1320
+    ],
+    "pngColorType": 6
+  },
+  {
+    "path": "docs/releases/app-store/1.0-2/raw-captures/04-title.png",
+    "sha256": "fc1c7b7f3bc8dd49e6808b85a78145980a75b0a159ac1d0363685cd7474fe583",
+    "bytes": 4117495,
+    "dimensions": [
+      2868,
+      1320
+    ],
+    "pngColorType": 6
+  },
+  {
+    "path": "docs/releases/app-store/1.0-2/raw-captures/05-highscores.png",
+    "sha256": "2d2eb566b5d1e53ec3bd10b1d51548a57caf2123f98d643af3994b3a29a0c5c5",
+    "bytes": 1292527,
+    "dimensions": [
+      2868,
+      1320
+    ],
+    "pngColorType": 6
+  },
+  {
+    "path": "docs/releases/app-store/1.0-2/screenshot-layouts/01-overview.svg",
+    "sha256": "5967b93bd50ba8eaba0213db22e89bfc7f88e94d2ae616c2d0378854403ce2c8",
+    "bytes": 4801876
+  },
+  {
+    "path": "docs/releases/app-store/1.0-2/screenshot-layouts/02-barrels.svg",
+    "sha256": "d039f99fa07edc71a239c0a49d6c30eff08b6fa0fc73a27428c27a82255cafbf",
+    "bytes": 4786708
+  },
+  {
+    "path": "docs/releases/app-store/1.0-2/screenshot-layouts/03-controls.svg",
+    "sha256": "137314f04d764538b27318c756ea8e79e74623d83879bebf3d8197700d1617ee",
+    "bytes": 579973
+  },
+  {
+    "path": "docs/releases/app-store/1.0-2/screenshot-layouts/04-title.svg",
+    "sha256": "5a559fc06f66fcae3eec68d8ca1c4c9b1eb53feb1c52437805da029b59374bb5",
+    "bytes": 5679315
+  },
+  {
+    "path": "docs/releases/app-store/1.0-2/screenshot-layouts/05-highscores.svg",
+    "sha256": "de99a3a46e586913dc4ed1959c24566affd1ecc1291099f4d0e733d0dbf8fd8f",
+    "bytes": 1912688
+  },
+  {
+    "path": "docs/releases/app-store/1.0-2/screenshots-en/01-overview.jpg",
+    "sha256": "1034a502e07a9f9ab4accd5344337c67a70ce7a866502866fbf42f55a03b12c7",
+    "bytes": 735453,
+    "dimensions": [
+      2868,
+      1320
+    ],
+    "hasAlpha": false,
+    "verification": "sips 2026-09-29"
+  },
+  {
+    "path": "docs/releases/app-store/1.0-2/screenshots-en/02-barrels.jpg",
+    "sha256": "f2c27b36128e91bb2b59bac4bb906beac14c832bffa0489a197a72614f02ff75",
+    "bytes": 719191,
+    "dimensions": [
+      2868,
+      1320
+    ],
+    "hasAlpha": false,
+    "verification": "sips 2026-09-29"
+  },
+  {
+    "path": "docs/releases/app-store/1.0-2/screenshots-en/03-controls.jpg",
+    "sha256": "025894765ca57c9cc447003f96e58fca702415764b022edb5e057c14d5400aab",
+    "bytes": 426417,
+    "dimensions": [
+      2868,
+      1320
+    ],
+    "hasAlpha": false,
+    "verification": "sips 2026-09-29"
+  },
+  {
+    "path": "docs/releases/app-store/1.0-2/screenshots-en/04-title.jpg",
+    "sha256": "dd131ee5e5225bedca199c4bafe1c1cb60eab8a8750c30181bad0c9b5f3d0501",
+    "bytes": 755858,
+    "dimensions": [
+      2868,
+      1320
+    ],
+    "hasAlpha": false,
+    "verification": "sips 2026-09-29"
+  },
+  {
+    "path": "docs/releases/app-store/1.0-2/screenshots-en/05-highscores.jpg",
+    "sha256": "5c5145e542fde97175f628d8f7b797fdf43ad611c2b41470e09ae6d8953de89f",
+    "bytes": 380457,
+    "dimensions": [
+      2868,
+      1320
+    ],
+    "hasAlpha": false,
+    "verification": "sips 2026-09-29"
+  },
+  {
+    "path": "src/DonkeyTrump3D/Resources/Assets.xcassets/AppIcon.appiconset/AppIcon-dark-1024.png",
+    "sha256": "ef399b8d2d5de6c4479b0b7cb94f3f5b00995b685abe164c75223e838088e61f",
+    "bytes": 1531794,
+    "dimensions": [
+      1024,
+      1024
+    ],
+    "pngColorType": 2
+  },
+  {
+    "path": "src/DonkeyTrump3D/Resources/Assets.xcassets/AppIcon.appiconset/AppIcon-light-1024.png",
+    "sha256": "ef84dce478de5b7c4e4378ab05cf4aa682368923ca750a17474226aad8db58aa",
+    "bytes": 1625879,
+    "dimensions": [
+      1024,
+      1024
+    ],
+    "pngColorType": 2
+  },
+  {
+    "path": "src/DonkeyTrump3D/Resources/Assets.xcassets/AppIcon.appiconset/AppIcon-tinted-1024.png",
+    "sha256": "8e612c3c100f708c9eac3f5b64cda205776582959d16d9ec4ee4253504a38130",
+    "bytes": 1610322,
+    "dimensions": [
+      1024,
+      1024
+    ],
+    "pngColorType": 2
+  },
+  {
+    "path": "src/DonkeyTrump3D/Resources/Assets.xcassets/AppIcon.appiconset/Contents.json",
+    "sha256": "2a941780f0a7ecaa71d78375405c5e626c72e776d93f5bc83d665269202940b6",
+    "bytes": 720
+  }
+]

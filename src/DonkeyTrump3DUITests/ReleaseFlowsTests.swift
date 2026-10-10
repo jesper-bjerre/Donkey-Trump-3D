@@ -2,6 +2,18 @@ import XCTest
 
 @MainActor
 final class ReleaseFlowsTests: HighscoreUITestCase {
+    func testHelpOpensReceiptHistoryWithoutRequiringALeaderboardResponse() {
+        launch("rank-1")
+        app.buttons["How to Play"].tap()
+        let reports = app.buttons["helpReports"]
+        if !reports.isHittable { app.swipeUp() }
+        XCTAssertTrue(reports.waitForExistence(timeout: 3))
+        reports.tap()
+        XCTAssertTrue(app.buttons["reportClose"].waitForExistence(timeout: 3))
+        app.buttons["reportClose"].tap()
+        XCTAssertTrue(reports.waitForExistence(timeout: 3))
+    }
+
     func testReportFormAndCancelRemainReachableInBothLandscapes() {
         launch("rank-1")
         app.buttons["highscoreOpen"].tap()

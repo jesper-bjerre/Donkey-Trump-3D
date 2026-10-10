@@ -12,12 +12,12 @@ SIZES = {(2868,1320),(2796,1290),(2736,1260)}
 
 def digest(path): return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
-def inspect(path, sizes):
+def inspect(path, sizes, opaque=True):
     with Image.open(path) as image:
         image.load()
         if image.format not in ('PNG','JPEG') or image.size not in sizes:
             raise ValueError('Unsupported format or native dimensions')
-        if 'A' in image.getbands() or 'transparency' in image.info:
+        if opaque and ('A' in image.getbands() or 'transparency' in image.info):
             raise ValueError('Alpha channels/transparency are not accepted')
         if image.getexif().get(274,1) != 1: raise ValueError('Rotated metadata is not a landscape pixel export')
         return image.size
@@ -36,8 +36,15 @@ def validate(manifest_path):
     for item in entries:
         source,output = base/item['source'],base/item['file']
         if not item.get('caption') or not item.get('provenance'): raise ValueError('Caption/provenance missing')
-        if inspect(source,SIZES) != inspect(output,SIZES): raise ValueError('Source/output native dimensions differ')
+        # Retain native captures byte-for-byte, including their alpha channel.
+        # Apple's opacity requirement applies to the uploaded export.
+        if inspect(source,SIZES,opaque=False) != inspect(output,SIZES): raise ValueError('Source/output native dimensions differ')
         if digest(source) != item['sourceSHA256'] or digest(output) != item['sha256']: raise ValueError('Media checksum mismatch')
+        if not item.get('editableSource') or not item.get('editableSHA256'):
+            raise ValueError('Editable source identity missing')
+        editable=base/item['editableSource']
+        if not editable.is_file() or editable.stat().st_size == 0 or digest(editable) != item['editableSHA256']:
+            raise ValueError('Editable source missing or checksum mismatch')
         outputs.append(item['sha256'])
     if len(set(outputs)) != 5: raise ValueError('Five distinct final scenes are required')
     icon=base/data['icon']['file'];inspect(icon,{(1024,1024)})

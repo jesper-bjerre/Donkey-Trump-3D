@@ -1,0 +1,45 @@
+{
+  "lead": {
+    "tool": "Codex",
+    "vendor": "OpenAI",
+    "model": "GPT-6 family; exact runtime ID not exposed",
+    "reasoning": "not exposed"
+  },
+  "reviewer": {
+    "tool": "Claude Code",
+    "version": "2.1.283",
+    "vendor": "Anthropic",
+    "requestedModel": "claude-opus-5-5",
+    "explicitEffortFlag": "high",
+    "explicitEffortEnvironment": "high",
+    "safeMode": true,
+    "tools": [],
+    "mcpServers": {},
+    "sessionPersistence": false
+  },
+  "probe": {
+    "textResult": "REVIEW_ROUTE_OK",
+    "textStderr": "",
+    "jsonStderr": "",
+    "sessionID": "0bcf1f54-d9fd-4c9b-8aad-f9d6d5a6f438",
+    "status": "success",
+    "isError": false,
+    "modelUsage": {
+      "claude-opus-5-5": {
+        "inputTokens": 2,
+        "outputTokens": 16,
+        "cacheReadInputTokens": 1850,
+        "cacheCreationInputTokens": 0,
+        "webSearchRequests": 0,
+        "costUSD": 0.000698,
+        "contextWindow": 1000000,
+        "maxOutputTokens": 128000,
+        "thinkingTokens": 0,
+        "canonicalModel": "claude-opus-5-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      }
+    }
+  },
+  "limits": "Provider usage attests actual canonical model/provider, not a separate effective-effort field. Explicit high settings, plain-text warning check and successful probes establish the prescribed route. No fallback used."
+}

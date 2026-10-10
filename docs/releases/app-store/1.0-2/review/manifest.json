@@ -1,0 +1,113 @@
+{
+  "base": "368d7001b90ade026efcc71b4b057683eaa4ffaa",
+  "files": [
+    {
+      "path": "docs/releases/app-store/1.0-2/asset-manifest.json",
+      "sha256": "dbbce74a9300c94ba71db8474d2868c9c63e94795a0170c09af4169bf5e15747"
+    },
+    {
+      "path": "docs/releases/app-store/1.0-2/candidate-source-manifest.json",
+      "sha256": "b79d672c2088363db10fa2a3455a38d5d216526060b4f4bb584544f65daf695e"
+    },
+    {
+      "path": "docs/releases/app-store/1.0-2/candidate.json",
+      "sha256": "647dd97b5009737a9425e759b39b72da698cdf28c2b4960d8bbf8a77856aacc5"
+    },
+    {
+      "path": "docs/releases/app-store/1.0-2/listing-en.md",
+      "sha256": "c8b2bb899b2501bdbd54c83749726f8d94c29cf69a4b20f15f6039353ec3cd90"
+    },
+    {
+      "path": "docs/releases/app-store/1.0-2/raw-captures/01-overview.png",
+      "sha256": "00fe6f7cf2e4cc5c288f22faef04a3e3fe95f2d9b0ef702b9339f6faa5761f13"
+    },
+    {
+      "path": "docs/releases/app-store/1.0-2/raw-captures/02-barrels.png",
+      "sha256": "32cecef1d5a18f4855db1c26361861ad096ce6d8c7edf9a8d622032d0f147559"
+    },
+    {
+      "path": "docs/releases/app-store/1.0-2/raw-captures/03-controls.png",
+      "sha256": "9e7032a851c3113ba4aed0eb0663ce5e9d2fb1dd010c280fc04e3eb67f91ab13"
+    },
+    {
+      "path": "docs/releases/app-store/1.0-2/raw-captures/04-title.png",
+      "sha256": "fc1c7b7f3bc8dd49e6808b85a78145980a75b0a159ac1d0363685cd7474fe583"
+    },
+    {
+      "path": "docs/releases/app-store/1.0-2/raw-captures/05-highscores.png",
+      "sha256": "2d2eb566b5d1e53ec3bd10b1d51548a57caf2123f98d643af3994b3a29a0c5c5"
+    },
+    {
+      "path": "docs/releases/app-store/1.0-2/screenshot-layouts/01-overview.svg",
+      "sha256": "5967b93bd50ba8eaba0213db22e89bfc7f88e94d2ae616c2d0378854403ce2c8"
+    },
+    {
+      "path": "docs/releases/app-store/1.0-2/screenshot-layouts/02-barrels.svg",
+      "sha256": "d039f99fa07edc71a239c0a49d6c30eff08b6fa0fc73a27428c27a82255cafbf"
+    },
+    {
+      "path": "docs/releases/app-store/1.0-2/screenshot-layouts/03-controls.svg",
+      "sha256": "137314f04d764538b27318c756ea8e79e74623d83879bebf3d8197700d1617ee"
+    },
+    {
+      "path": "docs/releases/app-store/1.0-2/screenshot-layouts/04-title.svg",
+      "sha256": "5a559fc06f66fcae3eec68d8ca1c4c9b1eb53feb1c52437805da029b59374bb5"
+    },
+    {
+      "path": "docs/releases/app-store/1.0-2/screenshot-layouts/05-highscores.svg",
+      "sha256": "de99a3a46e586913dc4ed1959c24566affd1ecc1291099f4d0e733d0dbf8fd8f"
+    },
+    {
+      "path": "docs/releases/app-store/1.0-2/screenshots-en/01-overview.jpg",
+      "sha256": "1034a502e07a9f9ab4accd5344337c67a70ce7a866502866fbf42f55a03b12c7"
+    },
+    {
+      "path": "docs/releases/app-store/1.0-2/screenshots-en/02-barrels.jpg",
+      "sha256": "f2c27b36128e91bb2b59bac4bb906beac14c832bffa0489a197a72614f02ff75"
+    },
+    {
+      "path": "docs/releases/app-store/1.0-2/screenshots-en/03-controls.jpg",
+      "sha256": "025894765ca57c9cc447003f96e58fca702415764b022edb5e057c14d5400aab"
+    },
+    {
+      "path": "docs/releases/app-store/1.0-2/screenshots-en/04-title.jpg",
+      "sha256": "dd131ee5e5225bedca199c4bafe1c1cb60eab8a8750c30181bad0c9b5f3d0501"
+    },
+    {
+      "path": "docs/releases/app-store/1.0-2/screenshots-en/05-highscores.jpg",
+      "sha256": "5c5145e542fde97175f628d8f7b797fdf43ad611c2b41470e09ae6d8953de89f"
+    },
+    {
+      "path": "docs/releases/app-store/1.0-2/source-evidence/git-base.diff",
+      "sha256": "e7868e95e054ba75d8410e00d3c1a41e2008432af1f71310854cc6150b3252b1"
+    },
+    {
+      "path": "docs/releases/app-store/1.0-2/source-evidence/pre-edit-manifest.json",
+      "sha256": "646d87df0bf07030ab6774d9c116cd4f2b9186ada543483b651eb7c092414a1b"
+    },
+    {
+      "path": "docs/releases/app-store/1.0-2/source-evidence/this-task.diff",
+      "sha256": "0805918a86f0c6ef43cb18907d83c65f1a4e988191535097ba0c09fc25ef5b44"
+    },
+    {
+      "path": "src/DonkeyTrump3D/Resources/Assets.xcassets/AppIcon.appiconset/AppIcon-dark-1024.png",
+      "sha256": "ef399b8d2d5de6c4479b0b7cb94f3f5b00995b685abe164c75223e838088e61f"
+    },
+    {
+      "path": "src/DonkeyTrump3D/Resources/Assets.xcassets/AppIcon.appiconset/AppIcon-light-1024.png",
+      "sha256": "ef84dce478de5b7c4e4378ab05cf4aa682368923ca750a17474226aad8db58aa"
+    },
+    {
+      "path": "src/DonkeyTrump3D/Resources/Assets.xcassets/AppIcon.appiconset/AppIcon-tinted-1024.png",
+      "sha256": "8e612c3c100f708c9eac3f5b64cda205776582959d16d9ec4ee4253504a38130"
+    },
+    {
+      "path": "src/DonkeyTrump3D/Resources/Assets.xcassets/AppIcon.appiconset/Contents.json",
+      "sha256": "2a941780f0a7ecaa71d78375405c5e626c72e776d93f5bc83d665269202940b6"
+    },
+    {
+      "path": "src/DonkeyTrump3D.xcodeproj/project.pbxproj",
+      "sha256": "616842b579e71ed10cc6019beb0abd83dbcd2b23817d3ba7e2b26ae7ffa56607"
+    }
+  ]
+}
