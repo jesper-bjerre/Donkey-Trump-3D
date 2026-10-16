@@ -1,0 +1,2 @@
+  DonkeyTrump.Highscores.Api -> C:\Download\Git\Donkey-Trump-3D\src\backend\bin\Release\net10.0\DonkeyTrump.Highscores.Api.dll
+  DonkeyTrump.Highscores.Api -> C:\Users\jespe\AppData\Local\Temp\dt3d-expected-name-a4c20b17544a4ac3ad481ec2bfc05ae4\publish\

@@ -49,6 +49,14 @@ Identical same-ID submissions are deduplicated only while the result remains ran
 
 ## Configuration and operations
 
+For manual owner-only name corrections, see [highscore administration](../../docs/highscore-administration.md).
+The existing executable's `moderation entry` / `moderation rename` commands use
+authenticated App Service SSH and managed identity. The published
+`highscore-admin.sh` wrapper supports read-only lookup, rename preview and explicit
+`--apply`. Rename requires the fixed entry ID and `--expected-name` matching its
+current name; a changed name is rejected without a write. This adds no HTTP route
+or iOS integration.
+
 All settings use the `Highscores` configuration section (`Highscores__...` in environment variables):
 
 | Setting | Default / constraint |

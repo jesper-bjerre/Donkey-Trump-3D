@@ -1,0 +1,30 @@
+{
+  "tool": "Claude Code 2.1.296",
+  "model": "claude-opus-5-5",
+  "effort": "high explicitly in argv and environment",
+  "actualAssistantModels": [
+    "claude-opus-5-5"
+  ],
+  "session": "dfd4109c-44ef-49a2-a5ce-bde5e0b60f58",
+  "subtype": "success",
+  "isError": false,
+  "modelUsage": {
+    "claude-opus-5-5": {
+      "inputTokens": 2,
+      "outputTokens": 8043,
+      "cacheReadInputTokens": 1454,
+      "cacheCreationInputTokens": 67229,
+      "webSearchRequests": 0,
+      "costUSD": 0.6989908,
+      "contextWindow": 1000000,
+      "maxOutputTokens": 128000,
+      "thinkingTokens": 5295,
+      "canonicalModel": "claude-opus-5-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    }
+  },
+  "stderr": null,
+  "packetSha256": "be8f350e82f379e4b9bb94b7083a91a4534065024221489e72d04d9b5a4f5dc9",
+  "probes": "review-configuration.json; same uninterrupted configuration"
+}

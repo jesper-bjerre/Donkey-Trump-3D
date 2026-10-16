@@ -1,0 +1,44 @@
+[
+  {
+    "path": "src/backend/Moderation/ModerationCommand.cs",
+    "beforeSha256": "62d9c4552df5ef8786281a2aa04552b1c071eb93f16417e4dc3792a88988516c",
+    "candidateSha256": "ff3d5a507588e3d035b82156f9088fb54385e90db7f48c10663e34f942921424",
+    "beforeIdentity": "captured uncommitted worktree before this follow-up; not Git base"
+  },
+  {
+    "path": "src/backend/Moderation/HighscoreAdministration.cs",
+    "beforeSha256": "9bb1d38363e580bfaaf7fb605a345508fac70a0ae7283d1c05d8589b4d3f8292",
+    "candidateSha256": "90641f68ac14b580ff0c08524d51d25a4b67a44fc3e6ef4b69336cdbc07ac334",
+    "beforeIdentity": "captured uncommitted worktree before this follow-up; not Git base"
+  },
+  {
+    "path": "src/backend.tests/HighscoreAdministrationTests.cs",
+    "beforeSha256": "30438c139c50f751dceda12cd680da6d42856edc28aeea30b15dfad51f5f1b63",
+    "candidateSha256": "4c615c990e8517bc89f4f9b9f5462097653f295550f1d0cecd017570080c6d5d",
+    "beforeIdentity": "captured uncommitted worktree before this follow-up; not Git base"
+  },
+  {
+    "path": "src/backend/Moderation/highscore-admin.sh",
+    "beforeSha256": "5d7d8a791a88bc60a2d95379b82da99d502f33cee9d84998a4d556abbcf59cb2",
+    "candidateSha256": "eb54e754d0a7db1aa1a8f51bb7b98a3cac011896a23b070d3a29dbd6e70f932a",
+    "beforeIdentity": "captured uncommitted worktree before this follow-up; not Git base"
+  },
+  {
+    "path": "docs/highscore-administration.md",
+    "beforeSha256": "cb5c451418601133cf7d8afcf5601445cd017ca7c705bd32bcc34ea6746314b4",
+    "candidateSha256": "1be4a3cf44911a94b52905067547effa90147e8cee8708cf3c454de7e2a1a40d",
+    "beforeIdentity": "captured uncommitted worktree before this follow-up; not Git base"
+  },
+  {
+    "path": "specs/002-app-store-release/contracts/moderation-api.md",
+    "beforeSha256": "8aa00aebfd335ae6f92685d5c6a2b83239b42388e0b6c9e468dacdbccdc7022c",
+    "candidateSha256": "6b9db158fcc47ab2f98e3eff15408b0d666f652bb315fadbdc038c2a6439bcd0",
+    "beforeIdentity": "captured uncommitted worktree before this follow-up; not Git base"
+  },
+  {
+    "path": "src/backend/README.md",
+    "beforeSha256": "a18d3fb526ac4ceac0e4d529a0442014f32f0162193636410b40df9befb3c1b7",
+    "candidateSha256": "c1930c05a9cf646c6db47a71f0d3a72d39258ef3cf609d79f6261b2599fd628d",
+    "beforeIdentity": "captured uncommitted worktree before this follow-up; not Git base"
+  }
+]

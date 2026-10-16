@@ -1,0 +1,12 @@
+{
+  "candidateManifest": "manifest.json",
+  "sourceState": "Seven scoped files unchanged from successful build through review and final hash comparison",
+  "build": "build.txt: SDK 10.0.401 Release backend and test project compilation; no tests",
+  "publish": "publish.txt: same source Release publish, no source edits after build",
+  "builtDllSha256": "60b5c449f15ea66246e5ed4b904ebd1ad786969871356f22986255a49366efaf",
+  "publishedDllSha256": "60b5c449f15ea66246e5ed4b904ebd1ad786969871356f22986255a49366efaf",
+  "installedDllSha256": "60b5c449f15ea66246e5ed4b904ebd1ad786969871356f22986255a49366efaf",
+  "transfer": "Local published DLL read directly with Node fs, hashed with crypto SHA256, gzip/base64 transferred through authenticated App Service SSH; existing installer validates exact SHA256 before atomic manual current switch; sha256sum installed assembly displayed exact hash",
+  "httpDllSha256BeforeAndAfter": "d2c2eb54e354f5d01cdc03b1712a7b66ab239e0756937b9484b77491414d18b7",
+  "attestation": "Lead observed filesystem and console provenance. Independent reviewer approved source; no independent binary execution/attestation claimed."
+}

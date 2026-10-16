@@ -1,0 +1,11 @@
+  Determining projects to restore...
+  Restored C:\Download\Git\Donkey-Trump-3D\src\backend.tests\DonkeyTrump.Highscores.Api.Tests.csproj (in 538 ms).
+  Restored C:\Download\Git\Donkey-Trump-3D\src\backend\DonkeyTrump.Highscores.Api.csproj (in 535 ms).
+  DonkeyTrump.Highscores.Api -> C:\Download\Git\Donkey-Trump-3D\src\backend\bin\Release\net10.0\DonkeyTrump.Highscores.Api.dll
+  DonkeyTrump.Highscores.Api.Tests -> C:\Download\Git\Donkey-Trump-3D\src\backend.tests\bin\Release\net10.0\DonkeyTrump.Highscores.Api.Tests.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:10.47
