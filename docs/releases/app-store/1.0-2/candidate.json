@@ -1,0 +1,56 @@
+{
+  "archivePath": "/Users/jesperhyldenbrandtbjerre/Library/Developer/Xcode/Archives/2026-09-29/DonkeyTrump3D 1.0-2 Artwork.xcarchive",
+  "archiveInfo": {
+    "CFBundleIdentifier": "com.hyldenbrandt.donkeytrump3d",
+    "CFBundleShortVersionString": "1.0",
+    "CFBundleVersion": "2",
+    "UIDeviceFamily": [
+      1
+    ],
+    "MinimumOSVersion": "26.0",
+    "CFBundleIcons": {
+      "CFBundlePrimaryIcon": {
+        "CFBundleIconFiles": [
+          "AppIcon60x60"
+        ],
+        "CFBundleIconName": "AppIcon"
+      }
+    },
+    "UISupportedInterfaceOrientations~iphone": [
+      "UIInterfaceOrientationLandscapeLeft",
+      "UIInterfaceOrientationLandscapeRight"
+    ],
+    "HighscoreAPIBaseURL": "https://donkeytrump-api-p.azurewebsites.net",
+    "ITSAppUsesNonExemptEncryption": "not present; answer in Connect"
+  },
+  "archiveExecutableSHA256": "26d563131b4844f08a20a6c9280497e365422138732307c54406b75530e46901",
+  "archiveAssetsSHA256": "73682a3b9e3095f1a8906dd7105beb1604f6ca65734a270216e9dc9c5d196409",
+  "exportedIPAPath": "/tmp/dt3d-release-20260929/export/DonkeyTrump3D.ipa",
+  "exportedIPASHA256": "7f598957041c3b0f143ddf44b713fc89a54e870bbff02faa081da161c72bc35e",
+  "testsRun": false,
+  "upload": {
+    "adamId": "6817091486",
+    "destination": "upload",
+    "identifier": "00b725f5-5680-407b-81ac-bd35104a1a42",
+    "teamID": "QHL89A7A8J",
+    "uploadDestination": "App Store",
+    "uploadEvent": {
+      "date": "2026-09-29T16:11:47Z",
+      "errors": [],
+      "infoMessages": [],
+      "shortTitle": "Uploaded",
+      "state": "success",
+      "title": "Uploaded to Apple",
+      "warnings": []
+    },
+    "uploadedBuildNumber": "2"
+  },
+  "connectObservation": {
+    "build": "1.0 (2)",
+    "status": "Complete",
+    "displayedUploadTime": "Sep 29, 2026 6:11 PM",
+    "date": "2026-09-29",
+    "buildID": "00b725f5-5680-407b-81ac-bd35104a1a42",
+    "exportCompliance": "None of the algorithms mentioned above; OS-only APIs"
+  }
+}

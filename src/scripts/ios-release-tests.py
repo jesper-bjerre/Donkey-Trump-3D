@@ -18,5 +18,6 @@ class ReleaseBoundaryTests(unittest.TestCase):
         validator.settings('Release','iphoneos','install',validator.PROD,'')
         for origin,flags in [(validator.CAPTURE,''),('http://127.0.0.1:5281',''),(validator.PROD,'DEBUG'),(validator.PROD,'APPSTORE_CAPTURE')]:
             with self.assertRaises(ValueError): validator.settings('Release','iphoneos','install',origin,flags)
+        with self.assertRaises(ValueError): validator.settings('AdHoc','iphoneos','install',validator.PROD,'')
 
 if __name__=='__main__':unittest.main()

@@ -1,0 +1,12 @@
+[
+  {
+    "capturedPreEditPath": "/tmp/dt3d-release-20260929/pre-edit/project.pbxproj",
+    "sha256": "2bcc15f8c95a7f7554134c634511cff55e9cc46bddb9098e52821b79b4aedde9",
+    "candidatePath": "src/DonkeyTrump3D.xcodeproj/project.pbxproj"
+  },
+  {
+    "capturedPreEditPath": "/tmp/dt3d-release-20260929/pre-edit/AppIcon.appiconset/Contents.json",
+    "sha256": "6887c3efe1b5245e1e8e70b01083bd07aeb9696578998ab71660ce9d61239f33",
+    "candidatePath": "src/DonkeyTrump3D/Resources/Assets.xcassets/AppIcon.appiconset/Contents.json"
+  }
+]

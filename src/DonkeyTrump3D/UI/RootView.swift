@@ -82,7 +82,7 @@ struct RootView: View {
         #endif
         .animation(.easeInOut(duration: 0.35), value: hud.phase)
         .sheet(isPresented: Binding(get: { model.showHowTo }, set: { model.showHowTo = $0 })) {
-            HowToPlayView()
+            HowToPlayView(reports: model.reports)
                 .presentationDetents([.large])
         }
     }
@@ -187,7 +187,9 @@ struct TitleView: View {
 }
 
 struct HowToPlayView: View {
+    let reports: ReportCoordinator
     @Environment(\.dismiss) private var dismiss
+    @State private var showingReports = false
 
     var body: some View {
         NavigationStack {
@@ -206,6 +208,8 @@ struct HowToPlayView: View {
                     }
                     Link("Privacy Policy", destination: SupportLinks.privacy)
                     Link("Support and Reporting", destination: SupportLinks.support)
+                    Button("My Reports") { reports.history(); showingReports = true }
+                        .accessibilityIdentifier("helpReports")
                     Text("Use the flag beside a highscore to report a name. The owner checks reports every working day. View receipts in My Reports. Blocking affects online publication, not local play.")
                     Text(Copy.privacy)
                         .font(.footnote)
@@ -219,6 +223,13 @@ struct HowToPlayView: View {
                     Button("Done") { dismiss() }
                 }
             }
+        }
+        .sheet(isPresented: $showingReports, onDismiss: { reports.close() }) {
+            ReportsView(coordinator: reports, closeLabel: "Back to Help")
+                .padding()
+                .onChange(of: reports.state) { _, state in
+                    if state == .closed { showingReports = false }
+                }
         }
     }
 }

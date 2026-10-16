@@ -1,0 +1,89 @@
+diff --git a/src/DonkeyTrump3D.xcodeproj/project.pbxproj b/src/DonkeyTrump3D.xcodeproj/project.pbxproj
+index 86d469e..4a10915 100644
+--- a/src/DonkeyTrump3D.xcodeproj/project.pbxproj
++++ b/src/DonkeyTrump3D.xcodeproj/project.pbxproj
+@@ -326,7 +326,6 @@
+ 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+ 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+ 				INFOPLIST_KEY_UIStatusBarHidden = YES;
+-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+ 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+ 				LD_RUNPATH_SEARCH_PATHS = (
+ 					"$(inherited)",
+@@ -337,7 +336,7 @@
+ 				PRODUCT_NAME = "$(TARGET_NAME)";
+ 				SWIFT_EMIT_LOC_STRINGS = YES;
+ 				SWIFT_VERSION = 5.0;
+-				TARGETED_DEVICE_FAMILY = "1,2";
++				TARGETED_DEVICE_FAMILY = 1;
+ 			};
+ 			name = Debug;
+ 		};
+@@ -359,7 +358,6 @@
+ 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+ 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+ 				INFOPLIST_KEY_UIStatusBarHidden = YES;
+-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+ 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+ 				LD_RUNPATH_SEARCH_PATHS = (
+ 					"$(inherited)",
+@@ -370,7 +368,7 @@
+ 				PRODUCT_NAME = "$(TARGET_NAME)";
+ 				SWIFT_EMIT_LOC_STRINGS = YES;
+ 				SWIFT_VERSION = 5.0;
+-				TARGETED_DEVICE_FAMILY = "1,2";
++				TARGETED_DEVICE_FAMILY = 1;
+ 			};
+ 			name = Release;
+ 		};
+@@ -517,7 +515,6 @@
+ 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+ 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+ 				INFOPLIST_KEY_UIStatusBarHidden = YES;
+-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+ 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+ 				LD_RUNPATH_SEARCH_PATHS = (
+ 					"$(inherited)",
+@@ -528,7 +525,7 @@
+ 				PRODUCT_NAME = "$(TARGET_NAME)";
+ 				SWIFT_EMIT_LOC_STRINGS = YES;
+ 				SWIFT_VERSION = 5.0;
+-				TARGETED_DEVICE_FAMILY = "1,2";
++				TARGETED_DEVICE_FAMILY = 1;
+ 			};
+ 			name = "Debug Local";
+ 		};
+@@ -550,7 +547,6 @@
+ 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+ 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+ 				INFOPLIST_KEY_UIStatusBarHidden = YES;
+-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+ 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+ 				LD_RUNPATH_SEARCH_PATHS = (
+ 					"$(inherited)",
+@@ -561,7 +557,7 @@
+ 				PRODUCT_NAME = "$(TARGET_NAME)";
+ 				SWIFT_EMIT_LOC_STRINGS = YES;
+ 				SWIFT_VERSION = 5.0;
+-				TARGETED_DEVICE_FAMILY = "1,2";
++				TARGETED_DEVICE_FAMILY = 1;
+ 			};
+ 			name = "Debug PROD";
+ 		};
+@@ -716,7 +712,6 @@
+ 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+ 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+ 				INFOPLIST_KEY_UIStatusBarHidden = YES;
+-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+ 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+ 				LD_RUNPATH_SEARCH_PATHS = (
+ 					"$(inherited)",
+@@ -728,7 +723,7 @@
+ 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) APPSTORE_CAPTURE";
+ 				SWIFT_EMIT_LOC_STRINGS = YES;
+ 				SWIFT_VERSION = 5.0;
+-				TARGETED_DEVICE_FAMILY = "1,2";
++				TARGETED_DEVICE_FAMILY = 1;
+ 			};
+ 			name = AppStoreCapture;
+ 		};

@@ -1,0 +1,38 @@
+{
+  "removedTrackedFile": "src/DonkeyTrump3D/Resources/Assets.xcassets/AppIcon.appiconset/AppIcon.png",
+  "gitBase": "368d7001b90ade026efcc71b4b057683eaa4ffaa",
+  "gitBaseSHA256": "93c482dca9c92ce084595c63327256c4a06e6c59ea92d5406e59ede08cd63c3f",
+  "preEditBackup": "/tmp/dt3d-release-20260929/pre-edit/AppIcon.appiconset/AppIcon.png",
+  "preEditSHA256": "93c482dca9c92ce084595c63327256c4a06e6c59ea92d5406e59ede08cd63c3f",
+  "matchesCommittedBase": true,
+  "imports": [
+    {
+      "source": "docs/design/app-store/Donkey_Trump_iOS_Release_Artwork/02_Xcode/Assets.xcassets/AppIcon.appiconset/AppIcon-dark-1024.png",
+      "sourceSHA256": "ef399b8d2d5de6c4479b0b7cb94f3f5b00995b685abe164c75223e838088e61f",
+      "candidate": "src/DonkeyTrump3D/Resources/Assets.xcassets/AppIcon.appiconset/AppIcon-dark-1024.png",
+      "candidateSHA256": "ef399b8d2d5de6c4479b0b7cb94f3f5b00995b685abe164c75223e838088e61f",
+      "equal": true
+    },
+    {
+      "source": "docs/design/app-store/Donkey_Trump_iOS_Release_Artwork/02_Xcode/Assets.xcassets/AppIcon.appiconset/AppIcon-light-1024.png",
+      "sourceSHA256": "ef84dce478de5b7c4e4378ab05cf4aa682368923ca750a17474226aad8db58aa",
+      "candidate": "src/DonkeyTrump3D/Resources/Assets.xcassets/AppIcon.appiconset/AppIcon-light-1024.png",
+      "candidateSHA256": "ef84dce478de5b7c4e4378ab05cf4aa682368923ca750a17474226aad8db58aa",
+      "equal": true
+    },
+    {
+      "source": "docs/design/app-store/Donkey_Trump_iOS_Release_Artwork/02_Xcode/Assets.xcassets/AppIcon.appiconset/AppIcon-tinted-1024.png",
+      "sourceSHA256": "8e612c3c100f708c9eac3f5b64cda205776582959d16d9ec4ee4253504a38130",
+      "candidate": "src/DonkeyTrump3D/Resources/Assets.xcassets/AppIcon.appiconset/AppIcon-tinted-1024.png",
+      "candidateSHA256": "8e612c3c100f708c9eac3f5b64cda205776582959d16d9ec4ee4253504a38130",
+      "equal": true
+    },
+    {
+      "source": "docs/design/app-store/Donkey_Trump_iOS_Release_Artwork/02_Xcode/Assets.xcassets/AppIcon.appiconset/Contents.json",
+      "sourceSHA256": "2a941780f0a7ecaa71d78375405c5e626c72e776d93f5bc83d665269202940b6",
+      "candidate": "src/DonkeyTrump3D/Resources/Assets.xcassets/AppIcon.appiconset/Contents.json",
+      "candidateSHA256": "2a941780f0a7ecaa71d78375405c5e626c72e776d93f5bc83d665269202940b6",
+      "equal": true
+    }
+  ]
+}

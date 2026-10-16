@@ -1,0 +1,317 @@
+{
+  "gitBase": "368d7001b90ade026efcc71b4b057683eaa4ffaa",
+  "files": [
+    {
+      "path": "src/DonkeyTrump3D.xcodeproj/project.pbxproj",
+      "sha256": "616842b579e71ed10cc6019beb0abd83dbcd2b23817d3ba7e2b26ae7ffa56607"
+    },
+    {
+      "path": "src/DonkeyTrump3D/App/DonkeyTrump3DApp.swift",
+      "sha256": "f8a2ec06aadc6a1766e44303b7c26a36fe76a226dec65d23d646beec26018097"
+    },
+    {
+      "path": "src/DonkeyTrump3D/App/GameEngine.swift",
+      "sha256": "49695b2263617bc57fdd9c84bdd35cfeeb85acc6b564e453f4b29953eb1ca083"
+    },
+    {
+      "path": "src/DonkeyTrump3D/Audio/AudioSystem.swift",
+      "sha256": "864b7b7abc6bf2d32639e9d07959234262961751f25982ded715c888ef466ac5"
+    },
+    {
+      "path": "src/DonkeyTrump3D/Core/Autopilot.swift",
+      "sha256": "8a688f78de56c0e083fc7fa3333c371175b001d69974e17068f3dd16d9964e48"
+    },
+    {
+      "path": "src/DonkeyTrump3D/Core/Barrels.swift",
+      "sha256": "736b7631254a0db2bd5e224357e1f9f2989e3a864900d7ad630a4175e34cfe50"
+    },
+    {
+      "path": "src/DonkeyTrump3D/Core/CompletedRun.swift",
+      "sha256": "200ffdd97f56638373e5d903ccac604fec51951fe7c58cd841fe5218e15635ba"
+    },
+    {
+      "path": "src/DonkeyTrump3D/Core/IntroSoundtrack.swift",
+      "sha256": "9507246e1819f6b9b1579d593a97c17e4038c7c559570d444944605aa5cc2320"
+    },
+    {
+      "path": "src/DonkeyTrump3D/Core/IntroTimeline.swift",
+      "sha256": "46f9c26408a049bbc22226a5b8b0ff14f825d1ad79598a7a51be879f766f81ab"
+    },
+    {
+      "path": "src/DonkeyTrump3D/Core/Level.swift",
+      "sha256": "9eabab4e83a584f74dc41a15bbd208dd63a4843f78f9c0830bfb2568c4ef91f6"
+    },
+    {
+      "path": "src/DonkeyTrump3D/Core/Player.swift",
+      "sha256": "bc2bced2b24bb72b58cca3bc0055d3e6903849cec7ef3d0dcb67016878bc9c56"
+    },
+    {
+      "path": "src/DonkeyTrump3D/Core/Rules.swift",
+      "sha256": "6b6b7e5f025563dfe2b4be9f03807e7ea628005a7d1f994466f34120fd6f56e1"
+    },
+    {
+      "path": "src/DonkeyTrump3D/Core/Simulation.swift",
+      "sha256": "210ea28c4a2931abb2376b0795f0f65853852083fb4f2b15fb45dba51f9cb8b1"
+    },
+    {
+      "path": "src/DonkeyTrump3D/Core/Slope.swift",
+      "sha256": "af5706da092ee82d5e1e7f161a14980db824e15464ee2615409fb2816aea570d"
+    },
+    {
+      "path": "src/DonkeyTrump3D/Highscores/HighscoreConfiguration.swift",
+      "sha256": "7c31a70c4821c33e727e98d5d7459e53413b51fab2099ccb78f80c8bc396cbdc"
+    },
+    {
+      "path": "src/DonkeyTrump3D/Highscores/HighscoreCoordinator.swift",
+      "sha256": "ced451d43d617198915ed7e9300bcd028fb74067db39e43836a9f049e3542404"
+    },
+    {
+      "path": "src/DonkeyTrump3D/Highscores/HighscoreFixtures.swift",
+      "sha256": "353b1f9082edff3680198492d3b25b09d688947b428ad3e16f94d86e5c1946d7"
+    },
+    {
+      "path": "src/DonkeyTrump3D/Highscores/HighscoreIntegrationEvidence.swift",
+      "sha256": "5890beedd9882449bc5a2f2dc7b35748037c59ccb33bb3e4f89897091074ab01"
+    },
+    {
+      "path": "src/DonkeyTrump3D/Highscores/HighscoreModels.swift",
+      "sha256": "c055b14cb09a3882d6d0ea95eeac18fac56c47986552cda42ca17d40dd7b48e2"
+    },
+    {
+      "path": "src/DonkeyTrump3D/Highscores/HighscorePerformanceHarness.swift",
+      "sha256": "b736dc64340a16add65dccc1f184f4bbf0fc92d3fefb89dafabe859c3f38a777"
+    },
+    {
+      "path": "src/DonkeyTrump3D/Highscores/HighscoreService.swift",
+      "sha256": "eb9c8507c397ea46d7d307ab0f0f6869f26e5b778b30e2070d447807c3fbb023"
+    },
+    {
+      "path": "src/DonkeyTrump3D/Highscores/HighscoreState.swift",
+      "sha256": "f6428ea8b8631e8fb4b8933f45e7f6596ae94287b32653b58b16e9b9a0d861e5"
+    },
+    {
+      "path": "src/DonkeyTrump3D/Highscores/InstallationCredentialStore.swift",
+      "sha256": "f54f62096ea1f2cae73e6c56755cc6bf023672d2d407d96d369e84d541a62c4e"
+    },
+    {
+      "path": "src/DonkeyTrump3D/Highscores/ReportCoordinator.swift",
+      "sha256": "fbf6e13aa12666773d0aac5bab6bb37b94249427bdb7c3d0756175c951ac97cf"
+    },
+    {
+      "path": "src/DonkeyTrump3D/Highscores/ReportReceiptStore.swift",
+      "sha256": "68d822b356d8322452c697c30eeeeb27d2144496b97f9ae63325b1f94e213619"
+    },
+    {
+      "path": "src/DonkeyTrump3D/Highscores/ReportService.swift",
+      "sha256": "7853b983e7f2d58a4be023a2a1d40022b26adad310fa69bce0cca4d0b99281ea"
+    },
+    {
+      "path": "src/DonkeyTrump3D/Highscores/URLSessionHighscoreService.swift",
+      "sha256": "7cf3166cf4286af6cc6d45d1d867d771ab93bc8b1bd7f9e9e64108ef065f39d0"
+    },
+    {
+      "path": "src/DonkeyTrump3D/Input/Input.swift",
+      "sha256": "e0b374a4264703dccba247661e914e8da3dc7cb991718137fe4677d4fed2c73a"
+    },
+    {
+      "path": "src/DonkeyTrump3D/Render/Characters.swift",
+      "sha256": "68e623b2a0e60a2c6cff59f9775b59791f873353af578dd2cc5a139ea6668c08"
+    },
+    {
+      "path": "src/DonkeyTrump3D/Render/Effects.swift",
+      "sha256": "914d2cc48f814f1db0c6ee57db04e1ea3b26ad526a2b27e81cc2457a386ac34a"
+    },
+    {
+      "path": "src/DonkeyTrump3D/Render/Materials.swift",
+      "sha256": "6fdfe95ba87ee4597e207ea9e7a43f1d0d06c0ccf34e58a74f3163364a076cdd"
+    },
+    {
+      "path": "src/DonkeyTrump3D/Render/WorldBuilder.swift",
+      "sha256": "54bbbe30bc3154bba22110a7448bce2035d077700020f47045dab9ff456f4d59"
+    },
+    {
+      "path": "src/DonkeyTrump3D/Resources/Assets.xcassets/AccentColor.colorset/Contents.json",
+      "sha256": "4d88df49a9a316d2ba0c3c87657b5f22cd01f88e915a48c1943e419fc356a603"
+    },
+    {
+      "path": "src/DonkeyTrump3D/Resources/Assets.xcassets/AppIcon.appiconset/AppIcon-dark-1024.png",
+      "sha256": "ef399b8d2d5de6c4479b0b7cb94f3f5b00995b685abe164c75223e838088e61f"
+    },
+    {
+      "path": "src/DonkeyTrump3D/Resources/Assets.xcassets/AppIcon.appiconset/AppIcon-light-1024.png",
+      "sha256": "ef84dce478de5b7c4e4378ab05cf4aa682368923ca750a17474226aad8db58aa"
+    },
+    {
+      "path": "src/DonkeyTrump3D/Resources/Assets.xcassets/AppIcon.appiconset/AppIcon-tinted-1024.png",
+      "sha256": "8e612c3c100f708c9eac3f5b64cda205776582959d16d9ec4ee4253504a38130"
+    },
+    {
+      "path": "src/DonkeyTrump3D/Resources/Assets.xcassets/AppIcon.appiconset/Contents.json",
+      "sha256": "2a941780f0a7ecaa71d78375405c5e626c72e776d93f5bc83d665269202940b6"
+    },
+    {
+      "path": "src/DonkeyTrump3D/Resources/Assets.xcassets/Contents.json",
+      "sha256": "80b0b2e5ce5f42d06c9cea0234147e7f2bea58ef205c47ce3a82f0abe4b64465"
+    },
+    {
+      "path": "src/DonkeyTrump3D/Resources/Assets.xcassets/LaunchCover.imageset/Contents.json",
+      "sha256": "a6ed8ed89f18bb3aaddd71da03e2258f4a58c2d19ed360c94de54d6b1c188acd"
+    },
+    {
+      "path": "src/DonkeyTrump3D/Resources/Assets.xcassets/LaunchCover.imageset/DonkeyTrumpCover.png",
+      "sha256": "89a8112846e8cfa154feaf486f990d024af9d218b5b773b790eea84099e7674d"
+    },
+    {
+      "path": "src/DonkeyTrump3D/Resources/Audio/game-over.wav",
+      "sha256": "63aa99ffc58bc04bee1e2c0b7942118045ed677713c14eedc27c5bec7b3ae04c"
+    },
+    {
+      "path": "src/DonkeyTrump3D/Resources/Audio/hit.wav",
+      "sha256": "f2cb8a7160e6b234e5dbf7e019c1167c5ed5026ddaaceec245e5cb502e24d012"
+    },
+    {
+      "path": "src/DonkeyTrump3D/Resources/Audio/intro-climb.wav",
+      "sha256": "27d07f126006648d52fc850d368cda669db6dc7c61cf22e3dbdb9caaf5773e2b"
+    },
+    {
+      "path": "src/DonkeyTrump3D/Resources/Audio/intro-creak.wav",
+      "sha256": "ed6efc48c667697800f166c1a3f7e3bc967d980dc86206c79eeec316863065de"
+    },
+    {
+      "path": "src/DonkeyTrump3D/Resources/Audio/intro-drop.wav",
+      "sha256": "bb1e9a1e89aca5b23e77d3ea190494fbe7ddf8a660115bcde57f03d7f7520666"
+    },
+    {
+      "path": "src/DonkeyTrump3D/Resources/Audio/intro-impact.wav",
+      "sha256": "198d85eade5fb9d465a9933b4ae961080a8703cb05ad54f436fbb68736e35ef3"
+    },
+    {
+      "path": "src/DonkeyTrump3D/Resources/Audio/intro-ready.wav",
+      "sha256": "802b1c88c4d56dc9321db80e1a4f6389dbcf50d7b6cdb2b8573b619f9a5731dc"
+    },
+    {
+      "path": "src/DonkeyTrump3D/Resources/Audio/intro-sign.wav",
+      "sha256": "63ee2760a444b25f5b9be5e877fd23516bac4873c1f103cd5f7f050bf5317c2f"
+    },
+    {
+      "path": "src/DonkeyTrump3D/Resources/Audio/intro-stamp.wav",
+      "sha256": "3e6dc3d21a27da0a6bd35f423b1540668f4d38fdd0eaaca8413546158a2e6a08"
+    },
+    {
+      "path": "src/DonkeyTrump3D/Resources/Audio/intro-step.wav",
+      "sha256": "dc7d76b396975f95eb743327769e68f2f0592ec372dc3b1ce56092dfcb4879e5"
+    },
+    {
+      "path": "src/DonkeyTrump3D/Resources/Audio/intro.wav",
+      "sha256": "ac640bc4a5e032d592acb8cd45f6701f0032a633c5d19dde34edbe116750c6cb"
+    },
+    {
+      "path": "src/DonkeyTrump3D/Resources/Audio/jump.wav",
+      "sha256": "c8b29ebf9ee5b16bf278645a04d89cfe9a500d5b71938e52960872a0224249f2"
+    },
+    {
+      "path": "src/DonkeyTrump3D/Resources/Audio/level-start.wav",
+      "sha256": "24562d116bda36980b7e6c270a063fd261bc735ab010bce04375bcd08aba9b3b"
+    },
+    {
+      "path": "src/DonkeyTrump3D/Resources/Audio/menu-music.mp3",
+      "sha256": "55f763b5e79c4c7ffef3c37726d873164240901c9180cef67b6dade79d110d58"
+    },
+    {
+      "path": "src/DonkeyTrump3D/Resources/Audio/music-loop.wav",
+      "sha256": "cd7c4bb7e6a3b65977c3f466d2717deeac383116c4137472cb03fd466cdc4d73"
+    },
+    {
+      "path": "src/DonkeyTrump3D/Resources/Audio/rescue.wav",
+      "sha256": "703e7e61031cc4ef55702255d4038739d2afe6606f770131c452e92503d67ecf"
+    },
+    {
+      "path": "src/DonkeyTrump3D/Resources/Audio/retry.wav",
+      "sha256": "b2f665830b9c9e97be4cfa887161919b7284e16f59f428faec2119689283f738"
+    },
+    {
+      "path": "src/DonkeyTrump3D/Resources/Audio/score.wav",
+      "sha256": "18784aeb05dca9078a48a3c55a76cbf9ca7c49ea7ce6fad7bd7b6ffdeb1dfef5"
+    },
+    {
+      "path": "src/DonkeyTrump3D/Resources/Audio/step.wav",
+      "sha256": "f555535403f295ee5ff19ca62dd60f9fc5974b41e7254892f0636349732da3cd"
+    },
+    {
+      "path": "src/DonkeyTrump3D/Resources/Audio/throw.wav",
+      "sha256": "da5084e9ad36d6b5d61ffc649b9c8215d29dd89e07a8a5f85ba91f46ac2c1cfd"
+    },
+    {
+      "path": "src/DonkeyTrump3D/Resources/Audio/victory.wav",
+      "sha256": "75fec75de7df3b5cac6001381af3d845dc54a5d7ec8bc9da7d0c711a140cd9e6"
+    },
+    {
+      "path": "src/DonkeyTrump3D/Resources/LaunchScreen.storyboard",
+      "sha256": "1b6826576f84d20aeaa7d646832c30a9deaceb6481173c2f4cc4f03347763110"
+    },
+    {
+      "path": "src/DonkeyTrump3D/Resources/Levels/level1.json",
+      "sha256": "0b0f14448fe1c1ddcfc6411acf57e6a55db6f38da0feb1ea903ddcc3868ddf2e"
+    },
+    {
+      "path": "src/DonkeyTrump3D/Resources/Levels/level2.json",
+      "sha256": "2a8d5c561b653cd698d31237c09a49af942e69e5b7dd707a3683ffb636f3b93e"
+    },
+    {
+      "path": "src/DonkeyTrump3D/Resources/Levels/level3.json",
+      "sha256": "243662361d70533e865661a5c2fd8726e0d0c66e0c36a08cff53007976e39b7d"
+    },
+    {
+      "path": "src/DonkeyTrump3D/Resources/PrivacyInfo.xcprivacy",
+      "sha256": "1fe572634da02ed578e97b23adb8c4b62f343c1b7f5795978d2c75e3e4158c94"
+    },
+    {
+      "path": "src/DonkeyTrump3D/UI/Copy.swift",
+      "sha256": "fc5a464f0fb57a60cd3f4c2a0ac557783af70724045d6e58b94d5158812323d9"
+    },
+    {
+      "path": "src/DonkeyTrump3D/UI/HighscoreListView.swift",
+      "sha256": "02af78ecf40e83537871781023a756b90f2dc779d5d8f96ba236a35e9c759354"
+    },
+    {
+      "path": "src/DonkeyTrump3D/UI/HighscoreNameEntryView.swift",
+      "sha256": "d672e3871a346fe31902b3c88b9e4ca98d8f25f0d06e3aaaa6a34760e7d9bfa3"
+    },
+    {
+      "path": "src/DonkeyTrump3D/UI/HighscoreReportView.swift",
+      "sha256": "ab05f6098b4e16391a2bc4b92aedfb9b8902e16e6cc286af3c87077308354ea0"
+    },
+    {
+      "path": "src/DonkeyTrump3D/UI/LoadingScreenView.swift",
+      "sha256": "dae4c491bbffae852e66158544d20c7483069bd0d67a21a3a1e5e7ffc056cd93"
+    },
+    {
+      "path": "src/DonkeyTrump3D/UI/ReportsView.swift",
+      "sha256": "23691a23db7a99d9b4a935c87541b3af02d7bb8f3c9010d4a88eebf2b26c12be"
+    },
+    {
+      "path": "src/DonkeyTrump3D/UI/RootView.swift",
+      "sha256": "ee1e50b9e01cf9a8e7756160a1a3bf4a3da82fc41d8cc30a10f22af352df042e"
+    },
+    {
+      "path": "src/DonkeyTrump3D.xcodeproj/xcshareddata/xcschemes/DonkeyTrump3D AppStoreCapture.xcscheme",
+      "sha256": "96de9901d87ce2fa32363e748fae91b0d110df303014843cc02a4f13e44ccf06"
+    },
+    {
+      "path": "src/DonkeyTrump3D.xcodeproj/xcshareddata/xcschemes/DonkeyTrump3D DEV.xcscheme",
+      "sha256": "50cfdcf7b1276765db543511110c30ff8437e7852c779abecd2d1b12214ccdc5"
+    },
+    {
+      "path": "src/DonkeyTrump3D.xcodeproj/xcshareddata/xcschemes/DonkeyTrump3D Local.xcscheme",
+      "sha256": "3e7cc5fe41f513c38fbf37db70de876e68009150a70b68900ca844434569d94a"
+    },
+    {
+      "path": "src/DonkeyTrump3D.xcodeproj/xcshareddata/xcschemes/DonkeyTrump3D PROD.xcscheme",
+      "sha256": "eec1865c143456331070cddc97932bb1b9d962bce84a0df940811fc1ab88f5ad"
+    },
+    {
+      "path": "src/DonkeyTrump3D.xcodeproj/xcshareddata/xcschemes/DonkeyTrump3D.xcscheme",
+      "sha256": "50cfdcf7b1276765db543511110c30ff8437e7852c779abecd2d1b12214ccdc5"
+    }
+  ]
+}

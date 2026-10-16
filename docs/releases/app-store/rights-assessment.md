@@ -25,3 +25,11 @@ Next action: incorporate genuine owner provenance/licence facts; inspect final i
 ## Owner attestation received
 
 Owner response: “Det har jeg \"Jesper Bjerre\". Lavet med AI værktøjer.” Recorded as Jesper Bjerre's assertion of rights to the supplied cover and music, produced using AI tools. This resolves the missing rights-holder answer; tool/model/date and detailed licence terms were not supplied. Do not invent them. Final whole-product naming/content assessment and candidate media still need reconciliation before distribution. Preserve this new evidence alongside the earlier missing-input observation.
+
+## Final artwork candidate reassessment — 2026-09-29
+
+The dated [1.0 (2) reassessment](1.0-2/content-rights.md) covers the newly supplied
+icon and final genuine store screenshots/catalog. It supersedes this record's old
+claims that final store assets or moderation implementation do not yet exist.
+Historical findings and owner answers above remain historical; current declaration
+basis and unresolved inputs are recorded in the new candidate document.

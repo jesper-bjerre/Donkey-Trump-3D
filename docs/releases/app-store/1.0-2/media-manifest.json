@@ -1,0 +1,99 @@
+{
+  "candidateId": "com.hyldenbrandt.donkeytrump3d/1.0/2",
+  "configurationHash": "8e793ba3f2098aa718ee1439039e81a0597d8265c16c6ea78b4d528e457d994a",
+  "language": "en-US",
+  "displaySet": "iPhone 6.9-inch (6.5-inch inherits)",
+  "screenshots": [
+    {
+      "order": 1,
+      "file": "screenshots-en/01-overview.jpg",
+      "source": "raw-captures/01-overview.png",
+      "sha256": "1034a502e07a9f9ab4accd5344337c67a70ce7a866502866fbf42f55a03b12c7",
+      "sourceSHA256": "00fe6f7cf2e4cc5c288f22faef04a3e3fe95f2d9b0ef702b9339f6faa5761f13",
+      "editableSource": "screenshot-layouts/01-overview.svg",
+      "editableSHA256": "5967b93bd50ba8eaba0213db22e89bfc7f88e94d2ae616c2d0378854403ce2c8",
+      "caption": "JUMP INTO THE CHAOS",
+      "provenance": "Native iPhone 17 Pro Max simulator iOS 26.5, AppStoreCapture 1.0 (2), normal controls and isolated DEV synthetic starters; owner artwork framing",
+      "nativeDimensions": [
+        2868,
+        1320
+      ],
+      "remoteSlot": "iPhone 6.9-inch / 1",
+      "remoteObserved": "2026-09-29"
+    },
+    {
+      "order": 2,
+      "file": "screenshots-en/02-barrels.jpg",
+      "source": "raw-captures/02-barrels.png",
+      "sha256": "f2c27b36128e91bb2b59bac4bb906beac14c832bffa0489a197a72614f02ff75",
+      "sourceSHA256": "32cecef1d5a18f4855db1c26361861ad096ce6d8c7edf9a8d622032d0f147559",
+      "editableSource": "screenshot-layouts/02-barrels.svg",
+      "editableSHA256": "d039f99fa07edc71a239c0a49d6c30eff08b6fa0fc73a27428c27a82255cafbf",
+      "caption": "DODGE THE BARRELS",
+      "provenance": "Native iPhone 17 Pro Max simulator iOS 26.5, AppStoreCapture 1.0 (2), normal controls and isolated DEV synthetic starters; owner artwork framing",
+      "nativeDimensions": [
+        2868,
+        1320
+      ],
+      "remoteSlot": "iPhone 6.9-inch / 2",
+      "remoteObserved": "2026-09-29"
+    },
+    {
+      "order": 3,
+      "file": "screenshots-en/03-controls.jpg",
+      "source": "raw-captures/03-controls.png",
+      "sha256": "025894765ca57c9cc447003f96e58fca702415764b022edb5e057c14d5400aab",
+      "sourceSHA256": "9e7032a851c3113ba4aed0eb0663ce5e9d2fb1dd010c280fc04e3eb67f91ab13",
+      "editableSource": "screenshot-layouts/03-controls.svg",
+      "editableSHA256": "137314f04d764538b27318c756ea8e79e74623d83879bebf3d8197700d1617ee",
+      "caption": "PLAY YOUR WAY",
+      "provenance": "Native iPhone 17 Pro Max simulator iOS 26.5, AppStoreCapture 1.0 (2), normal controls and isolated DEV synthetic starters; owner artwork framing",
+      "nativeDimensions": [
+        2868,
+        1320
+      ],
+      "remoteSlot": "iPhone 6.9-inch / 3",
+      "remoteObserved": "2026-09-29"
+    },
+    {
+      "order": 4,
+      "file": "screenshots-en/04-title.jpg",
+      "source": "raw-captures/04-title.png",
+      "sha256": "dd131ee5e5225bedca199c4bafe1c1cb60eab8a8750c30181bad0c9b5f3d0501",
+      "sourceSHA256": "fc1c7b7f3bc8dd49e6808b85a78145980a75b0a159ac1d0363685cd7474fe583",
+      "editableSource": "screenshot-layouts/04-title.svg",
+      "editableSHA256": "5a559fc06f66fcae3eec68d8ca1c4c9b1eb53feb1c52437805da029b59374bb5",
+      "caption": "CLIMB. DODGE. RESCUE.",
+      "provenance": "Native iPhone 17 Pro Max simulator iOS 26.5, AppStoreCapture 1.0 (2), normal controls and isolated DEV synthetic starters; owner artwork framing",
+      "nativeDimensions": [
+        2868,
+        1320
+      ],
+      "remoteSlot": "iPhone 6.9-inch / 4",
+      "remoteObserved": "2026-09-29"
+    },
+    {
+      "order": 5,
+      "file": "screenshots-en/05-highscores.jpg",
+      "source": "raw-captures/05-highscores.png",
+      "sha256": "5c5145e542fde97175f628d8f7b797fdf43ad611c2b41470e09ae6d8953de89f",
+      "sourceSHA256": "2d2eb566b5d1e53ec3bd10b1d51548a57caf2123f98d643af3994b3a29a0c5c5",
+      "editableSource": "screenshot-layouts/05-highscores.svg",
+      "editableSHA256": "de99a3a46e586913dc4ed1959c24566affd1ecc1291099f4d0e733d0dbf8fd8f",
+      "caption": "CHASE YOUR BEST",
+      "provenance": "Native iPhone 17 Pro Max simulator iOS 26.5, AppStoreCapture 1.0 (2), normal controls and isolated DEV synthetic starters; owner artwork framing",
+      "nativeDimensions": [
+        2868,
+        1320
+      ],
+      "remoteSlot": "iPhone 6.9-inch / 5",
+      "remoteObserved": "2026-09-29"
+    }
+  ],
+  "icon": {
+    "file": "../../../../src/DonkeyTrump3D/Resources/Assets.xcassets/AppIcon.appiconset/AppIcon-light-1024.png",
+    "sha256": "ef84dce478de5b7c4e4378ab05cf4aa682368923ca750a17474226aad8db58aa"
+  },
+  "candidateSourceManifest": "candidate-source-manifest.json",
+  "candidateSourceManifestSHA256": "b79d672c2088363db10fa2a3455a38d5d216526060b4f4bb584544f65daf695e"
+}

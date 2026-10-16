@@ -1,0 +1,128 @@
+path,bytes,width,height,mode,role
+01_App_Icons/AppIcon-dark-1024.png,1531794,1024,1024,RGB,app icon export
+01_App_Icons/AppIcon-light-1024.png,1625879,1024,1024,RGB,app icon export
+01_App_Icons/AppIcon-tinted-1024.png,1610322,1024,1024,RGB,app icon export
+01_App_Icons/PNG_Sizes/dark/AppIcon-120.png,26973,120,120,RGB,app icon export
+01_App_Icons/PNG_Sizes/dark/AppIcon-180.png,55773,180,180,RGB,app icon export
+01_App_Icons/PNG_Sizes/dark/AppIcon-40.png,3903,40,40,RGB,app icon export
+01_App_Icons/PNG_Sizes/dark/AppIcon-58.png,7484,58,58,RGB,app icon export
+01_App_Icons/PNG_Sizes/dark/AppIcon-60.png,7933,60,60,RGB,app icon export
+01_App_Icons/PNG_Sizes/dark/AppIcon-80.png,13159,80,80,RGB,app icon export
+01_App_Icons/PNG_Sizes/dark/AppIcon-87.png,15256,87,87,RGB,app icon export
+01_App_Icons/PNG_Sizes/light/AppIcon-120.png,27939,120,120,RGB,app icon export
+01_App_Icons/PNG_Sizes/light/AppIcon-180.png,57442,180,180,RGB,app icon export
+01_App_Icons/PNG_Sizes/light/AppIcon-40.png,4088,40,40,RGB,app icon export
+01_App_Icons/PNG_Sizes/light/AppIcon-58.png,7815,58,58,RGB,app icon export
+01_App_Icons/PNG_Sizes/light/AppIcon-60.png,8278,60,60,RGB,app icon export
+01_App_Icons/PNG_Sizes/light/AppIcon-80.png,13699,80,80,RGB,app icon export
+01_App_Icons/PNG_Sizes/light/AppIcon-87.png,15833,87,87,RGB,app icon export
+01_App_Icons/PNG_Sizes/tinted/AppIcon-120.png,26924,120,120,RGB,app icon export
+01_App_Icons/PNG_Sizes/tinted/AppIcon-180.png,54947,180,180,RGB,app icon export
+01_App_Icons/PNG_Sizes/tinted/AppIcon-40.png,4021,40,40,RGB,app icon export
+01_App_Icons/PNG_Sizes/tinted/AppIcon-58.png,7626,58,58,RGB,app icon export
+01_App_Icons/PNG_Sizes/tinted/AppIcon-60.png,8090,60,60,RGB,app icon export
+01_App_Icons/PNG_Sizes/tinted/AppIcon-80.png,13307,80,80,RGB,app icon export
+01_App_Icons/PNG_Sizes/tinted/AppIcon-87.png,15394,87,87,RGB,app icon export
+02_Xcode/Assets.xcassets/AppIcon.appiconset/AppIcon-dark-1024.png,1531794,1024,1024,RGB,Xcode integration asset
+02_Xcode/Assets.xcassets/AppIcon.appiconset/AppIcon-light-1024.png,1625879,1024,1024,RGB,Xcode integration asset
+02_Xcode/Assets.xcassets/AppIcon.appiconset/AppIcon-tinted-1024.png,1610322,1024,1024,RGB,Xcode integration asset
+02_Xcode/Assets.xcassets/AppIcon.appiconset/Contents.json,720,,,,Xcode integration asset
+02_Xcode/Assets.xcassets/Contents.json,60,,,,Xcode integration asset
+02_Xcode/Assets.xcassets/DonkeyTrumpLogo.imageset/Contents.json,159,,,,Xcode integration asset
+02_Xcode/Assets.xcassets/DonkeyTrumpLogo.imageset/DonkeyTrumpLogo.png,1730130,1600,800,RGBA,Xcode integration asset
+02_Xcode/Assets.xcassets/GameBackground.colorset/Contents.json,317,,,,Xcode integration asset
+02_Xcode/Assets.xcassets/LoadingLandscape.imageset/Contents.json,160,,,,Xcode integration asset
+02_Xcode/Assets.xcassets/LoadingLandscape.imageset/LoadingLandscape.png,5593808,2868,1320,RGB,Xcode integration asset
+02_Xcode/Assets.xcassets/LoadingPortrait.imageset/Contents.json,159,,,,Xcode integration asset
+02_Xcode/Assets.xcassets/LoadingPortrait.imageset/LoadingPortrait.png,5586286,1320,2868,RGB,Xcode integration asset
+02_Xcode/Legacy_Alternative/AppIcon.appiconset/AppStore-1024.png,1625879,1024,1024,RGB,Xcode integration asset
+02_Xcode/Legacy_Alternative/AppIcon.appiconset/Contents.json,1161,,,,Xcode integration asset
+02_Xcode/Legacy_Alternative/AppIcon.appiconset/Icon-20pt@2x.png,4088,40,40,RGB,Xcode integration asset
+02_Xcode/Legacy_Alternative/AppIcon.appiconset/Icon-20pt@3x.png,8278,60,60,RGB,Xcode integration asset
+02_Xcode/Legacy_Alternative/AppIcon.appiconset/Icon-29pt@2x.png,7815,58,58,RGB,Xcode integration asset
+02_Xcode/Legacy_Alternative/AppIcon.appiconset/Icon-29pt@3x.png,15833,87,87,RGB,Xcode integration asset
+02_Xcode/Legacy_Alternative/AppIcon.appiconset/Icon-40pt@2x.png,13699,80,80,RGB,Xcode integration asset
+02_Xcode/Legacy_Alternative/AppIcon.appiconset/Icon-40pt@3x.png,27939,120,120,RGB,Xcode integration asset
+02_Xcode/Legacy_Alternative/AppIcon.appiconset/Icon-60pt@2x.png,27939,120,120,RGB,Xcode integration asset
+02_Xcode/Legacy_Alternative/AppIcon.appiconset/Icon-60pt@3x.png,57442,180,180,RGB,Xcode integration asset
+03_Game_Artwork/Brand/DonkeyTrump-Logo-1600x800.png,1730130,1600,800,RGBA,runtime artwork/brand; not a gameplay capture
+03_Game_Artwork/Brand/DonkeyTrump-Logo-400x200.png,141118,400,200,RGBA,runtime artwork/brand; not a gameplay capture
+03_Game_Artwork/Brand/DonkeyTrump-Logo-800x400.png,493460,800,400,RGBA,runtime artwork/brand; not a gameplay capture
+03_Game_Artwork/DonkeyTrump-1920x1080.png,3218704,1920,1080,RGB,runtime artwork/brand; not a gameplay capture
+03_Game_Artwork/Landscape/Loading-2436x1125.png,4317803,2436,1125,RGB,runtime artwork/brand; not a gameplay capture
+03_Game_Artwork/Landscape/Loading-2532x1170.png,4595821,2532,1170,RGB,runtime artwork/brand; not a gameplay capture
+03_Game_Artwork/Landscape/Loading-2556x1179.png,4662014,2556,1179,RGB,runtime artwork/brand; not a gameplay capture
+03_Game_Artwork/Landscape/Loading-2622x1206.png,4844107,2622,1206,RGB,runtime artwork/brand; not a gameplay capture
+03_Game_Artwork/Landscape/Loading-2688x1242.png,5056831,2688,1242,RGB,runtime artwork/brand; not a gameplay capture
+03_Game_Artwork/Landscape/Loading-2778x1284.png,5331520,2778,1284,RGB,runtime artwork/brand; not a gameplay capture
+03_Game_Artwork/Landscape/Loading-2796x1290.png,5381945,2796,1290,RGB,runtime artwork/brand; not a gameplay capture
+03_Game_Artwork/Landscape/Loading-2868x1320.png,5593808,2868,1320,RGB,runtime artwork/brand; not a gameplay capture
+03_Game_Artwork/Portrait/Artwork-1170x2532.png,4594887,1170,2532,RGB,runtime artwork/brand; not a gameplay capture
+03_Game_Artwork/Portrait/Artwork-1242x2688.png,5055692,1242,2688,RGB,runtime artwork/brand; not a gameplay capture
+03_Game_Artwork/Portrait/Artwork-1290x2796.png,5376159,1290,2796,RGB,runtime artwork/brand; not a gameplay capture
+03_Game_Artwork/Portrait/Artwork-1320x2868.png,5586286,1320,2868,RGB,runtime artwork/brand; not a gameplay capture
+04_AppStore_Screenshots/CAPTURE_GUIDE.md,2601,,,,reference/source
+04_AppStore_Screenshots/TEMPLATES_NOT_FOR_UPLOAD/6.5_landscape/da/01-overview.png,242016,2688,1242,RGB,template requiring real gameplay capture
+04_AppStore_Screenshots/TEMPLATES_NOT_FOR_UPLOAD/6.5_landscape/da/01-overview.svg,189950,,,,template requiring real gameplay capture
+04_AppStore_Screenshots/TEMPLATES_NOT_FOR_UPLOAD/6.5_landscape/da/02-barrels.png,240262,2688,1242,RGB,template requiring real gameplay capture
+04_AppStore_Screenshots/TEMPLATES_NOT_FOR_UPLOAD/6.5_landscape/da/02-barrels.svg,189948,,,,template requiring real gameplay capture
+04_AppStore_Screenshots/TEMPLATES_NOT_FOR_UPLOAD/6.5_landscape/da/03-climb.png,239470,2688,1242,RGB,template requiring real gameplay capture
+04_AppStore_Screenshots/TEMPLATES_NOT_FOR_UPLOAD/6.5_landscape/da/03-climb.svg,189944,,,,template requiring real gameplay capture
+04_AppStore_Screenshots/TEMPLATES_NOT_FOR_UPLOAD/6.5_landscape/da/04-rescue.png,235313,2688,1242,RGB,template requiring real gameplay capture
+04_AppStore_Screenshots/TEMPLATES_NOT_FOR_UPLOAD/6.5_landscape/da/04-rescue.svg,189952,,,,template requiring real gameplay capture
+04_AppStore_Screenshots/TEMPLATES_NOT_FOR_UPLOAD/6.5_landscape/da/05-challenge.png,239985,2688,1242,RGB,template requiring real gameplay capture
+04_AppStore_Screenshots/TEMPLATES_NOT_FOR_UPLOAD/6.5_landscape/da/05-challenge.svg,189948,,,,template requiring real gameplay capture
+04_AppStore_Screenshots/TEMPLATES_NOT_FOR_UPLOAD/6.5_landscape/en/01-overview.png,240664,2688,1242,RGB,template requiring real gameplay capture
+04_AppStore_Screenshots/TEMPLATES_NOT_FOR_UPLOAD/6.5_landscape/en/01-overview.svg,189940,,,,template requiring real gameplay capture
+04_AppStore_Screenshots/TEMPLATES_NOT_FOR_UPLOAD/6.5_landscape/en/02-barrels.png,239914,2688,1242,RGB,template requiring real gameplay capture
+04_AppStore_Screenshots/TEMPLATES_NOT_FOR_UPLOAD/6.5_landscape/en/02-barrels.svg,189934,,,,template requiring real gameplay capture
+04_AppStore_Screenshots/TEMPLATES_NOT_FOR_UPLOAD/6.5_landscape/en/03-climb.png,232691,2688,1242,RGB,template requiring real gameplay capture
+04_AppStore_Screenshots/TEMPLATES_NOT_FOR_UPLOAD/6.5_landscape/en/03-climb.svg,189932,,,,template requiring real gameplay capture
+04_AppStore_Screenshots/TEMPLATES_NOT_FOR_UPLOAD/6.5_landscape/en/04-rescue.png,238811,2688,1242,RGB,template requiring real gameplay capture
+04_AppStore_Screenshots/TEMPLATES_NOT_FOR_UPLOAD/6.5_landscape/en/04-rescue.svg,189936,,,,template requiring real gameplay capture
+04_AppStore_Screenshots/TEMPLATES_NOT_FOR_UPLOAD/6.5_landscape/en/05-challenge.png,237835,2688,1242,RGB,template requiring real gameplay capture
+04_AppStore_Screenshots/TEMPLATES_NOT_FOR_UPLOAD/6.5_landscape/en/05-challenge.svg,189936,,,,template requiring real gameplay capture
+04_AppStore_Screenshots/TEMPLATES_NOT_FOR_UPLOAD/6.9_landscape/da/01-overview.png,253240,2868,1320,RGB,template requiring real gameplay capture
+04_AppStore_Screenshots/TEMPLATES_NOT_FOR_UPLOAD/6.9_landscape/da/01-overview.svg,189952,,,,template requiring real gameplay capture
+04_AppStore_Screenshots/TEMPLATES_NOT_FOR_UPLOAD/6.9_landscape/da/02-barrels.png,251521,2868,1320,RGB,template requiring real gameplay capture
+04_AppStore_Screenshots/TEMPLATES_NOT_FOR_UPLOAD/6.9_landscape/da/02-barrels.svg,189950,,,,template requiring real gameplay capture
+04_AppStore_Screenshots/TEMPLATES_NOT_FOR_UPLOAD/6.9_landscape/da/03-climb.png,250723,2868,1320,RGB,template requiring real gameplay capture
+04_AppStore_Screenshots/TEMPLATES_NOT_FOR_UPLOAD/6.9_landscape/da/03-climb.svg,189946,,,,template requiring real gameplay capture
+04_AppStore_Screenshots/TEMPLATES_NOT_FOR_UPLOAD/6.9_landscape/da/04-rescue.png,247204,2868,1320,RGB,template requiring real gameplay capture
+04_AppStore_Screenshots/TEMPLATES_NOT_FOR_UPLOAD/6.9_landscape/da/04-rescue.svg,189954,,,,template requiring real gameplay capture
+04_AppStore_Screenshots/TEMPLATES_NOT_FOR_UPLOAD/6.9_landscape/da/05-challenge.png,251266,2868,1320,RGB,template requiring real gameplay capture
+04_AppStore_Screenshots/TEMPLATES_NOT_FOR_UPLOAD/6.9_landscape/da/05-challenge.svg,189950,,,,template requiring real gameplay capture
+04_AppStore_Screenshots/TEMPLATES_NOT_FOR_UPLOAD/6.9_landscape/en/01-overview.png,251815,2868,1320,RGB,template requiring real gameplay capture
+04_AppStore_Screenshots/TEMPLATES_NOT_FOR_UPLOAD/6.9_landscape/en/01-overview.svg,189942,,,,template requiring real gameplay capture
+04_AppStore_Screenshots/TEMPLATES_NOT_FOR_UPLOAD/6.9_landscape/en/02-barrels.png,251004,2868,1320,RGB,template requiring real gameplay capture
+04_AppStore_Screenshots/TEMPLATES_NOT_FOR_UPLOAD/6.9_landscape/en/02-barrels.svg,189936,,,,template requiring real gameplay capture
+04_AppStore_Screenshots/TEMPLATES_NOT_FOR_UPLOAD/6.9_landscape/en/03-climb.png,244211,2868,1320,RGB,template requiring real gameplay capture
+04_AppStore_Screenshots/TEMPLATES_NOT_FOR_UPLOAD/6.9_landscape/en/03-climb.svg,189934,,,,template requiring real gameplay capture
+04_AppStore_Screenshots/TEMPLATES_NOT_FOR_UPLOAD/6.9_landscape/en/04-rescue.png,249737,2868,1320,RGB,template requiring real gameplay capture
+04_AppStore_Screenshots/TEMPLATES_NOT_FOR_UPLOAD/6.9_landscape/en/04-rescue.svg,189938,,,,template requiring real gameplay capture
+04_AppStore_Screenshots/TEMPLATES_NOT_FOR_UPLOAD/6.9_landscape/en/05-challenge.png,248998,2868,1320,RGB,template requiring real gameplay capture
+04_AppStore_Screenshots/TEMPLATES_NOT_FOR_UPLOAD/6.9_landscape/en/05-challenge.svg,189938,,,,template requiring real gameplay capture
+04_AppStore_Screenshots/build_screenshots.py,3667,,,,reference/source
+04_AppStore_Screenshots/template_map.json,9261,,,,reference/source
+05_Marketing/Portrait-Poster-1320x2868.jpg,1898228,1320,2868,RGB,marketing artwork; not an App Store screenshot
+05_Marketing/Social-Avatar-1080x1080.jpg,546635,1080,1080,RGB,marketing artwork; not an App Store screenshot
+05_Marketing/Social-Link-1200x630.jpg,632657,1200,630,RGB,marketing artwork; not an App Store screenshot
+05_Marketing/Story-1080x1920.jpg,1152138,1080,1920,RGB,marketing artwork; not an App Store screenshot
+05_Marketing/Trailer-Thumbnail-1920x1080.jpg,1118424,1920,1080,RGB,marketing artwork; not an App Store screenshot
+06_Source_Masters/generation_prompts.json,6795,,,,reference/source
+06_Source_Masters/hero_16_9_master.png,2592651,1672,941,RGB,reference/source
+06_Source_Masters/icon_dark_master.png,2314608,1254,1254,RGB,reference/source
+06_Source_Masters/icon_light_master.png,2476960,1254,1254,RGB,reference/source
+06_Source_Masters/icon_tinted_master.png,2415490,1254,1254,RGB,reference/source
+06_Source_Masters/landscape_master.png,2770416,1848,851,RGB,reference/source
+06_Source_Masters/logo_master.png,2022234,1774,887,RGBA,reference/source
+06_Source_Masters/lokke_master.png,2268662,1536,1024,RGB,reference/source
+06_Source_Masters/portrait_master.png,2774673,851,1849,RGB,reference/source
+06_Source_Masters/source_dimensions.json,395,,,,reference/source
+06_Source_Masters/trump_master.png,2330308,1536,1024,RGB,reference/source
+06_Source_Masters/vivian_master.png,2686842,1536,1024,RGB,reference/source
+07_Character_References/lokke-character-sheet.png,2268662,1536,1024,RGB,reference/source
+07_Character_References/trump-character-sheet.png,2330308,1536,1024,RGB,reference/source
+07_Character_References/vivian-character-sheet.png,2686842,1536,1024,RGB,reference/source
+README.md,7349,,,,reference/source
+START_HERE.html,4244,,,,reference/source

@@ -54,8 +54,52 @@ actor DelayedReportService: ReportService {
     func complete(_ receipt: ReportReceipt) { continuation?.resume(returning: receipt); continuation = nil }
 }
 
+actor RejectedReportService: ReportService {
+    let code: String
+    private(set) var posts = 0
+    init(code: String) { self.code = code }
+    func submit(_ report: ReportSubmission) async throws -> ReportReceipt {
+        posts += 1
+        throw HighscoreServiceError.rejected(.init(type: "about:blank", title: "Unavailable", status: 503, code: code, errors: nil))
+    }
+    func status(_ id: UUID) async throws -> ReportReceipt { throw HighscoreServiceError.unavailable }
+}
+
 @Suite("Report cancellation", .serialized) @MainActor
 struct ReportCoordinatorTests {
+    @Test(arguments: ["report_unconfirmed", "internal_error", "future_server_error"])
+    func unknownServerFailuresNeverClaimNoReportWasAccepted(code: String) async throws {
+        let folder = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: folder) }
+        let service = RejectedReportService(code: code)
+        let store = ReportReceiptStore(file: folder.appendingPathComponent("receipts"))
+        let coordinator = ReportCoordinator(service: service, store: store)
+        coordinator.open(entryId: UUID())
+        coordinator.send(reason: .other)
+        #expect(await eventually {
+            if case .result(_, let message) = coordinator.state { message.contains("could not be confirmed") }
+            else { false }
+        })
+        coordinator.close()
+        coordinator.history()
+        #expect(await eventually { coordinator.receipts.count == 1 })
+        #expect(await service.posts == 1)
+    }
+
+    @Test func confirmedRejectionRemainsDistinctFromAnUncertainWrite() async throws {
+        let folder = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: folder) }
+        let service = RejectedReportService(code: "moderation_capacity")
+        let coordinator = ReportCoordinator(service: service, store: ReportReceiptStore(file: folder.appendingPathComponent("receipts")))
+        coordinator.open(entryId: UUID())
+        coordinator.send(reason: .other)
+        #expect(await eventually {
+            if case .result(_, let message) = coordinator.state { message.contains("not accepted") }
+            else { false }
+        })
+        #expect(await service.posts == 1)
+    }
+
     @Test func deadlineRetainsOnlyReceiptAndLateResultCannotReopenUI() async throws {
         let folder = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         defer { try? FileManager.default.removeItem(at: folder) }
