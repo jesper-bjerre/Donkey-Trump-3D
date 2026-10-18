@@ -1,0 +1,30 @@
+{
+  "environment": "PROD",
+  "manualToolPath": "/home/site/tools/highscore-admin/current/highscore-admin.sh",
+  "installedAssemblySha256": "0c5da81320e936dcbd8ab818c9fe5c67e1b2d99589e186766882ad0bca3b7cc6",
+  "httpAssemblyBeforeSha256": "d2c2eb54e354f5d01cdc03b1712a7b66ab239e0756937b9484b77491414d18b7",
+  "httpAssemblyAfterSha256": "d2c2eb54e354f5d01cdc03b1712a7b66ab239e0756937b9484b77491414d18b7",
+  "runtime": "Microsoft.NETCore.App and Microsoft.AspNetCore.App 10.0.12",
+  "AzureStorageBlobs": "12.29.2",
+  "AzureIdentity": "1.21.0",
+  "bashSyntaxChecks": "bash -n wrapper and installer: success",
+  "installation": "versioned private tool directory and current link installed, HTTP app not changed or restarted",
+  "manualEntry": {
+    "exit": 0,
+    "entryId": "8070dc7a-3b76-4b66-ba52-cf5c260846cd",
+    "rank": 4,
+    "displayName": "ErikB",
+    "score": 4000,
+    "etag": "\"0x8DF2B7BF4A6EF9E\""
+  },
+  "manualRenamePreview": {
+    "exit": 0,
+    "preview": true,
+    "changed": false,
+    "applyFlagUsed": false,
+    "etag": "\"0x8DF2B7BF4A6EF9E\""
+  },
+  "testsRun": false,
+  "actualRenameThroughNewTool": "Not executed; no additional highscore mutation was requested",
+  "build": "SDK10.0.401 build backend.tests Release and publish backend Release: success, zero warnings/errors; test execution not invoked"
+}

@@ -1,0 +1,12 @@
+{
+  "finding": "C-01",
+  "source": "src/backend.tests/HighscoreAdministrationTests.cs",
+  "utf8ComposedNameOccurrences": 2,
+  "expectedCodePoints": "U+0052 U+0065 U+006E U+00E9",
+  "expectedUtf8Hex": "52 65 6E C3 A9",
+  "replacementCharactersInSource": false,
+  "guideArrowCodePoint": "U+2192",
+  "guideReplacementCharacters": false,
+  "sourceSha256": "30438c139c50f751dceda12cd680da6d42856edc28aeea30b15dfad51f5f1b63",
+  "disposition": "No source defect. Packet stdin transport damaged non-ASCII text. Reviewer explicitly permits closing C-01 with no action when source is U+00E9; lead confirms that condition and agrees. Candidate unchanged, no second review required."
+}

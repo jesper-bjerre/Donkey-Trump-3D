@@ -1,0 +1,23 @@
+{
+  "checkedAtUtc": "2026-10-16T11:52:50.9027311Z",
+  "endpoint": "https://donkeytrump-api-p.azurewebsites.net/api/v1/highscores",
+  "target": {
+    "entryId": "8070dc7a-3b76-4b66-ba52-cf5c260846cd",
+    "rank": 4,
+    "displayName": "ErikB",
+    "score": 4000
+  },
+  "entryCount": 35,
+  "revision": "\"0x8DF2B7BF4A6EF9E\"",
+  "operation": {
+    "count": 35,
+    "schema": 2,
+    "beforeETag": "\"0x8DF2B7B5B492783\"",
+    "savedETag": "\"0x8DF2B7BF4A6EF9E\"",
+    "beforeSha256": "f18a63f5cbed3221289b31b4e2956fd20168705e5ab46d3fdc3039e01e3582d2",
+    "candidateSha256": "aad7cadf75284893b40161d6abe68a800ae8efc5ac4f9159887c777d25398962",
+    "writeStatus": 201,
+    "exactReadback": true,
+    "writeAttempts": 1
+  }
+}

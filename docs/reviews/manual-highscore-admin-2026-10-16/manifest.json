@@ -1,0 +1,47 @@
+{
+  "baseCommit": "368d7001b90ade026efcc71b4b057683eaa4ffaa",
+  "files": [
+    {
+      "path": ".gitattributes",
+      "sha256": "f7e77bb9f4d7fc508be061eb9ef42c7d909eac802f93050cede2f2096b5d7c1e"
+    },
+    {
+      "path": "src/backend/DonkeyTrump.Highscores.Api.csproj",
+      "sha256": "2abe9ba3ab76732dadc4017dfbe4573ceae631fbdf166422bc4a86d2d4056721"
+    },
+    {
+      "path": "src/backend/Moderation/ModerationCommand.cs",
+      "sha256": "62d9c4552df5ef8786281a2aa04552b1c071eb93f16417e4dc3792a88988516c"
+    },
+    {
+      "path": "src/backend/Moderation/HighscoreAdministration.cs",
+      "sha256": "9bb1d38363e580bfaaf7fb605a345508fac70a0ae7283d1c05d8589b4d3f8292"
+    },
+    {
+      "path": "src/backend/Moderation/highscore-admin.sh",
+      "sha256": "5d7d8a791a88bc60a2d95379b82da99d502f33cee9d84998a4d556abbcf59cb2"
+    },
+    {
+      "path": "src/backend.tests/HighscoreAdministrationTests.cs",
+      "sha256": "30438c139c50f751dceda12cd680da6d42856edc28aeea30b15dfad51f5f1b63"
+    },
+    {
+      "path": "src/scripts/install-highscore-admin.sh",
+      "sha256": "af78478a5e25b9e0bb9af7ad9592aa266907f9f2c36258bbe868d7091abee82b"
+    },
+    {
+      "path": "src/backend/README.md",
+      "sha256": "a18d3fb526ac4ceac0e4d529a0442014f32f0162193636410b40df9befb3c1b7"
+    },
+    {
+      "path": "docs/highscore-administration.md",
+      "sha256": "cb5c451418601133cf7d8afcf5601445cd017ca7c705bd32bcc34ea6746314b4"
+    },
+    {
+      "path": "specs/002-app-store-release/contracts/moderation-api.md",
+      "sha256": "8aa00aebfd335ae6f92685d5c6a2b83239b42388e0b6c9e468dacdbccdc7022c"
+    }
+  ],
+  "assemblySha256": "0c5da81320e936dcbd8ab818c9fe5c67e1b2d99589e186766882ad0bca3b7cc6",
+  "preexistingOutOfScope": "Prior PROD rename review records were present and preserved."
+}

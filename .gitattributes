@@ -1,0 +1,2 @@
+src/backend/Moderation/highscore-admin.sh text eol=lf
+src/scripts/install-highscore-admin.sh text eol=lf

@@ -1,0 +1,475 @@
+diff --git a/specs/002-app-store-release/contracts/moderation-api.md b/specs/002-app-store-release/contracts/moderation-api.md
+index 2b61357..eb46e5b 100644
+--- a/specs/002-app-store-release/contracts/moderation-api.md
++++ b/specs/002-app-store-release/contracts/moderation-api.md
+@@ -90,6 +90,21 @@ No public admin route or additional hosted service. Failure to obtain a supporte
+ SSH session blocks cloud operator work; no human Blob credential fallback.
+ 
+ Commands:
++- `entry --rank 1..100` or `entry --entry-id UUID`: manual private lookup of one
++  persisted score, returning only its entry ID, current rank/name/score and ETag.
++  Exactly one selector is required; virtual unstored starters return404.
++- `rename --entry-id UUID --display-name NAME [--expected-etag ETAG]`: manual
++  owner-only name correction with preview then explicit `--apply`. Writes always
++  target the fixed ID, never a rank. Normalize/validate/filter the new name using
++  existing rules; preserve score/tie identity/attribution and report snapshots.
++  Normal pre-mutation expiry cleanup still applies. Apply pins its freshly inspected
++  ETag; an explicitly supplied ETag also pins an earlier preview. A concurrent update
++  returns409 `revision_changed`; an ambiguous attempted write returns
++  `operation_unconfirmed` and requires manual ID-based readback. An already matching
++  name is a read-only no-op. This command uses ID/ETag concurrency identity instead
++  of a persisted operation-ID audit receipt; no new audit enum or storage field is
++  introduced. It does not acknowledge/resolve reports or change public API/iOS flows.
++  See [manual administration](../../../docs/highscore-administration.md).
+ - `list`: report IDs/status/reason/deadline grouped by entry ID with counts, for private
+   owner console only (not CI/application logs); `show --report-id UUID`
+   reveals necessary private snapshot to the owner, not to CI logs or repository evidence.
+@@ -142,7 +157,7 @@ Commands:
+ 
+ Preview mutation summary then require explicit `--apply` for write commands. This is
+ an operator safeguard, not a new owner-approval handoff for agent work already
+-explicitly authorized. Mutations use stable operation IDs; ambiguous results require
++explicitly authorized. Except for the ID/ETag-based rename above, mutations use stable operation IDs; ambiguous results require
+ readback, never blind duplicate writes. ID-based deduplication lasts only while its
+ audit receipt is retained; it is not indefinite. After audit eviction, tombstones,
+ immutable resolved reports (including resolvedOperationId) and expected blockId
+diff --git a/src/backend/DonkeyTrump.Highscores.Api.csproj b/src/backend/DonkeyTrump.Highscores.Api.csproj
+index cd6e88f..3cf61ff 100644
+--- a/src/backend/DonkeyTrump.Highscores.Api.csproj
++++ b/src/backend/DonkeyTrump.Highscores.Api.csproj
+@@ -6,6 +6,7 @@
+     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+   </PropertyGroup>
+   <ItemGroup>
++    <None Update="Moderation/highscore-admin.sh" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" TargetPath="highscore-admin.sh" />
+     <EmbeddedResource Include="../../infra/backend-environments.json" LogicalName="BackendEnvironments.json" />
+     <PackageReference Include="Azure.Storage.Blobs" Version="12.29.2" />
+     <PackageReference Include="Azure.Identity" Version="1.21.0" />
+diff --git a/src/backend/Moderation/ModerationCommand.cs b/src/backend/Moderation/ModerationCommand.cs
+index 4085114..fe81f78 100644
+--- a/src/backend/Moderation/ModerationCommand.cs
++++ b/src/backend/Moderation/ModerationCommand.cs
+@@ -12,7 +12,7 @@ public static class ModerationCommand
+         var result=new Dictionary<string,string> { ["command"]=args[0] };
+         for(int i=1;i<args.Length;i++) {
+             var name=args[i];
+-            if(name is not ("--target" or "--report-id" or "--report-ids" or "--operation-id" or "--entry-id" or "--decision" or "--installation-hash" or "--expected-block-id" or "--expected-etag" or "--apply")) throw Invalid();
++            if(name is not ("--target" or "--report-id" or "--report-ids" or "--operation-id" or "--entry-id" or "--rank" or "--display-name" or "--decision" or "--installation-hash" or "--expected-block-id" or "--expected-etag" or "--apply")) throw Invalid();
+             var value=name=="--apply"?"true":++i<args.Length?args[i]:throw Invalid();
+             if(value.StartsWith("--") || !result.TryAdd(name,value)) throw Invalid();
+         }
+@@ -39,6 +39,7 @@ public static class ModerationCommand
+     {
+         try {
+             var args=Parse(raw);var command=args["command"];
++            if(command is "entry" or "rename") HighscoreAdministration.ValidateArguments(command,args);
+             var options=configuration.GetSection("Highscores").Get<HighscoreOptions>() ?? new();
+             var moderation=configuration.GetSection("Moderation").Get<ModerationOptions>() ?? new();
+             ValidateTarget(args["--target"],options,Environment.GetEnvironmentVariable);
+@@ -48,6 +49,9 @@ public static class ModerationCommand
+             }
+             var client=await options.CreateOperatorClientAsync(token);var clock=TimeProvider.System;
+             var store=new BlobHighscoreStore(client,options,clock,moderation:moderation);
++            if(command is "entry" or "rename") {
++                await HighscoreAdministration.RunAsync(command,args,store,output,token);return 0;
++            }
+             if(command=="initialize") {
+                 await ModerationMigration.InitializeAsync(client,options,args.ContainsKey("--apply"),output,token);return 0;
+             }
+diff --git a/src/backend/README.md b/src/backend/README.md
+index d2903ac..0e49e38 100644
+--- a/src/backend/README.md
++++ b/src/backend/README.md
+@@ -49,6 +49,12 @@ Identical same-ID submissions are deduplicated only while the result remains ran
+ 
+ ## Configuration and operations
+ 
++For manual owner-only name corrections, see [highscore administration](../../docs/highscore-administration.md).
++The existing executable's `moderation entry` / `moderation rename` commands use
++authenticated App Service SSH and managed identity. The published
++`highscore-admin.sh` wrapper supports read-only lookup, rename preview and explicit
++`--apply`; this adds no HTTP route or iOS integration.
++
+ All settings use the `Highscores` configuration section (`Highscores__...` in environment variables):
+ 
+ | Setting | Default / constraint |
+diff --git a/.gitattributes b/.gitattributes
+new file mode 100644
+index 0000000..530aeb2
+--- /dev/null
++++ b/.gitattributes
+@@ -0,0 +1,2 @@
++src/backend/Moderation/highscore-admin.sh text eol=lf
++src/scripts/install-highscore-admin.sh text eol=lf
+diff --git a/src/backend/Moderation/HighscoreAdministration.cs b/src/backend/Moderation/HighscoreAdministration.cs
+new file mode 100644
+index 0000000..9f2a387
+--- /dev/null
++++ b/src/backend/Moderation/HighscoreAdministration.cs
+@@ -0,0 +1,77 @@
++using System.Globalization;
++using System.Text.Json;
++
++namespace DonkeyTrump.Highscores;
++
++/// Manually invoked operator commands; never mapped to HTTP or called by the app.
++public static class HighscoreAdministration
++{
++    private static HighscoreFailure Arguments() => new(400,"operator_arguments_invalid","Invalid highscore administration arguments");
++    private static Guid EntryId(Dictionary<string,string> args) =>
++        Guid.TryParseExact(args.GetValueOrDefault("--entry-id"),"D",out var id) && id!=Guid.Empty ? id : throw Arguments();
++    private static int Rank(Dictionary<string,string> args) =>
++        int.TryParse(args.GetValueOrDefault("--rank"),NumberStyles.None,CultureInfo.InvariantCulture,out var rank) && rank is >=1 and <=100
++            ? rank : throw Arguments();
++    private static string Name(Dictionary<string,string> args)
++    {
++        var name=HighscoreValidation.NormalizeName(args.GetValueOrDefault("--display-name")) ?? throw Arguments();
++        if(!NameModerationPolicy.Allowed(name)) throw new HighscoreFailure(422,"name_rejected","Choose a different name");
++        return name;
++    }
++
++    public static void ValidateArguments(string command,Dictionary<string,string> args)
++    {
++        var allowed=command=="entry"
++            ? new[]{"command","--target","--entry-id","--rank"}
++            : new[]{"command","--target","--entry-id","--display-name","--expected-etag","--apply"};
++        if(command is not ("entry" or "rename") || args.Keys.Any(key=>!allowed.Contains(key))) throw Arguments();
++        if(command=="entry") {
++            if(args.ContainsKey("--entry-id")==args.ContainsKey("--rank")) throw Arguments();
++            if(args.ContainsKey("--entry-id")) _=EntryId(args);else _=Rank(args);
++        } else {
++            _=EntryId(args);_=Name(args);
++            if(args.TryGetValue("--expected-etag",out var etag) && string.IsNullOrWhiteSpace(etag)) throw Arguments();
++        }
++    }
++
++    public static HighscoreDocument Rename(HighscoreDocument document,Guid entryId,string displayName)
++    {
++        document.Validate();
++        if(document.SchemaVersion!=2) throw new HighscoreFailure(503,"service_maintenance","Highscores are being maintained");
++        var name=Name(new() {["--display-name"]=displayName});
++        var entry=Find(document,entryId);
++        if(entry.DisplayName==name) return document;
++        var renamed=document with {Entries=document.Entries.Select(e=>e.SubmissionId==entryId ? e with {DisplayName=name} : e).ToList()};
++        renamed.Validate();return renamed;
++    }
++
++    private static StoredEntry Find(HighscoreDocument document,Guid entryId) =>
++        document.Entries.FirstOrDefault(e=>e.SubmissionId==entryId) ?? throw new HighscoreFailure(404,"entry_not_found","This stored entry is no longer available");
++
++    public static async Task RunAsync(string command,Dictionary<string,string> args,IModerationStore store,TextWriter output,CancellationToken token)
++    {
++        ValidateArguments(command,args);
++        var read=await store.ReadAggregateAsync(token);
++        var document=read.Document;
++        var id=args.ContainsKey("--entry-id") ? EntryId(args)
++            : HighscoreStarters.Fill(document).Entries.ElementAtOrDefault(Rank(args)-1)?.SubmissionId ?? throw new HighscoreFailure(404,"entry_not_found","This stored entry is no longer available");
++        var entry=Find(document,id);
++        void Write(object value)=>output.WriteLine(JsonSerializer.Serialize(value,HighscoreJson.Options));
++        object View(HighscoreDocument d,string etag) {
++            var current=Find(d,id);
++            return new {entryId=id,rank=HighscoreStarters.Fill(d).Entries.FindIndex(e=>e.SubmissionId==id)+1,displayName=current.DisplayName,score=current.Score,etag};
++        }
++        if(command=="entry") {Write(View(document,read.ETag));return;}
++        var expected=args.GetValueOrDefault("--expected-etag",read.ETag);
++        if(expected!=read.ETag) throw new HighscoreFailure(409,"revision_changed","Refresh the entry before renaming");
++        var preview=Rename(document,id,Name(args));
++        bool changed=entry.DisplayName!=Find(preview,id).DisplayName;
++        Write(new {preview=true,changed,before=View(document,read.ETag),after=View(preview,read.ETag)});
++        if(!args.ContainsKey("--apply")) return;
++        if(!changed) {Write(new {applied=false,alreadyMatches=true,entry=View(document,read.ETag)});return;}
++        // Pin the exact aggregate just inspected. A conflict returns revision_changed;
++        // never recompute against a different admin's rename or replay an uncertain write.
++        var saved=await store.MutateAsync((current,_)=>Rename(current,id,Name(args)),"operation_unconfirmed",token,expectedETag:expected);
++        Write(new {applied=true,entry=View(saved.Document,saved.ETag)});
++    }
++}
+diff --git a/src/backend/Moderation/highscore-admin.sh b/src/backend/Moderation/highscore-admin.sh
+new file mode 100644
+index 0000000..08c95b7
+--- /dev/null
++++ b/src/backend/Moderation/highscore-admin.sh
+@@ -0,0 +1,31 @@
++#!/usr/bin/env bash
++set -euo pipefail
++
++case "${1:-help}" in
++  entry|rename) ;;
++  help|--help|-h)
++    cat <<'USAGE'
++Manual highscore administration (authenticated App Service SSH only)
++
++  bash highscore-admin.sh entry --rank 4
++  bash highscore-admin.sh entry --entry-id UUID
++  bash highscore-admin.sh rename --entry-id UUID --display-name 'New name'
++  bash highscore-admin.sh rename --entry-id UUID --display-name 'New name' --apply
++
++Rename previews by default. --apply writes. To pin an earlier preview, also pass
++--expected-etag '"ETAG"'. After operation_unconfirmed, inspect the entry; do not
++blindly repeat --apply. Names are printed only in this private operator console.
++USAGE
++    exit 0 ;;
++  *) printf '%s\n' 'Expected entry, rename or help.' >&2; exit 1 ;;
++esac
++
++case "${WEBSITE_SITE_NAME:-}" in
++  donkeytrump-api-p) target=prod ;;
++  donkeytrump-api-d) target=dev ;;
++  *) printf '%s\n' 'Run inside the matching Azure App Service SSH session.' >&2; exit 1 ;;
++esac
++
++admin_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
++cd /home/site/wwwroot
++exec dotnet "$admin_dir/DonkeyTrump.Highscores.Api.dll" moderation "$@" --target "$target"
+diff --git a/src/backend.tests/HighscoreAdministrationTests.cs b/src/backend.tests/HighscoreAdministrationTests.cs
+new file mode 100644
+index 0000000..bccf3c7
+--- /dev/null
++++ b/src/backend.tests/HighscoreAdministrationTests.cs
+@@ -0,0 +1,96 @@
++using System.Text.Json;
++using static DonkeyTrump.Highscores.Tests.ModerationContractTests;
++
++namespace DonkeyTrump.Highscores.Tests;
++
++public class HighscoreAdministrationTests
++{
++    [Fact]
++    public void RenamePreservesRankingIdentityAndPrivateReportSnapshot()
++    {
++        var before=WithRun(out var id);
++        before=ModerationService.Report(before,new(Guid.NewGuid(),id,"personalInformation"),Reporter,Now).Document;
++        var bytes=before.Serialize();
++        var after=HighscoreAdministration.Rename(before,id,"  Rene\u0301  ");
++        Assert.Equal("René",after.Entries[0].DisplayName);
++        Assert.Equal(before.Entries[0],after.Entries[0] with {DisplayName=before.Entries[0].DisplayName});
++        Assert.Equal(before.Entries.Skip(1),after.Entries.Skip(1));
++        Assert.Same(before.Reports,after.Reports);
++        Assert.Equal("Player",after.Reports[0].DisplayName);
++        Assert.Equal(before.NextSequence,after.NextSequence);
++        Assert.Equal(bytes,before.Serialize());
++        Assert.Same(after,HighscoreAdministration.Rename(after,id,"René"));
++    }
++
++    [Fact]
++    public void InvalidNamesAndRemovedEntriesCannotBeRenamed()
++    {
++        var document=WithRun(out var id);
++        Assert.Equal("operator_arguments_invalid",Assert.Throws<HighscoreFailure>(()=>HighscoreAdministration.Rename(document,id,"\nBad")).Code);
++        Assert.Equal("name_rejected",Assert.Throws<HighscoreFailure>(()=>HighscoreAdministration.Rename(document,id,"shit")).Code);
++        var removed=ModerationService.Remove(document,id,Guid.NewGuid(),Now);
++        Assert.Equal("entry_not_found",Assert.Throws<HighscoreFailure>(()=>HighscoreAdministration.Rename(removed,id,"New name")).Code);
++    }
++
++    [Fact]
++    public void RankIsReadOnlyAndRenameRejectsUnrelatedArguments()
++    {
++        HighscoreAdministration.ValidateArguments("entry",ModerationCommand.Parse(["entry","--target","prod","--rank","4"]));
++        foreach(var raw in new[]{
++            new[]{"rename","--target","prod","--rank","4","--display-name","New name","--apply"},
++            new[]{"entry","--target","prod","--rank","4","--apply"},
++            new[]{"entry","--target","prod","--rank","0"},
++            new[]{"rename","--target","prod","--entry-id",Guid.NewGuid().ToString(),"--display-name","New name","--operation-id",Guid.NewGuid().ToString()}})
++        {
++            var args=ModerationCommand.Parse(raw);
++            Assert.Throws<HighscoreFailure>(()=>HighscoreAdministration.ValidateArguments(args["command"],args));
++        }
++    }
++
++    [Fact]
++    public async Task LookupUsesPublicRankWhenVirtualStartersFillGaps()
++    {
++        var full=Document();var stored=full.Entries[^1];
++        var store=new CommandStore(full with {Entries=[stored]});
++        var args=ModerationCommand.Parse(["entry","--target","local","--entry-id",stored.SubmissionId.ToString()]);
++        var output=new StringWriter();
++        await HighscoreAdministration.RunAsync("entry",args,store,output,CancellationToken.None);
++        using var json=JsonDocument.Parse(output.ToString());
++        Assert.Equal(10,json.RootElement.GetProperty("rank").GetInt32());
++        args=ModerationCommand.Parse(["entry","--target","local","--rank","1"]);
++        var failure=await Assert.ThrowsAsync<HighscoreFailure>(()=>HighscoreAdministration.RunAsync("entry",args,store,new StringWriter(),CancellationToken.None));
++        Assert.Equal("entry_not_found",failure.Code);Assert.Equal(0,store.Mutations);
++    }
++
++    [Fact]
++    public async Task PreviewNeverWritesAndApplyPinsInspectedRevision()
++    {
++        var document=WithRun(out var id);var store=new CommandStore(document);var output=new StringWriter();
++        var args=ModerationCommand.Parse(["rename","--target","local","--entry-id",id.ToString(),"--display-name","New name"]);
++        await HighscoreAdministration.RunAsync("rename",args,store,output,CancellationToken.None);
++        Assert.Equal(0,store.Mutations);
++        using(var preview=JsonDocument.Parse(output.ToString())) Assert.True(preview.RootElement.GetProperty("preview").GetBoolean());
++        args["--apply"]="true";
++        await HighscoreAdministration.RunAsync("rename",args,store,new StringWriter(),CancellationToken.None);
++        Assert.Equal(1,store.Mutations);Assert.Equal("revision-1",store.ExpectedETag);
++        Assert.Equal("New name",store.Document.Entries[0].DisplayName);
++        await HighscoreAdministration.RunAsync("rename",args,store,new StringWriter(),CancellationToken.None);
++        Assert.Equal(1,store.Mutations);
++        args["--expected-etag"]="old-preview";
++        var failure=await Assert.ThrowsAsync<HighscoreFailure>(()=>HighscoreAdministration.RunAsync("rename",args,store,new StringWriter(),CancellationToken.None));
++        Assert.Equal("revision_changed",failure.Code);Assert.Equal(1,store.Mutations);
++    }
++
++    private sealed class CommandStore(HighscoreDocument document) : IModerationStore
++    {
++        public HighscoreDocument Document=document;
++        public int Mutations;
++        public string? ExpectedETag;
++        public Task<AggregateRead> ReadAggregateAsync(CancellationToken token)=>Task.FromResult(new AggregateRead(Document,"revision-1"));
++        public Task<AggregateRead> MutateAsync(Func<HighscoreDocument,DateTimeOffset,HighscoreDocument> transition,string code,CancellationToken token,bool migration=false,string? expectedETag=null)
++        { Mutations++;ExpectedETag=expectedETag;Document=transition(Document,Now);return Task.FromResult(new AggregateRead(Document,"revision-2")); }
++        public Task<HighscoreResult> PublishAsync(HighscoreSubmission run,string hash,CancellationToken token)=>throw new NotSupportedException();
++        public Task<(ReportReceipt Receipt,bool Created)> ReportAsync(ReportSubmission report,string hash,CancellationToken token)=>throw new NotSupportedException();
++        public Task<ReportReceipt> ReceiptAsync(Guid id,string hash,CancellationToken token)=>throw new NotSupportedException();
++    }
++}
+diff --git a/src/scripts/install-highscore-admin.sh b/src/scripts/install-highscore-admin.sh
+new file mode 100644
+index 0000000..7fbfbb6
+--- /dev/null
++++ b/src/scripts/install-highscore-admin.sh
+@@ -0,0 +1,30 @@
++#!/usr/bin/env bash
++# Run manually in the target App Service SSH session with a reviewed staging folder.
++set -euo pipefail
++umask 077
++
++case "${WEBSITE_SITE_NAME:-}" in
++  donkeytrump-api-p|donkeytrump-api-d) ;;
++  *) printf '%s\n' 'Run inside the matching Azure App Service SSH session.' >&2; exit 1 ;;
++esac
++[ "$#" = 2 ] || { printf '%s\n' 'Usage: bash install-highscore-admin.sh STAGING_DIRECTORY EXPECTED_DLL_SHA256' >&2; exit 1; }
++staging="$(cd -- "$1" && pwd)"
++expected="$2"
++[[ "$expected" =~ ^[a-f0-9]{64}$ ]] || { printf '%s\n' 'Invalid SHA256.' >&2; exit 1; }
++printf '%s  %s\n' "$expected" "$staging/DonkeyTrump.Highscores.Api.dll" | sha256sum --check --status
++[ -f "$staging/highscore-admin.sh" ]
++
++root=/home/site/tools/highscore-admin
++revision="$root/$expected"
++mkdir -p -- "$root"
++# An existing revision is immutable. Never replace the running HTTP application's files.
++mkdir -- "$revision"
++cp -- /home/site/wwwroot/*.dll "$revision/"
++cp -- /home/site/wwwroot/DonkeyTrump.Highscores.Api.deps.json /home/site/wwwroot/DonkeyTrump.Highscores.Api.runtimeconfig.json "$revision/"
++if [ -d /home/site/wwwroot/runtimes ]; then cp -R -- /home/site/wwwroot/runtimes "$revision/"; fi
++cp -- "$staging/DonkeyTrump.Highscores.Api.dll" "$staging/highscore-admin.sh" "$revision/"
++printf '%s  %s\n' "$expected" "$revision/DonkeyTrump.Highscores.Api.dll" | sha256sum --check --status
++# Keep prior revisions available. Switching this link affects manual invocations only.
++ln -s -- "$revision" "$root/current.next"
++mv -Tf -- "$root/current.next" "$root/current"
++printf '%s\n' 'Installed. Manual command:' 'bash /home/site/tools/highscore-admin/current/highscore-admin.sh help'
+diff --git a/docs/highscore-administration.md b/docs/highscore-administration.md
+new file mode 100644
+index 0000000..bab4182
+--- /dev/null
++++ b/docs/highscore-administration.md
+@@ -0,0 +1,108 @@
++# Manual highscore administration
++
++This is an owner-operated console tool. Open the target App Service in the Azure
++portal, choose **Development Tools → SSH → Go**, and use the commands below.
++Azure authorizes the SSH session; the tool uses that app's existing managed identity
++and validates the app/storage inventory. There is no admin HTTP endpoint, iOS call,
++scheduled operation, startup mutation, new credential or additional hosted service.
++
++## Routine use
++
++In the SSH session, define this convenience function once:
++
++```sh
++admin() { bash /home/site/tools/highscore-admin/current/highscore-admin.sh "$@"; }
++```
++
++Find the current entry at a position, or inspect a known entry ID:
++
++```sh
++admin entry --rank 4
++admin entry --entry-id ENTRY_ID_FROM_OUTPUT
++```
++
++The private console shows only that stored entry's ID, current rank, name, score
++and ETag. Copy its `entryId`; positions can change when new scores arrive. A virtual
++starter that has never been stored cannot be edited.
++
++Preview a rename, then explicitly apply it:
++
++```sh
++admin rename --entry-id ENTRY_ID_FROM_OUTPUT --display-name 'New name'
++admin rename --entry-id ENTRY_ID_FROM_OUTPUT --display-name 'New name' --apply
++admin entry --entry-id ENTRY_ID_FROM_OUTPUT
++```
++
++`--apply` is a manual instruction to perform that invocation's fresh preview.
++To require the exact revision from an earlier preview, include its ETag:
++
++```sh
++admin rename --entry-id ENTRY_ID_FROM_OUTPUT --display-name 'New name' \
++  --expected-etag '"ETAG_FROM_PREVIEW"' --apply
++```
++
++The wrapper derives DEV/PROD from `WEBSITE_SITE_NAME`; the backend independently
++validates the matching storage account/container and managed-identity context.
++It rejects a user-supplied `--target` override. Run neither in CI nor a recorded
++application log: the selected public name is intentionally visible to the owner.
++
++## Behavior and failures
++
++- Names use the existing NFC normalization, 1–20 grapheme / 256-byte validation and
++  moderation policy. Invalid/prohibited names are rejected before a write.
++- Only the identified stored entry's display name changes. ID, score, sequence,
++  rank, level, origin, installation attribution and acceptance time are preserved.
++  Report snapshots are not renamed. Normal existing pre-mutation retention cleanup
++  may remove already-expired reports/audit/spam receipts.
++- Preview performs no mutation. Applying an already matching name is a read-only
++  no-op. Rename cannot create a missing entry or resurrect a removed one.
++- Apply pins the ETag read for its own preview, and storage uses `If-Match`. Any
++  intervening update returns `revision_changed` without overwriting it. Inspect the
++  entry and make a new deliberate invocation if still appropriate.
++- After `operation_unconfirmed` or `operator_unavailable_or_unconfirmed`, inspect
++  the entry by ID. The write may have committed; do not blindly repeat `--apply`.
++- Rename uses the entry ID and inspected ETag as its concurrency identity. It adds
++  no new aggregate audit enum/receipt or schema field, so existing schema-2 readers
++  remain compatible. The private command result contains the saved entry and ETag.
++  Keep content-free operational evidence (entry ID/revisions/actor/action), not
++  prior personal names or complete blob snapshots, in ordinary review records.
++- Existing publication deduplication compares the current canonical stored payload;
++  replaying the original name for this run after an admin rename can therefore
++  return `submission_conflict`. This does not create a score upload/retry path.
++
++The store retains its existing six-second operation/two-second network limits and
++disabled SDK retries. Conflicts never fall back to unconditional replacement.
++Maintenance blocks changes. The command is not a report resolution and does not
++acknowledge/close reports, remove tombstones or unblock installations.
++
++## Installation and updates
++
++The wrapper is included in backend build/publish output. When the new backend
++package has been deployed normally, the equivalent direct command is:
++
++```sh
++bash /home/site/wwwroot/highscore-admin.sh entry --rank 4
++```
++
++For an administrative-only installation without restarting or replacing the HTTP
++application, stage the reviewed backend DLL and its `highscore-admin.sh` wrapper
++in a private temporary directory in the target App Service. Use the recorded DLL
++SHA256 and the matching existing backend dependency/runtime baseline; this narrow
++update introduces no package dependencies. Then manually run:
++
++```sh
++bash install-highscore-admin.sh STAGING_DIRECTORY EXPECTED_DLL_SHA256
++```
++
++The installer is [in the repository](../src/scripts/install-highscore-admin.sh).
++It copies the current app's dependency DLLs, dependency/runtime manifests and
++runtime assets into `/home/site/tools/highscore-admin/DLL_SHA256`, adds the reviewed
++operator assembly/wrapper, verifies the assembly hash, and switches `current`.
++Existing revisions are immutable and retained. It never runs a data command,
++rewrites `/home/site/wwwroot`, restarts the app or changes Azure permissions.
++The wrapper reads the live app's configuration by setting its working directory
++to `/home/site/wwwroot`. Install a reviewed matching tool revision again if a
++future storage/dependency contract changes; do not reuse an incompatible old tool.
++
++The dated review record is the authority for what was actually built, installed
++and checked. A source build is not proof of a live installation or a tested rename.

@@ -1,0 +1,35 @@
+{
+  "tool": "Claude Code 2.1.296",
+  "vendor": "Anthropic",
+  "requestedModel": "claude-opus-5-5",
+  "explicitEffort": "high",
+  "effortEnvironment": "high",
+  "safeMode": true,
+  "toolsDisabled": true,
+  "mcpDisabled": true,
+  "utf8Input": true,
+  "textProbe": "REVIEW_ROUTE_OK; exit 0; empty stderr; no effort-cap warning",
+  "streamProbeSession": "fdc0710a-bbb5-4f38-861d-a9416d97d2e4",
+  "actualAssistantModel": "claude-opus-5-5",
+  "modelUsage": {
+    "claude-opus-5-5": {
+      "inputTokens": 2,
+      "outputTokens": 16,
+      "cacheReadInputTokens": 2063,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.0007406,
+      "contextWindow": 1000000,
+      "maxOutputTokens": 128000,
+      "thinkingTokens": 0,
+      "canonicalModel": "claude-opus-5-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    }
+  },
+  "result": "success",
+  "stderr": null,
+  "leadVendor": "OpenAI",
+  "leadModel": "GPT-6 (system identity; no finer runtime model ID exposed)",
+  "leadEffort": "not exposed"
+}

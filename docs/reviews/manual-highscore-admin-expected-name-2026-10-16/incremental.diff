@@ -1,0 +1,298 @@
+diff --git "C:\\Users\\jespe\\AppData\\Local\\Temp\\dt3d-expected-name-a4c20b17544a4ac3ad481ec2bfc05ae4\\before\\src\\backend\\Moderation\\ModerationCommand.cs" src/backend/Moderation/ModerationCommand.cs
+index fe81f78..588e22c 100644
+--- "C:\\Users\\jespe\\AppData\\Local\\Temp\\dt3d-expected-name-a4c20b17544a4ac3ad481ec2bfc05ae4\\before\\src\\backend\\Moderation\\ModerationCommand.cs"
++++ src/backend/Moderation/ModerationCommand.cs
+@@ -12,7 +12,7 @@ public static class ModerationCommand
+         var result=new Dictionary<string,string> { ["command"]=args[0] };
+         for(int i=1;i<args.Length;i++) {
+             var name=args[i];
+-            if(name is not ("--target" or "--report-id" or "--report-ids" or "--operation-id" or "--entry-id" or "--rank" or "--display-name" or "--decision" or "--installation-hash" or "--expected-block-id" or "--expected-etag" or "--apply")) throw Invalid();
++            if(name is not ("--target" or "--report-id" or "--report-ids" or "--operation-id" or "--entry-id" or "--rank" or "--expected-name" or "--display-name" or "--decision" or "--installation-hash" or "--expected-block-id" or "--expected-etag" or "--apply")) throw Invalid();
+             var value=name=="--apply"?"true":++i<args.Length?args[i]:throw Invalid();
+             if(value.StartsWith("--") || !result.TryAdd(name,value)) throw Invalid();
+         }
+diff --git "C:\\Users\\jespe\\AppData\\Local\\Temp\\dt3d-expected-name-a4c20b17544a4ac3ad481ec2bfc05ae4\\before\\src\\backend\\Moderation\\HighscoreAdministration.cs" src/backend/Moderation/HighscoreAdministration.cs
+index 9f2a387..c32ab77 100644
+--- "C:\\Users\\jespe\\AppData\\Local\\Temp\\dt3d-expected-name-a4c20b17544a4ac3ad481ec2bfc05ae4\\before\\src\\backend\\Moderation\\HighscoreAdministration.cs"
++++ src/backend/Moderation/HighscoreAdministration.cs
+@@ -18,28 +18,33 @@ public static class HighscoreAdministration
+         if(!NameModerationPolicy.Allowed(name)) throw new HighscoreFailure(422,"name_rejected","Choose a different name");
+         return name;
+     }
++    private static string ExpectedName(Dictionary<string,string> args) =>
++        HighscoreValidation.NormalizeName(args.GetValueOrDefault("--expected-name")) ?? throw Arguments();
+ 
+     public static void ValidateArguments(string command,Dictionary<string,string> args)
+     {
+         var allowed=command=="entry"
+             ? new[]{"command","--target","--entry-id","--rank"}
+-            : new[]{"command","--target","--entry-id","--display-name","--expected-etag","--apply"};
++            : new[]{"command","--target","--entry-id","--expected-name","--display-name","--expected-etag","--apply"};
+         if(command is not ("entry" or "rename") || args.Keys.Any(key=>!allowed.Contains(key))) throw Arguments();
+         if(command=="entry") {
+             if(args.ContainsKey("--entry-id")==args.ContainsKey("--rank")) throw Arguments();
+             if(args.ContainsKey("--entry-id")) _=EntryId(args);else _=Rank(args);
+         } else {
+-            _=EntryId(args);_=Name(args);
++            _=EntryId(args);_=ExpectedName(args);_=Name(args);
+             if(args.TryGetValue("--expected-etag",out var etag) && string.IsNullOrWhiteSpace(etag)) throw Arguments();
+         }
+     }
+ 
+-    public static HighscoreDocument Rename(HighscoreDocument document,Guid entryId,string displayName)
++    public static HighscoreDocument Rename(HighscoreDocument document,Guid entryId,string expectedName,string displayName)
+     {
+         document.Validate();
+         if(document.SchemaVersion!=2) throw new HighscoreFailure(503,"service_maintenance","Highscores are being maintained");
+         var name=Name(new() {["--display-name"]=displayName});
+         var entry=Find(document,entryId);
++        var expected=ExpectedName(new() {["--expected-name"]=expectedName});
++        if(!string.Equals(entry.DisplayName,expected,StringComparison.Ordinal))
++            throw new HighscoreFailure(409,"entry_changed","Refresh the entry before renaming");
+         if(entry.DisplayName==name) return document;
+         var renamed=document with {Entries=document.Entries.Select(e=>e.SubmissionId==entryId ? e with {DisplayName=name} : e).ToList()};
+         renamed.Validate();return renamed;
+@@ -64,14 +69,15 @@ public static class HighscoreAdministration
+         if(command=="entry") {Write(View(document,read.ETag));return;}
+         var expected=args.GetValueOrDefault("--expected-etag",read.ETag);
+         if(expected!=read.ETag) throw new HighscoreFailure(409,"revision_changed","Refresh the entry before renaming");
+-        var preview=Rename(document,id,Name(args));
++        var expectedName=ExpectedName(args);var name=Name(args);
++        var preview=Rename(document,id,expectedName,name);
+         bool changed=entry.DisplayName!=Find(preview,id).DisplayName;
+         Write(new {preview=true,changed,before=View(document,read.ETag),after=View(preview,read.ETag)});
+         if(!args.ContainsKey("--apply")) return;
+         if(!changed) {Write(new {applied=false,alreadyMatches=true,entry=View(document,read.ETag)});return;}
+         // Pin the exact aggregate just inspected. A conflict returns revision_changed;
+         // never recompute against a different admin's rename or replay an uncertain write.
+-        var saved=await store.MutateAsync((current,_)=>Rename(current,id,Name(args)),"operation_unconfirmed",token,expectedETag:expected);
++        var saved=await store.MutateAsync((current,_)=>Rename(current,id,expectedName,name),"operation_unconfirmed",token,expectedETag:expected);
+         Write(new {applied=true,entry=View(saved.Document,saved.ETag)});
+     }
+ }
+diff --git "C:\\Users\\jespe\\AppData\\Local\\Temp\\dt3d-expected-name-a4c20b17544a4ac3ad481ec2bfc05ae4\\before\\src\\backend.tests\\HighscoreAdministrationTests.cs" src/backend.tests/HighscoreAdministrationTests.cs
+index bccf3c7..cdf73a9 100644
+--- "C:\\Users\\jespe\\AppData\\Local\\Temp\\dt3d-expected-name-a4c20b17544a4ac3ad481ec2bfc05ae4\\before\\src\\backend.tests\\HighscoreAdministrationTests.cs"
++++ src/backend.tests/HighscoreAdministrationTests.cs
+@@ -11,7 +11,7 @@ public class HighscoreAdministrationTests
+         var before=WithRun(out var id);
+         before=ModerationService.Report(before,new(Guid.NewGuid(),id,"personalInformation"),Reporter,Now).Document;
+         var bytes=before.Serialize();
+-        var after=HighscoreAdministration.Rename(before,id,"  Rene\u0301  ");
++        var after=HighscoreAdministration.Rename(before,id,"Player","  Rene\u0301  ");
+         Assert.Equal("René",after.Entries[0].DisplayName);
+         Assert.Equal(before.Entries[0],after.Entries[0] with {DisplayName=before.Entries[0].DisplayName});
+         Assert.Equal(before.Entries.Skip(1),after.Entries.Skip(1));
+@@ -19,17 +19,17 @@ public class HighscoreAdministrationTests
+         Assert.Equal("Player",after.Reports[0].DisplayName);
+         Assert.Equal(before.NextSequence,after.NextSequence);
+         Assert.Equal(bytes,before.Serialize());
+-        Assert.Same(after,HighscoreAdministration.Rename(after,id,"René"));
++        Assert.Same(after,HighscoreAdministration.Rename(after,id,"René","René"));
+     }
+ 
+     [Fact]
+     public void InvalidNamesAndRemovedEntriesCannotBeRenamed()
+     {
+         var document=WithRun(out var id);
+-        Assert.Equal("operator_arguments_invalid",Assert.Throws<HighscoreFailure>(()=>HighscoreAdministration.Rename(document,id,"\nBad")).Code);
+-        Assert.Equal("name_rejected",Assert.Throws<HighscoreFailure>(()=>HighscoreAdministration.Rename(document,id,"shit")).Code);
++        Assert.Equal("operator_arguments_invalid",Assert.Throws<HighscoreFailure>(()=>HighscoreAdministration.Rename(document,id,"Player","\nBad")).Code);
++        Assert.Equal("name_rejected",Assert.Throws<HighscoreFailure>(()=>HighscoreAdministration.Rename(document,id,"Player","shit")).Code);
+         var removed=ModerationService.Remove(document,id,Guid.NewGuid(),Now);
+-        Assert.Equal("entry_not_found",Assert.Throws<HighscoreFailure>(()=>HighscoreAdministration.Rename(removed,id,"New name")).Code);
++        Assert.Equal("entry_not_found",Assert.Throws<HighscoreFailure>(()=>HighscoreAdministration.Rename(removed,id,"Player","New name")).Code);
+     }
+ 
+     [Fact]
+@@ -37,6 +37,7 @@ public class HighscoreAdministrationTests
+     {
+         HighscoreAdministration.ValidateArguments("entry",ModerationCommand.Parse(["entry","--target","prod","--rank","4"]));
+         foreach(var raw in new[]{
++            new[]{"rename","--target","prod","--entry-id",Guid.NewGuid().ToString(),"--display-name","New name"},
+             new[]{"rename","--target","prod","--rank","4","--display-name","New name","--apply"},
+             new[]{"entry","--target","prod","--rank","4","--apply"},
+             new[]{"entry","--target","prod","--rank","0"},
+@@ -47,6 +48,31 @@ public class HighscoreAdministrationTests
+         }
+     }
+ 
++    [Fact]
++    public void ExpectedNameMatchesCanonicallyButCaseSensitivelyAndAllowsCorrectingProhibitedNames()
++    {
++        var document=WithRun(out var id);
++        document=document with {Entries=document.Entries.Select(e=>e.SubmissionId==id?e with {DisplayName="René"}:e).ToList()};
++        Assert.Equal("New name",HighscoreAdministration.Rename(document,id,"  Rene\u0301  ","New name").Entries[0].DisplayName);
++        var failure=Assert.Throws<HighscoreFailure>(()=>HighscoreAdministration.Rename(document,id,"rené","René"));
++        Assert.Equal(409,failure.Status);Assert.Equal("entry_changed",failure.Code);
++        document=document with {Entries=document.Entries.Select(e=>e.SubmissionId==id?e with {DisplayName="shit"}:e).ToList()};
++        Assert.Equal("New name",HighscoreAdministration.Rename(document,id,"shit","New name").Entries[0].DisplayName);
++    }
++
++    [Fact]
++    public async Task StaleExpectedNameRejectsBeforePreviewAndAgainInsideMutation()
++    {
++        var document=WithRun(out var id);var store=new CommandStore(document);var output=new StringWriter();
++        var args=ModerationCommand.Parse(["rename","--target","local","--entry-id",id.ToString(),"--expected-name","Old name","--display-name","Player","--apply"]);
++        var failure=await Assert.ThrowsAsync<HighscoreFailure>(()=>HighscoreAdministration.RunAsync("rename",args,store,output,CancellationToken.None));
++        Assert.Equal("entry_changed",failure.Code);Assert.Equal(0,store.Mutations);Assert.Equal("",output.ToString());
++        args["--expected-name"]="Player";args["--display-name"]="New name";
++        store.BeforeMutation=d=>d with {Entries=d.Entries.Select(e=>e.SubmissionId==id?e with {DisplayName="Another name"}:e).ToList()};
++        failure=await Assert.ThrowsAsync<HighscoreFailure>(()=>HighscoreAdministration.RunAsync("rename",args,store,new StringWriter(),CancellationToken.None));
++        Assert.Equal("entry_changed",failure.Code);Assert.Equal("Another name",store.Document.Entries[0].DisplayName);
++    }
++
+     [Fact]
+     public async Task LookupUsesPublicRankWhenVirtualStartersFillGaps()
+     {
+@@ -66,7 +92,7 @@ public class HighscoreAdministrationTests
+     public async Task PreviewNeverWritesAndApplyPinsInspectedRevision()
+     {
+         var document=WithRun(out var id);var store=new CommandStore(document);var output=new StringWriter();
+-        var args=ModerationCommand.Parse(["rename","--target","local","--entry-id",id.ToString(),"--display-name","New name"]);
++        var args=ModerationCommand.Parse(["rename","--target","local","--entry-id",id.ToString(),"--expected-name","Player","--display-name","New name"]);
+         await HighscoreAdministration.RunAsync("rename",args,store,output,CancellationToken.None);
+         Assert.Equal(0,store.Mutations);
+         using(var preview=JsonDocument.Parse(output.ToString())) Assert.True(preview.RootElement.GetProperty("preview").GetBoolean());
+@@ -74,6 +100,7 @@ public class HighscoreAdministrationTests
+         await HighscoreAdministration.RunAsync("rename",args,store,new StringWriter(),CancellationToken.None);
+         Assert.Equal(1,store.Mutations);Assert.Equal("revision-1",store.ExpectedETag);
+         Assert.Equal("New name",store.Document.Entries[0].DisplayName);
++        args["--expected-name"]="New name";
+         await HighscoreAdministration.RunAsync("rename",args,store,new StringWriter(),CancellationToken.None);
+         Assert.Equal(1,store.Mutations);
+         args["--expected-etag"]="old-preview";
+@@ -86,9 +113,10 @@ public class HighscoreAdministrationTests
+         public HighscoreDocument Document=document;
+         public int Mutations;
+         public string? ExpectedETag;
++        public Func<HighscoreDocument,HighscoreDocument>? BeforeMutation;
+         public Task<AggregateRead> ReadAggregateAsync(CancellationToken token)=>Task.FromResult(new AggregateRead(Document,"revision-1"));
+         public Task<AggregateRead> MutateAsync(Func<HighscoreDocument,DateTimeOffset,HighscoreDocument> transition,string code,CancellationToken token,bool migration=false,string? expectedETag=null)
+-        { Mutations++;ExpectedETag=expectedETag;Document=transition(Document,Now);return Task.FromResult(new AggregateRead(Document,"revision-2")); }
++        { Mutations++;ExpectedETag=expectedETag;Document=BeforeMutation?.Invoke(Document)??Document;Document=transition(Document,Now);return Task.FromResult(new AggregateRead(Document,"revision-2")); }
+         public Task<HighscoreResult> PublishAsync(HighscoreSubmission run,string hash,CancellationToken token)=>throw new NotSupportedException();
+         public Task<(ReportReceipt Receipt,bool Created)> ReportAsync(ReportSubmission report,string hash,CancellationToken token)=>throw new NotSupportedException();
+         public Task<ReportReceipt> ReceiptAsync(Guid id,string hash,CancellationToken token)=>throw new NotSupportedException();
+diff --git "C:\\Users\\jespe\\AppData\\Local\\Temp\\dt3d-expected-name-a4c20b17544a4ac3ad481ec2bfc05ae4\\before\\src\\backend\\Moderation\\highscore-admin.sh" src/backend/Moderation/highscore-admin.sh
+index 08c95b7..e69c4c6 100644
+--- "C:\\Users\\jespe\\AppData\\Local\\Temp\\dt3d-expected-name-a4c20b17544a4ac3ad481ec2bfc05ae4\\before\\src\\backend\\Moderation\\highscore-admin.sh"
++++ src/backend/Moderation/highscore-admin.sh
+@@ -9,9 +9,10 @@ Manual highscore administration (authenticated App Service SSH only)
+ 
+   bash highscore-admin.sh entry --rank 4
+   bash highscore-admin.sh entry --entry-id UUID
+-  bash highscore-admin.sh rename --entry-id UUID --display-name 'New name'
+-  bash highscore-admin.sh rename --entry-id UUID --display-name 'New name' --apply
++  bash highscore-admin.sh rename --entry-id UUID --expected-name 'Current name' --display-name 'New name'
++  bash highscore-admin.sh rename --entry-id UUID --expected-name 'Current name' --display-name 'New name' --apply
+ 
++--expected-name is required and must match the current name (case-sensitive, NFC).
+ Rename previews by default. --apply writes. To pin an earlier preview, also pass
+ --expected-etag '"ETAG"'. After operation_unconfirmed, inspect the entry; do not
+ blindly repeat --apply. Names are printed only in this private operator console.
+diff --git "C:\\Users\\jespe\\AppData\\Local\\Temp\\dt3d-expected-name-a4c20b17544a4ac3ad481ec2bfc05ae4\\before\\docs\\highscore-administration.md" docs/highscore-administration.md
+index bab4182..514283c 100644
+--- "C:\\Users\\jespe\\AppData\\Local\\Temp\\dt3d-expected-name-a4c20b17544a4ac3ad481ec2bfc05ae4\\before\\docs\\highscore-administration.md"
++++ docs/highscore-administration.md
+@@ -22,22 +22,27 @@ admin entry --entry-id ENTRY_ID_FROM_OUTPUT
+ ```
+ 
+ The private console shows only that stored entry's ID, current rank, name, score
+-and ETag. Copy its `entryId`; positions can change when new scores arrive. A virtual
++and ETag. Copy its `entryId` and current `displayName`; positions can change when new scores arrive. A virtual
+ starter that has never been stored cannot be edited.
+ 
+ Preview a rename, then explicitly apply it:
+ 
+ ```sh
+-admin rename --entry-id ENTRY_ID_FROM_OUTPUT --display-name 'New name'
+-admin rename --entry-id ENTRY_ID_FROM_OUTPUT --display-name 'New name' --apply
++admin rename --entry-id ENTRY_ID_FROM_OUTPUT --expected-name 'Current name' --display-name 'New name'
++admin rename --entry-id ENTRY_ID_FROM_OUTPUT --expected-name 'Current name' --display-name 'New name' --apply
+ admin entry --entry-id ENTRY_ID_FROM_OUTPUT
+ ```
+ 
+ `--apply` is a manual instruction to perform that invocation's fresh preview.
++`--expected-name` is mandatory. It must match the selected entry's current name,
++case-sensitively after the usual trimming and NFC normalization. A mismatch returns
++409 `entry_changed` without a write, including when the requested new name is
++already present. Inspect the entry again before making a new deliberate command.
++The fixed ID keeps the command on the same score even if its rank has changed.
+ To require the exact revision from an earlier preview, include its ETag:
+ 
+ ```sh
+-admin rename --entry-id ENTRY_ID_FROM_OUTPUT --display-name 'New name' \
++admin rename --entry-id ENTRY_ID_FROM_OUTPUT --expected-name 'Current name' --display-name 'New name' \
+   --expected-etag '"ETAG_FROM_PREVIEW"' --apply
+ ```
+ 
+@@ -49,19 +54,23 @@ application log: the selected public name is intentionally visible to the owner.
+ ## Behavior and failures
+ 
+ - Names use the existing NFC normalization, 1–20 grapheme / 256-byte validation and
+-  moderation policy. Invalid/prohibited names are rejected before a write.
++  moderation policy. Invalid/prohibited new names are rejected before a write.
++  The expected old name uses the same format validation, without the moderation
++  filter, so an existing prohibited name can still be corrected. Its match is
++  checked both in the preview and in the conditional mutation.
+ - Only the identified stored entry's display name changes. ID, score, sequence,
+   rank, level, origin, installation attribution and acceptance time are preserved.
+   Report snapshots are not renamed. Normal existing pre-mutation retention cleanup
+   may remove already-expired reports/audit/spam receipts.
+ - Preview performs no mutation. Applying an already matching name is a read-only
+-  no-op. Rename cannot create a missing entry or resurrect a removed one.
++  no-op only if the expected current name also matches. Rename cannot create a
++  missing entry or resurrect a removed one.
+ - Apply pins the ETag read for its own preview, and storage uses `If-Match`. Any
+   intervening update returns `revision_changed` without overwriting it. Inspect the
+   entry and make a new deliberate invocation if still appropriate.
+ - After `operation_unconfirmed` or `operator_unavailable_or_unconfirmed`, inspect
+   the entry by ID. The write may have committed; do not blindly repeat `--apply`.
+-- Rename uses the entry ID and inspected ETag as its concurrency identity. It adds
++- Rename uses the entry ID, required expected name and inspected ETag as its concurrency identity. It adds
+   no new aggregate audit enum/receipt or schema field, so existing schema-2 readers
+   remain compatible. The private command result contains the saved entry and ETag.
+   Keep content-free operational evidence (entry ID/revisions/actor/action), not
+diff --git "C:\\Users\\jespe\\AppData\\Local\\Temp\\dt3d-expected-name-a4c20b17544a4ac3ad481ec2bfc05ae4\\before\\specs\\002-app-store-release\\contracts\\moderation-api.md" specs/002-app-store-release/contracts/moderation-api.md
+index eb46e5b..6b642fb 100644
+--- "C:\\Users\\jespe\\AppData\\Local\\Temp\\dt3d-expected-name-a4c20b17544a4ac3ad481ec2bfc05ae4\\before\\specs\\002-app-store-release\\contracts\\moderation-api.md"
++++ specs/002-app-store-release/contracts/moderation-api.md
+@@ -93,15 +93,19 @@ Commands:
+ - `entry --rank 1..100` or `entry --entry-id UUID`: manual private lookup of one
+   persisted score, returning only its entry ID, current rank/name/score and ETag.
+   Exactly one selector is required; virtual unstored starters return404.
+-- `rename --entry-id UUID --display-name NAME [--expected-etag ETAG]`: manual
++- `rename --entry-id UUID --expected-name CURRENT_NAME --display-name NAME [--expected-etag ETAG]`: manual
+   owner-only name correction with preview then explicit `--apply`. Writes always
+-  target the fixed ID, never a rank. Normalize/validate/filter the new name using
++  target the fixed ID, never a rank. The expected current name is mandatory and
++  must match case-sensitively after trimming/NFC normalization, both during preview
++  and in the conditional mutation; mismatch returns409 `entry_changed` without a
++  write, even if the new name already matches. Validate the old name's format but
++  do not apply the moderation filter to it. Normalize/validate/filter the new name using
+   existing rules; preserve score/tie identity/attribution and report snapshots.
+   Normal pre-mutation expiry cleanup still applies. Apply pins its freshly inspected
+   ETag; an explicitly supplied ETag also pins an earlier preview. A concurrent update
+   returns409 `revision_changed`; an ambiguous attempted write returns
+   `operation_unconfirmed` and requires manual ID-based readback. An already matching
+-  name is a read-only no-op. This command uses ID/ETag concurrency identity instead
++  name is a read-only no-op only when the expected name also matches. This command uses ID/expected-name/ETag concurrency identity instead
+   of a persisted operation-ID audit receipt; no new audit enum or storage field is
+   introduced. It does not acknowledge/resolve reports or change public API/iOS flows.
+   See [manual administration](../../../docs/highscore-administration.md).
+diff --git "C:\\Users\\jespe\\AppData\\Local\\Temp\\dt3d-expected-name-a4c20b17544a4ac3ad481ec2bfc05ae4\\before\\src\\backend\\README.md" src/backend/README.md
+index 0e49e38..396d1dd 100644
+--- "C:\\Users\\jespe\\AppData\\Local\\Temp\\dt3d-expected-name-a4c20b17544a4ac3ad481ec2bfc05ae4\\before\\src\\backend\\README.md"
++++ src/backend/README.md
+@@ -53,7 +53,9 @@ For manual owner-only name corrections, see [highscore administration](../../doc
+ The existing executable's `moderation entry` / `moderation rename` commands use
+ authenticated App Service SSH and managed identity. The published
+ `highscore-admin.sh` wrapper supports read-only lookup, rename preview and explicit
+-`--apply`; this adds no HTTP route or iOS integration.
++`--apply`. Rename requires the fixed entry ID and `--expected-name` matching its
++current name; a changed name is rejected without a write. This adds no HTTP route
++or iOS integration.
+ 
+ All settings use the `Highscores` configuration section (`Highscores__...` in environment variables):
+ 

@@ -12,7 +12,7 @@ public static class ModerationCommand
         var result=new Dictionary<string,string> { ["command"]=args[0] };
         for(int i=1;i<args.Length;i++) {
             var name=args[i];
-            if(name is not ("--target" or "--report-id" or "--report-ids" or "--operation-id" or "--entry-id" or "--decision" or "--installation-hash" or "--expected-block-id" or "--expected-etag" or "--apply")) throw Invalid();
+            if(name is not ("--target" or "--report-id" or "--report-ids" or "--operation-id" or "--entry-id" or "--rank" or "--expected-name" or "--display-name" or "--decision" or "--installation-hash" or "--expected-block-id" or "--expected-etag" or "--apply")) throw Invalid();
             var value=name=="--apply"?"true":++i<args.Length?args[i]:throw Invalid();
             if(value.StartsWith("--") || !result.TryAdd(name,value)) throw Invalid();
         }
@@ -39,6 +39,7 @@ public static class ModerationCommand
     {
         try {
             var args=Parse(raw);var command=args["command"];
+            if(command is "entry" or "rename") HighscoreAdministration.ValidateArguments(command,args);
             var options=configuration.GetSection("Highscores").Get<HighscoreOptions>() ?? new();
             var moderation=configuration.GetSection("Moderation").Get<ModerationOptions>() ?? new();
             ValidateTarget(args["--target"],options,Environment.GetEnvironmentVariable);
@@ -48,6 +49,9 @@ public static class ModerationCommand
             }
             var client=await options.CreateOperatorClientAsync(token);var clock=TimeProvider.System;
             var store=new BlobHighscoreStore(client,options,clock,moderation:moderation);
+            if(command is "entry" or "rename") {
+                await HighscoreAdministration.RunAsync(command,args,store,output,token);return 0;
+            }
             if(command=="initialize") {
                 await ModerationMigration.InitializeAsync(client,options,args.ContainsKey("--apply"),output,token);return 0;
             }

@@ -1,0 +1,23 @@
+{
+  "date": "2026-10-16",
+  "site": "donkeytrump-api-p",
+  "mode": "authenticated App Service SSH, managed identity",
+  "manualDllSha256": "60b5c449f15ea66246e5ed4b904ebd1ad786969871356f22986255a49366efaf",
+  "manualPath": "/home/site/tools/highscore-admin/60b5c449f15ea66246e5ed4b904ebd1ad786969871356f22986255a49366efaf",
+  "previousManualDllSha256": "0c5da81320e936dcbd8ab818c9fe5c67e1b2d99589e186766882ad0bca3b7cc6",
+  "liveHttpDllSha256BeforeAndAfter": "d2c2eb54e354f5d01cdc03b1712a7b66ab239e0756937b9484b77491414d18b7",
+  "runtime": "Microsoft.AspNetCore.App and Microsoft.NETCore.App 10.0.12",
+  "shellSyntax": "bash -n wrapper and installer succeeded before installation",
+  "command": "admin rename --entry-id 8070dc7a-3b76-4b66-ba52-cf5c260846cd --expected-name 'ErikB' --display-name 'ErikB'",
+  "previewExit": 0,
+  "preview": true,
+  "changed": false,
+  "entryId": "8070dc7a-3b76-4b66-ba52-cf5c260846cd",
+  "rank": 7,
+  "score": 4000,
+  "etag": "\"0x8DF2B87604BEA1E\"",
+  "applyInvoked": false,
+  "highscoreWrites": 0,
+  "testsRun": false,
+  "limitations": "Read-only operator preview only; mismatch/concurrency/write behavior source-inspected and test code compiled, not executed."
+}

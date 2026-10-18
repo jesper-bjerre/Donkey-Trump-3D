@@ -90,6 +90,25 @@ No public admin route or additional hosted service. Failure to obtain a supporte
 SSH session blocks cloud operator work; no human Blob credential fallback.
 
 Commands:
+- `entry --rank 1..100` or `entry --entry-id UUID`: manual private lookup of one
+  persisted score, returning only its entry ID, current rank/name/score and ETag.
+  Exactly one selector is required; virtual unstored starters return404.
+- `rename --entry-id UUID --expected-name CURRENT_NAME --display-name NAME [--expected-etag ETAG]`: manual
+  owner-only name correction with preview then explicit `--apply`. Writes always
+  target the fixed ID, never a rank. The expected current name is mandatory and
+  must match case-sensitively after trimming/NFC normalization, both during preview
+  and in the conditional mutation; mismatch returns409 `entry_changed` without a
+  write, even if the new name already matches. Validate the old name's format but
+  do not apply the moderation filter to it. Normalize/validate/filter the new name using
+  existing rules; preserve score/tie identity/attribution and report snapshots.
+  Normal pre-mutation expiry cleanup still applies. Apply pins its freshly inspected
+  ETag; an explicitly supplied ETag also pins an earlier preview. A concurrent update
+  returns409 `revision_changed`; an ambiguous attempted write returns
+  `operation_unconfirmed` and requires manual ID-based readback. An already matching
+  name is a read-only no-op only when the expected name also matches. This command uses ID/expected-name/ETag concurrency identity instead
+  of a persisted operation-ID audit receipt; no new audit enum or storage field is
+  introduced. It does not acknowledge/resolve reports or change public API/iOS flows.
+  See [manual administration](../../../docs/highscore-administration.md).
 - `list`: report IDs/status/reason/deadline grouped by entry ID with counts, for private
   owner console only (not CI/application logs); `show --report-id UUID`
   reveals necessary private snapshot to the owner, not to CI logs or repository evidence.
@@ -142,7 +161,7 @@ Commands:
 
 Preview mutation summary then require explicit `--apply` for write commands. This is
 an operator safeguard, not a new owner-approval handoff for agent work already
-explicitly authorized. Mutations use stable operation IDs; ambiguous results require
+explicitly authorized. Except for the ID/ETag-based rename above, mutations use stable operation IDs; ambiguous results require
 readback, never blind duplicate writes. ID-based deduplication lasts only while its
 audit receipt is retained; it is not indefinite. After audit eviction, tombstones,
 immutable resolved reports (including resolvedOperationId) and expected blockId

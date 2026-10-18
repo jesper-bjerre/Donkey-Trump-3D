@@ -1,0 +1,20 @@
+{
+  "baseCommit": "368d7001b90ade026efcc71b4b057683eaa4ffaa",
+  "applicationDiff": "none",
+  "sourceFiles": [
+    {
+      "path": "C:\\Users\\jespe\\AppData\\Local\\Temp\\dt3d-prod-name-015f90094490430dad206587ddfb6f5e\\offline\\Program.cs",
+      "sha256": "d6073636e74678d5c997386e6eaa77f58849795a9cac7e6722b371674216547a"
+    },
+    {
+      "path": "C:\\Users\\jespe\\AppData\\Local\\Temp\\dt3d-prod-name-015f90094490430dad206587ddfb6f5e\\offline\\bin\\Release\\net10.0\\RenameProdHighscore.dll",
+      "sha256": "9e16c04aae0fa37cdde4d26b04bbaa3cccf856f736104777f41fb301784753da"
+    },
+    {
+      "path": "C:\\Users\\jespe\\AppData\\Local\\Temp\\dt3d-prod-name-015f90094490430dad206587ddfb6f5e\\operation.sh",
+      "sha256": "31374f5716d63e948b718c577ce8b08527369216962eb5150395d1ec649a8103"
+    }
+  ],
+  "reviewPacketSha256": "837a88fa7cdad9cae245f80084ca630e4947033ab17aab1f22196a19b0a223a7",
+  "note": "Exact editor source and review packet retained only in local temporary evidence; prior email-valued display name and private blob contents excluded from repository evidence. Record files excluded from operational payload identity."
+}
