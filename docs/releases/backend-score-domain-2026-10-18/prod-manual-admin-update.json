@@ -1,0 +1,9 @@
+{
+  "environment": "production",
+  "operation": "existing manual admin reader update",
+  "highscoreCommandsExecuted": false,
+  "testsExecuted": false,
+  "updated": true,
+  "previousRevisionPreserved": true,
+  "assemblySha256": "c7c0e0891ea0b8b475b06ae14c05bf22ff759ba0412cce3ca55504abe14a285c"
+}

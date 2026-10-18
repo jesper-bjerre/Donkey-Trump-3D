@@ -1,0 +1,12 @@
+{
+  "environment": "production",
+  "functionalTestsExecuted": false,
+  "sshExitCode": 0,
+  "expectedSiteObserved": true,
+  "commit": "dc26816631a9d4656e37a7711c43ba33fd0a4b86",
+  "matchingArtifactFiles": 29,
+  "expectedArtifactFiles": 29,
+  "allArtifactFilesMatch": true,
+  "assemblySha256": "c7c0e0891ea0b8b475b06ae14c05bf22ff759ba0412cce3ca55504abe14a285c",
+  "verified": true
+}

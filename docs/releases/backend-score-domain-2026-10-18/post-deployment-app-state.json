@@ -1,0 +1,18 @@
+{
+  "completedUtc": "2026-10-18T16:53:12.808972+00:00",
+  "apps": [
+    {
+      "name": "donkeytrump-api-p",
+      "state": "Running",
+      "httpsOnly": true,
+      "plan": "asp-vejles-koder-p"
+    },
+    {
+      "name": "byensgaader-api-p",
+      "state": "Running",
+      "plan": "asp-vejles-koder-p"
+    }
+  ],
+  "source": "Azure ARM read-only app metadata",
+  "functionalAvailabilityChecked": false
+}

@@ -1,0 +1,10 @@
+{
+  "docs/releases/backend-score-domain-2026-10-18/prod-deployment.json": "237339efdc68374034e58f7b115098a4d420e9a8ef869d744d80cc18603a7231",
+  "docs/releases/backend-score-domain-2026-10-18/post-deployment-app-state.json": "33231f31614f05e9ed74f214049d57c6325aedaeec138c504c0616d9ce3070ab",
+  "docs/releases/backend-score-domain-2026-10-18/prod-manual-admin-update.json": "9df5c2ea413bb3a20a95e794a32d1d8e5c645e5d7ec28a06969683e87fb13f1c",
+  "docs/releases/backend-score-domain-2026-10-18/prod-plan-metrics.json": "00cc016578cdf34af5f9a9566030f911a07ab54ad2e27d519eddd221fcc46f74",
+  "docs/releases/backend-score-domain-2026-10-18/dev-deployment.json": "a3069af6c0d8b19e8ce35db75c0f941f0b394dff74bd1d7f998e1ad31b1b48fb",
+  "docs/releases/backend-score-domain-2026-10-18/prod-artifact-inspection.json": "e5b555854021131944245361c735d84c7023950861df396c12479f679470fd2d",
+  "docs/releases/backend-score-domain-2026-10-18/artifact.json": "2d5476b9ea2fb60412af51f27a016950f9909b24527ec9f416e8aaefc00a33a3",
+  "docs/releases/backend-score-domain-2026-10-18.md": "9f4d771b2e8b04cba2240e5007024c174d4c31c668aaf65771a40002d694e463"
+}

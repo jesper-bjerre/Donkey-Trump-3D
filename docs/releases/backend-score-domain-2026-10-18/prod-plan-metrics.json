@@ -1,0 +1,30 @@
+{
+  "resource": "asp-vejles-koder-p",
+  "startUtc": "2026-10-18T16:36:10.898592+00:00",
+  "endUtc": "2026-10-18T16:51:10.898592+00:00",
+  "operationalMetricsOnly": true,
+  "metrics": [
+    {
+      "name": "CpuPercentage",
+      "observedPoints": 15,
+      "average": 32.266666666666666,
+      "maximum": 89.0,
+      "lastPoint": {
+        "average": 84.0,
+        "maximum": 84.0,
+        "timeStamp": "2026-10-18T16:50:00Z"
+      }
+    },
+    {
+      "name": "MemoryPercentage",
+      "observedPoints": 15,
+      "average": 78.53333333333333,
+      "maximum": 83.0,
+      "lastPoint": {
+        "average": 83.0,
+        "maximum": 83.0,
+        "timeStamp": "2026-10-18T16:50:00Z"
+      }
+    }
+  ]
+}

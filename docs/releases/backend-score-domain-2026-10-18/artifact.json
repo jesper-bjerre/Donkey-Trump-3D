@@ -1,0 +1,19 @@
+{
+  "sourceCommit": "dc26816631a9d4656e37a7711c43ba33fd0a4b86",
+  "zipSha256": "3a8f3fa6c93cafdb6dc55f2c8d78146ecabfca3d1155aeaea03d4b5835d3b88f",
+  "assemblySha256": "c7c0e0891ea0b8b475b06ae14c05bf22ff759ba0412cce3ca55504abe14a285c",
+  "artifactFiles": 29,
+  "retainedArtifactDirectory": ".build/backend-releases/dc26816631a9d4656e37a7711c43ba33fd0a4b86-20261018",
+  "storageContract": {
+    "readSchemas": [
+      1,
+      2
+    ],
+    "writeSchemas": [
+      2
+    ],
+    "rollbackFloor": 2
+  },
+  "testsExecuted": false,
+  "smokeExecuted": false
+}

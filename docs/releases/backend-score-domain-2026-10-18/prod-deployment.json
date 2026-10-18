@@ -1,0 +1,7 @@
+{
+  "failedInstances": 0,
+  "id": "/subscriptions/6b6dcc04-7490-42ed-bedf-68f60946485e/resourceGroups/Gulvet/providers/Microsoft.Web/sites/donkeytrump-api-p/deploymentStatus/ab775f79-fd1b-49d8-9c50-8d1897757f52",
+  "name": "ab775f79-fd1b-49d8-9c50-8d1897757f52",
+  "status": "RuntimeSuccessful",
+  "successfulInstances": 1
+}
