@@ -1,0 +1,69 @@
+{
+  "date": "2026-10-18",
+  "kind": "document consistency checks; no application tests",
+  "checks": {
+    "mandatory_sections_in_order": true,
+    "no_unresolved_clarification": true,
+    "requirements_22_unique": true,
+    "success_criteria_9_unique": true,
+    "checklist_16_complete": true,
+    "feature_pointer": true,
+    "no_extension_hooks_file": true,
+    "relative_links_resolve": true,
+    "no_template_placeholders": true,
+    "tracked_diff_whitespace": true,
+    "new_artifacts_no_trailing_whitespace": true
+  },
+  "links": [
+    {
+      "file": "specs/003-score-timer-difficulty/spec.md",
+      "target": "../../docs/intents/Donkey_Trump_3D_Codex_Point_Timer_Svaerhedsgrad.md",
+      "exists": true
+    },
+    {
+      "file": "specs/003-score-timer-difficulty/spec.md",
+      "target": "../../.specify/memory/constitution.md",
+      "exists": true
+    },
+    {
+      "file": "specs/003-score-timer-difficulty/spec.md",
+      "target": "../../docs/architecture_options.md",
+      "exists": true
+    },
+    {
+      "file": "specs/003-score-timer-difficulty/spec.md",
+      "target": "../001-global-highscores/contracts/ios-flow.md",
+      "exists": true
+    },
+    {
+      "file": "specs/003-score-timer-difficulty/spec.md",
+      "target": "../001-global-highscores/contracts/highscores.openapi.yaml",
+      "exists": true
+    },
+    {
+      "file": "specs/003-score-timer-difficulty/spec.md",
+      "target": "../../AGENTS.md",
+      "exists": true
+    },
+    {
+      "file": "specs/003-score-timer-difficulty/checklists/requirements.md",
+      "target": "../spec.md",
+      "exists": true
+    }
+  ],
+  "git_diff_check": {
+    "exit": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  "manual_quality_assessment": {
+    "criteria_passed": 16,
+    "intent_acceptance_items_mapped": 19,
+    "summary": "Read all intent sections against stories, FR-001–FR-022, transition table, SC-001–SC-009 and assumptions. All 19 intent acceptance items mapped in checklist. No product clarification markers. Formula-based business rules retain intent; implementation mechanisms omitted."
+  },
+  "not_run": [
+    "unit/integration/UI/end-to-end/smoke tests",
+    "application build",
+    "visual gameplay or physical-device checks"
+  ]
+}

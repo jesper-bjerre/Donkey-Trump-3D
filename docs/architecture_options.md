@@ -1,6 +1,6 @@
 # Donkey Trump 3D — Current architecture
 
-Updated: 2026-09-26. The filename is retained for existing references; this document records the implemented native iOS architecture and outstanding concerns. It supersedes the copied Phaser/static-web architecture options.
+Updated: 2026-10-18. The filename is retained for existing references; this document records the implemented native iOS architecture and outstanding concerns. It supersedes the copied Phaser/static-web architecture options.
 
 ## System boundary and platform
 
@@ -36,7 +36,7 @@ All level data and audio ship in the app bundle. Models, textures and scene effe
 | App entry and model | [DonkeyTrump3DApp.swift](../src/DonkeyTrump3D/App/DonkeyTrump3DApp.swift) | SwiftUI lifecycle, observable UI model and SceneKit view bridge |
 | Orchestration | [GameEngine.swift](../src/DonkeyTrump3D/App/GameEngine.swift) | Render delegate, fixed-step loop, commands, scene synchronisation, cameras, intro and feedback |
 | Session and simulation | [Simulation.swift](../src/DonkeyTrump3D/Core/Simulation.swift) | Phases, hits, rescue, score/lives, retries and gameplay events |
-| Rules and input contract | [Rules.swift](../src/DonkeyTrump3D/Core/Rules.swift) | `GamePhase`, scoring constants, timings, `InputState`, seeded random generator |
+| Rules and input contract | [Rules.swift](../src/DonkeyTrump3D/Core/Rules.swift) | `GamePhase`, checked scoring formulas, timings, `InputState`, seeded random generator |
 | Level data and progression | [Level.swift](../src/DonkeyTrump3D/Core/Level.swift) | Codable data, bundled layout loading and `DifficultyRamp` |
 | Movement | [Player.swift](../src/DonkeyTrump3D/Core/Player.swift) | Jump/coyote time, jump cut, overlap-gated ladders and integration |
 | Slopes and hazards | [Slope.swift](../src/DonkeyTrump3D/Core/Slope.swift), [Barrels.swift](../src/DonkeyTrump3D/Core/Barrels.swift) | Segment contacts, rolling, drops and direct throws |
@@ -45,7 +45,7 @@ All level data and audio ship in the app bundle. Models, textures and scene effe
 | Automated play | [Autopilot.swift](../src/DonkeyTrump3D/Core/Autopilot.swift) | Title demonstration and deterministic gameplay tests |
 | 3D world | [WorldBuilder.swift](../src/DonkeyTrump3D/Render/WorldBuilder.swift) | Tower, ladders, barrel geometry and environment |
 | Rendering assets | [Materials.swift](../src/DonkeyTrump3D/Render/Materials.swift), [Characters.swift](../src/DonkeyTrump3D/Render/Characters.swift), [Effects.swift](../src/DonkeyTrump3D/Render/Effects.swift) | Coordinates, materials/textures, character rigs and particles |
-| Input adapters | [Input.swift](../src/DonkeyTrump3D/Input/Input.swift) | Thread-safe touch snapshot, thumb stick/jump zones and input polling |
+| Input adapters | [Input.swift](../src/DonkeyTrump3D/Input/Input.swift) | Timestamped thread-safe touch events, thumb stick/jump zones and input polling |
 | Audio and haptics | [AudioSystem.swift](../src/DonkeyTrump3D/Audio/AudioSystem.swift) | WAV pools, music, mute preferences and UIKit feedback |
 | UI and copy | [RootView.swift](../src/DonkeyTrump3D/UI/RootView.swift), [Copy.swift](../src/DonkeyTrump3D/UI/Copy.swift) | Menus, overlays and shared English copy; some labels remain inline |
 | Resources | [Levels](../src/DonkeyTrump3D/Resources/Levels), [Audio](../src/DonkeyTrump3D/Resources/Audio) | Three JSON layouts and 20 WAV files |
@@ -55,7 +55,7 @@ All level data and audio ship in the app bundle. Models, textures and scene effe
 
 `DonkeyTrump3DApp` owns `GameModel`, which owns `GameEngine`. SwiftUI actions enqueue `EngineCommand` values. `GameSceneView` embeds an `SCNView`; SceneKit calls the engine's render delegate to drain commands, poll inputs, advance the session and synchronise visible nodes.
 
-During gameplay, a time accumulator runs the core simulation in `1/120`-second steps. Frame delta is capped at `1/20` second. The intro advances from the render delta on its own timeline. The view requests 120 FPS, which is a preference rather than a hardware guarantee.
+GameplayTimeline receives monotonic integral nanosecond stamps from one ContinuousClock epoch for render, touch/controller and commands. It uses cumulative120Hz boundaries and exact partial slices at commands; GameplaySession splits at exact attempt expiry. At most32 chronological slices drain per render callback; older foreground debt remains, with recorded input spans and once-only presses. Paused/inactive gaps are skipped, never charged as active time. Only camera/presentation delta keeps the50ms cap. A terminal/phase transition retires old intervals and starts its visible duration at delivery, without fast-forwarding a new attempt. The view requests120 FPS; this is not a measured device guarantee. Large foreground debt can delay timer presentation while it drains.
 
 `InputHub`, the command queue and audio playback use locks for their shared state. HUD snapshots and haptic work are dispatched to the main queue. UI code should send commands instead of directly mutating the simulation or SceneKit nodes. Core gameplay types depend on Foundation, not SceneKit/SwiftUI.
 
@@ -107,14 +107,14 @@ The existing intro march loops during the path and stops on entry to signing. Ei
 
 `AudioSystem` uses `AVAudioSession` playback mode with mixing. The in-game mute flag is locked and persisted; setting it changes every active voice and music volume immediately. A muted intro loop keeps advancing at zero volume so later unmuting remains in time. Music tempo rises with level index and is capped at 1.6×.
 
-There is no dedicated audio-interruption or route-change observer. Calls, headphones/Bluetooth changes, app suspension and subsequent audio recovery need physical-device validation. The lifecycle currently requests pause when leaving the active scene, but the engine accepts that command only during `.play`; a general pause model for intro and other transitions is not implemented.
+There is no dedicated audio-interruption or route-change observer. Calls, headphones/Bluetooth changes, app suspension and subsequent audio recovery need physical-device validation. Timestamped lifecycle activity now freezes intro/loss/retry/celebration as well as play. Leaving active pauses gameplay; returning does not automatically Resume a paused attempt.
 
 ## Persistence, privacy and failure boundaries
 
 | Data | Storage and lifecycle |
 |---|---|
 | Current run, position, lives and level | Memory only; not restored after process termination |
-| Best score | `UserDefaults` key `best`; persisted on rescue and game over |
+| Best score | `UserDefaults` key `best`; persisted on rescue and game over through a serial utility queue outside the render loop |
 | Sound preference | `UserDefaults` key `muted`; absent value defaults to sound enabled |
 | Haptics preference | `UserDefaults` key `haptics`; absent value defaults to enabled |
 | Layouts and WAVs | Read-only app-bundle resources |
@@ -144,3 +144,9 @@ The 18 existing tests cover level loading/connectivity, jump limits, difficulty 
 | Release operations | Local build/test commands exist | Establish signed distribution and reproducible release records |
 
 See the [product specification](prd_spec.md) for user-facing rules and the [backlog](backlog.md) for concrete acceptance checks.
+
+## Score/time/pressure ownership (feature003)
+
+GameSession owns one exact score, LevelProgress(T, immutable bases, ≤20 rewarded lifetime IDs) and AttemptState(R180s, terminal identity). Retries retain level history and score; new level resets history/T; restart resets the run. Clearance rewards are10×visible L, completion1000×L, time5×L×floor(max(0,180−T)). Checked transactions fail closed and never round to the remote ceiling. Immutable ScoreAward/BarrelSnapshot payloads prevent pool reuse from changing delayed feedback.
+
+Pressure p=clamp(T/180,0,1) scales desired intervals1−.60p and speeds1+.25p. Actual intervals use the per-level jump/spacing floor; direct ballistic aiming remains unchanged through intermediate falling until first landing. See [playability evidence](../specs/003-score-timer-difficulty/evidence/playability.md) for initial floor tables and unexecuted physical gates. Runs remain memory-only. Debug gameplay fixtures disable publication and persistent best even with malformed/combined flags; Release excludes injection. App/backend stored scores share the five-point domain with the same ceiling/history/ETags; no board/schema migration or deferred upload. Implementation source is distinct from runtime or release acceptance.

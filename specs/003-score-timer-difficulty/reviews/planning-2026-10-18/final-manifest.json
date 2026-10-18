@@ -1,0 +1,53 @@
+{
+  "base_commit": "9483e8eff3732cb4816942f6c9988ac1165ec537",
+  "branch": "main",
+  "final_payload": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "bd9443157d1500264d21af3d7db886c008cae67c652b9c912447aa91c1976d2b"
+    },
+    {
+      "path": "specs/003-score-timer-difficulty/spec.md",
+      "sha256": "0b16c35401a08b6001d99b14f15ced4ecbfb7b0cba9753a5780dadcc04948702"
+    },
+    {
+      "path": "specs/003-score-timer-difficulty/plan.md",
+      "sha256": "198258b85f110b362fe52e2f1d824fd0d9f98d81fb41448d423a753ed904315b"
+    },
+    {
+      "path": "specs/003-score-timer-difficulty/research.md",
+      "sha256": "1fabe18f4ccadebf95c4fd7ebbed7e4df7786038e8fc65927611e240c8d029f6"
+    },
+    {
+      "path": "specs/003-score-timer-difficulty/data-model.md",
+      "sha256": "2527c90e2aa00b881563f07b7363600065e27c92b421519d66ac3a2ea45a4735"
+    },
+    {
+      "path": "specs/003-score-timer-difficulty/quickstart.md",
+      "sha256": "7b76a9bb36864479baf5434b0f5729c83945211c718fcab928df81878e173e54"
+    },
+    {
+      "path": "specs/003-score-timer-difficulty/contracts/gameplay.md",
+      "sha256": "928400593195178478b1c18fdd8e7f63245adf22d750983b3e463d789bae4bed"
+    },
+    {
+      "path": "specs/003-score-timer-difficulty/contracts/highscore-score-domain.md",
+      "sha256": "84e1b06a00a24b460cb29b5e00066de9f4bcb2b089974de2171123559d24826f"
+    },
+    {
+      "path": "specs/003-score-timer-difficulty/contracts/highscore-score.schema.json",
+      "sha256": "8d268e034eb73f119d944c13495103a788eee544aa5a66fe6131dab6f5ad88c3"
+    },
+    {
+      "path": "specs/003-score-timer-difficulty/review-policy.md",
+      "sha256": "19760297d89bcd7a6e8f73f804a19bc86b124c9bab38324213dd39e7a4b2fa2f"
+    }
+  ],
+  "acceptance_evidence": {
+    "path": "specs/003-score-timer-difficulty/reviews/planning-2026-10-18/final-document-checks.json",
+    "sha256": "ed3d854731b66193c9401a2e05c27f4acd8e689b4978412b05310a2587d696fe"
+  },
+  "preexisting_untracked_spec_base_sha256": "6b75005033b0e36378368bee724cf4779c718052e81ae1980399a7c3021f69ff",
+  "review_status": "not required; owner-directed cancellation and durable scoped exception",
+  "record_exclusion": "evidence records/manifests/metadata only; source/instructions/design and acceptance evidence included"
+}

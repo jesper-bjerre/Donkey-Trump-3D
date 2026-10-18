@@ -115,6 +115,26 @@
     {
       "value": 2147483647,
       "valid": false
+    },
+    {
+      "value": 5,
+      "valid": true
+    },
+    {
+      "value": 10,
+      "valid": true
+    },
+    {
+      "value": 1005,
+      "valid": true
+    },
+    {
+      "value": 2147483605,
+      "valid": false
+    },
+    {
+      "value": 1.5,
+      "valid": false
     }
   ],
   "levels": [
@@ -1459,6 +1479,46 @@
         ],
         "revision": "\"fixture\"",
         "fetchedAtUtc": "2026-09-26T12:00:00.000Z"
+      }
+    },
+    {
+      "id": "mixed-five-point-history",
+      "valid": true,
+      "snapshot": {
+        "entries": [
+          {
+            "entryId": "20000000-0000-0000-0000-000000000001",
+            "rank": 1,
+            "displayName": "Mixed 1",
+            "score": 2600
+          },
+          {
+            "entryId": "20000000-0000-0000-0000-000000000002",
+            "rank": 2,
+            "displayName": "Mixed 2",
+            "score": 1005
+          },
+          {
+            "entryId": "20000000-0000-0000-0000-000000000003",
+            "rank": 3,
+            "displayName": "Mixed 3",
+            "score": 1000
+          },
+          {
+            "entryId": "20000000-0000-0000-0000-000000000004",
+            "rank": 4,
+            "displayName": "Mixed 4",
+            "score": 10
+          },
+          {
+            "entryId": "20000000-0000-0000-0000-000000000005",
+            "rank": 5,
+            "displayName": "Mixed 5",
+            "score": 0
+          }
+        ],
+        "revision": "mixed-003",
+        "fetchedAtUtc": "2026-10-18T12:00:00.000Z"
       }
     }
   ]

@@ -2,7 +2,7 @@ import Foundation
 
 enum HighscoreRules {
     static let zeroID = UUID(uuidString: "00000000-0000-0000-0000-000000000000")!
-    static func validScore(_ score: Int) -> Bool { score >= 0 && score <= 2_147_483_600 && score % 100 == 0 }
+    static func validScore(_ score: Int) -> Bool { score >= 0 && score <= 2_147_483_600 && score % 5 == 0 }
     static func name(_ input: String) -> String? {
         guard !input.unicodeScalars.contains(where: {
             [.control, .lineSeparator, .paragraphSeparator].contains($0.properties.generalCategory)

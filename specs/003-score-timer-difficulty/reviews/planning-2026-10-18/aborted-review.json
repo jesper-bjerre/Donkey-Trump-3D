@@ -1,0 +1,15 @@
+{
+  "owner_instruction": "Denne spec skal ikke have review af Claude Code. Heller ikke ved implementering.",
+  "date": "2026-10-18",
+  "status": "stopped on explicit owner instruction",
+  "process": {
+    "exit": 143,
+    "seconds": 295.57,
+    "timeout": false
+  },
+  "accepted_reviewer_verdict": null,
+  "no_substitute_launched": true,
+  "prior_round_1_files": "Historical pre-exception candidate/context/route and checks only; not current review approval.",
+  "raw_reasoning_or_debug_recorded_in_repository": false,
+  "termination_scope": "Only Claude PID9081 with verified matching isolated temporary cwd; unrelated Claude session untouched."
+}

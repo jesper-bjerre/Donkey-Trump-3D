@@ -1,0 +1,225 @@
+{
+  "date": "2026-10-18",
+  "kind": "document consistency checks and lead source inspection only",
+  "scope": "7 plan/design artifacts plus explicit owner review-policy instruction; application code unchanged",
+  "checked_files": [
+    "AGENTS.md",
+    "specs/003-score-timer-difficulty/spec.md",
+    "specs/003-score-timer-difficulty/plan.md",
+    "specs/003-score-timer-difficulty/research.md",
+    "specs/003-score-timer-difficulty/data-model.md",
+    "specs/003-score-timer-difficulty/quickstart.md",
+    "specs/003-score-timer-difficulty/contracts/gameplay.md",
+    "specs/003-score-timer-difficulty/contracts/highscore-score-domain.md",
+    "specs/003-score-timer-difficulty/contracts/highscore-score.schema.json",
+    "specs/003-score-timer-difficulty/review-policy.md"
+  ],
+  "link_checks": [
+    {
+      "file": "AGENTS.md",
+      "target": ".specify/memory/constitution.md",
+      "valid": true
+    },
+    {
+      "file": "AGENTS.md",
+      "target": "specs/003-score-timer-difficulty/review-policy.md",
+      "valid": true
+    },
+    {
+      "file": "AGENTS.md",
+      "target": "specs/001-global-highscores/review-remediation.md",
+      "valid": true
+    },
+    {
+      "file": "AGENTS.md",
+      "target": ".agents/templates/review-record.md",
+      "valid": true
+    },
+    {
+      "file": "specs/003-score-timer-difficulty/spec.md",
+      "target": "review-policy.md",
+      "valid": true
+    },
+    {
+      "file": "specs/003-score-timer-difficulty/spec.md",
+      "target": "../../docs/intents/Donkey_Trump_3D_Codex_Point_Timer_Svaerhedsgrad.md",
+      "valid": true
+    },
+    {
+      "file": "specs/003-score-timer-difficulty/spec.md",
+      "target": "../../.specify/memory/constitution.md",
+      "valid": true
+    },
+    {
+      "file": "specs/003-score-timer-difficulty/spec.md",
+      "target": "../../docs/architecture_options.md",
+      "valid": true
+    },
+    {
+      "file": "specs/003-score-timer-difficulty/spec.md",
+      "target": "../001-global-highscores/contracts/ios-flow.md",
+      "valid": true
+    },
+    {
+      "file": "specs/003-score-timer-difficulty/spec.md",
+      "target": "../001-global-highscores/contracts/highscores.openapi.yaml",
+      "valid": true
+    },
+    {
+      "file": "specs/003-score-timer-difficulty/spec.md",
+      "target": "../../AGENTS.md",
+      "valid": true
+    },
+    {
+      "file": "specs/003-score-timer-difficulty/plan.md",
+      "target": "spec.md",
+      "valid": true
+    },
+    {
+      "file": "specs/003-score-timer-difficulty/plan.md",
+      "target": "review-policy.md",
+      "valid": true
+    },
+    {
+      "file": "specs/003-score-timer-difficulty/plan.md",
+      "target": "research.md",
+      "valid": true
+    },
+    {
+      "file": "specs/003-score-timer-difficulty/plan.md",
+      "target": "data-model.md",
+      "valid": true
+    },
+    {
+      "file": "specs/003-score-timer-difficulty/plan.md",
+      "target": "contracts/gameplay.md",
+      "valid": true
+    },
+    {
+      "file": "specs/003-score-timer-difficulty/plan.md",
+      "target": "contracts/highscore-score-domain.md",
+      "valid": true
+    },
+    {
+      "file": "specs/003-score-timer-difficulty/plan.md",
+      "target": "quickstart.md",
+      "valid": true
+    },
+    {
+      "file": "specs/003-score-timer-difficulty/plan.md",
+      "target": "../../.specify/memory/constitution.md",
+      "valid": true
+    },
+    {
+      "file": "specs/003-score-timer-difficulty/plan.md",
+      "target": "research.md",
+      "valid": true
+    },
+    {
+      "file": "specs/003-score-timer-difficulty/research.md",
+      "target": "../../docs/releases/app-store/backend-single-api-rollout.md",
+      "valid": true
+    },
+    {
+      "file": "specs/003-score-timer-difficulty/research.md",
+      "target": "../../docs/releases/app-store/1.0-2/release-record.md",
+      "valid": true
+    },
+    {
+      "file": "specs/003-score-timer-difficulty/data-model.md",
+      "target": "spec.md",
+      "valid": true
+    },
+    {
+      "file": "specs/003-score-timer-difficulty/data-model.md",
+      "target": "contracts/highscore-score-domain.md",
+      "valid": true
+    },
+    {
+      "file": "specs/003-score-timer-difficulty/quickstart.md",
+      "target": "contracts/gameplay.md#debug-acceptance-fixtures",
+      "valid": true
+    },
+    {
+      "file": "specs/003-score-timer-difficulty/contracts/gameplay.md",
+      "target": "../spec.md",
+      "valid": true
+    },
+    {
+      "file": "specs/003-score-timer-difficulty/contracts/gameplay.md",
+      "target": "../data-model.md",
+      "valid": true
+    },
+    {
+      "file": "specs/003-score-timer-difficulty/contracts/gameplay.md",
+      "target": "../research.md#r5--initial-playability-floor-derived-from-existing-movement",
+      "valid": true
+    },
+    {
+      "file": "specs/003-score-timer-difficulty/contracts/gameplay.md",
+      "target": "../quickstart.md",
+      "valid": true
+    },
+    {
+      "file": "specs/003-score-timer-difficulty/contracts/highscore-score-domain.md",
+      "target": "../../001-global-highscores/contracts/highscores.openapi.yaml",
+      "valid": true
+    },
+    {
+      "file": "specs/003-score-timer-difficulty/contracts/highscore-score-domain.md",
+      "target": "../../002-app-store-release/contracts/moderation-api.md",
+      "valid": true
+    },
+    {
+      "file": "specs/003-score-timer-difficulty/contracts/highscore-score-domain.md",
+      "target": "../../001-global-highscores/contracts/ios-flow.md",
+      "valid": true
+    },
+    {
+      "file": "specs/003-score-timer-difficulty/contracts/highscore-score-domain.md",
+      "target": "highscore-score.schema.json",
+      "valid": true
+    },
+    {
+      "file": "specs/003-score-timer-difficulty/contracts/highscore-score-domain.md",
+      "target": "../../../docs/releases/app-store/backend-single-api-rollout.md",
+      "valid": true
+    },
+    {
+      "file": "specs/003-score-timer-difficulty/contracts/highscore-score-domain.md",
+      "target": "../quickstart.md",
+      "valid": true
+    },
+    {
+      "file": "specs/003-score-timer-difficulty/review-policy.md",
+      "target": "spec.md",
+      "valid": true
+    },
+    {
+      "file": "specs/003-score-timer-difficulty/review-policy.md",
+      "target": "../../AGENTS.md",
+      "valid": true
+    }
+  ],
+  "all_links_and_fragments_resolve": true,
+  "json_parse": "pass; schema examples/application contract tests not executed",
+  "no_placeholders_or_whitespace_issues": true,
+  "spec_change": "Review policy metadata only; product/acceptance body byte-identical",
+  "checklist": "Unchanged, 16/16 specification-quality items; not implementation tests",
+  "feature_pointer": "unchanged",
+  "tasks": "not created",
+  "hook_checks": "extensions.yml absent both pre/post; no hooks to execute",
+  "git_diff_check_exit": 0,
+  "constitution": "pre-research and post-design compliant, no constitution amendment; owner exception overrides repository Claude review gate only",
+  "acceptance_coverage": "27 story scenarios and all19 intent acceptance items mapped to V01–V14 by manual source/spec review",
+  "review": "Stopped; explicitly waived by owner for this feature, including implementation. No independent planning-review approval claimed.",
+  "not_executed": [
+    "application tests",
+    "builds",
+    "contract/smoke scripts",
+    "simulations/gameplay",
+    "device acceptance",
+    "cloud/API mutation",
+    "commit/push/deployment/publication"
+  ]
+}

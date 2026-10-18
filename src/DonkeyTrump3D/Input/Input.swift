@@ -7,24 +7,30 @@ final class InputHub {
     private let lock = NSLock()
     private var touch = InputState()
     private var jumpPresses = 0
+    var onChange: ((InputState) -> Void)?
 
     func setDirections(left: Bool, right: Bool, up: Bool, down: Bool) {
         lock.lock(); defer { lock.unlock() }
+        let previous = touch
         touch.left = left
         touch.right = right
         touch.up = up
         touch.down = down
+        if touch != previous { onChange?(touch) }
     }
 
     func setJump(_ held: Bool) {
         lock.lock(); defer { lock.unlock() }
         if held && !touch.jumpHeld { jumpPresses += 1 }
+        guard touch.jumpHeld != held else { return }
         touch.jumpHeld = held
+        onChange?(touch)
     }
 
     func clear() {
         lock.lock(); defer { lock.unlock() }
         touch = InputState()
+        onChange?(touch)
     }
 
     func snapshot() -> (state: InputState, presses: Int) {

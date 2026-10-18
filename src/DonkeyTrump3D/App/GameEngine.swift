@@ -14,10 +14,14 @@ struct HUDState: Equatable {
     var ladderHint = false
     var runID: UUID?
     var completedRun: CompletedRun?
+    var remainingSeconds = 180
+    var levelReward: LevelRewardBreakdown?
+    var lastLossReason: LifeLossReason?
 }
 
 enum EngineCommand {
     case startGame, skipIntro, pause, resume, restart, toTitle
+    case activity(Bool)
     #if DEBUG
     case highscoreFixtureGameOver(CompletedRun)
     #endif
@@ -26,6 +30,7 @@ enum EngineCommand {
 struct LaunchOptions {
     var autopilot = false
     var autostart = false
+    var gameplayFixture = false
     /// Debug: a UI-free close-up of the boss, used to render the app icon.
     var iconShot = false
     var introAt: Double?
@@ -35,6 +40,7 @@ struct LaunchOptions {
         var o = LaunchOptions()
         #if DEBUG
         let args = ProcessInfo.processInfo.arguments
+        o.gameplayFixture = GameplayFixtureLaunch.isPresent(args)
         o.autopilot = args.contains("-autopilot")
         o.autostart = args.contains("-autostart")
         o.iconShot = args.contains("-iconShot")
@@ -43,6 +49,30 @@ struct LaunchOptions {
         return o
     }()
 }
+
+#if DEBUG
+struct GameplayFixtureLaunch {
+    let levelIndex: Int
+    let retainedNs: Int64
+    let seed: UInt64
+    static func isPresent(_ args: [String]) -> Bool { args.contains { $0 == "-gameplayFixture" || $0.hasPrefix("-gameplayFixture=") } }
+    static func allowsPublication(_ args: [String]) -> Bool { !isPresent(args) }
+    static func usesPersistentBest(_ args: [String]) -> Bool { !isPresent(args) }
+    static func parse(_ args: [String]) -> Self? {
+        guard args.filter({ $0 == "-gameplayFixture" }).count == 1,
+              let i = args.firstIndex(of: "-gameplayFixture"), i + 1 < args.count,
+              args.filter({ $0 == "-gameplaySeed" }).count == 1,
+              let j = args.firstIndex(of: "-gameplaySeed"), j + 1 < args.count,
+              let seed = UInt64(args[j + 1]) else { return nil }
+        for n in 1...3 {
+            if args[i + 1] == "upper-\(n)" { return .init(levelIndex: n - 1, retainedNs: 0, seed: seed) }
+            if args[i + 1] == "retry-max-\(n)" { return .init(levelIndex: n - 1, retainedNs: ActiveDuration.attempt, seed: seed) }
+            if args[i + 1] == "limit-layout-\(n)" { return .init(levelIndex: 998 + n, retainedNs: ActiveDuration.attempt, seed: seed) }
+        }
+        return nil
+    }
+}
+#endif
 
 /// Runs the game on SceneKit's render loop: a fixed-step simulation, the 3D scene
 /// sync, cinematic cameras, the intro cutscene, effects, sound and haptics.
@@ -82,13 +112,12 @@ final class GameEngine: NSObject, SCNSceneRendererDelegate {
     private var themeIndex = -1
 
     // Loop state
-    private let commandLock = NSLock()
-    private var commands: [EngineCommand] = []
-    private var lastTime: TimeInterval?
+    private let gameplayClock = GameplayClock()
+    private let timeline = GameplayTimeline<EngineCommand>()
+    private var appActive = false
+    private var lastPresentationStamp: Int64?
     private var accumulator = 0.0
     private var clock = 0.0
-    private var lastJumpPresses = 0
-    private var lastControllerJump = false
     private var autopilot = Autopilot()
     private var titleDemo = Autopilot()
 
@@ -117,10 +146,21 @@ final class GameEngine: NSObject, SCNSceneRendererDelegate {
         #else
         defaults = .standard
         #endif
-        session = GameSession(best: defaults.integer(forKey: "best"), saveBest: { defaults.set($0, forKey: "best") })
+        #if DEBUG
+        let fixture = GameplayFixtureLaunch.parse(ProcessInfo.processInfo.arguments)
+        let isolateBest = !GameplayFixtureLaunch.usesPersistentBest(ProcessInfo.processInfo.arguments)
+        let seed = fixture?.seed ?? UInt64.random(in: 1...UInt64.max)
+        #else
+        let isolateBest = false
+        let seed = UInt64.random(in: 1...UInt64.max)
+        #endif
+        let bestWriter = DispatchQueue(label: "dk.donkeytrump.personal-best", qos: .utility)
+        session = GameSession(seed: seed, best: isolateBest ? 0 : defaults.integer(forKey: "best"), saveBest: { value in
+            if !isolateBest { bestWriter.async { defaults.set(value, forKey: "best") } }
+        })
         #if DEBUG
         let arguments = ProcessInfo.processInfo.arguments
-        if arguments.contains("-highscoreCompletedRun"), let mode = HighscoreFixtureLaunch.parse(arguments) {
+        if GameplayFixtureLaunch.allowsPublication(arguments), arguments.contains("-highscoreCompletedRun"), let mode = HighscoreFixtureLaunch.parse(arguments) {
             let name: String
             if case .fixture(let fixture) = mode { name = fixture } else { name = "empty" }
             let id: UUID
@@ -136,7 +176,14 @@ final class GameEngine: NSObject, SCNSceneRendererDelegate {
             session.completeForHighscoreFixture(run)
         }
         #endif
+        #if DEBUG
+        if let fixture { _ = session.install(fixture) }
+        #endif
         super.init()
+        inputHub.onChange = { [weak self] state in
+            guard let self else { return }
+            self.timeline.enqueueTouch(state, at: self.gameplayClock.now())
+        }
         if session.phase == .title && !options.autostart && options.introAt == nil {
             AudioSystem.shared.startMenuMusic()
         }
@@ -152,9 +199,12 @@ final class GameEngine: NSObject, SCNSceneRendererDelegate {
     }
 
     func send(_ command: EngineCommand) {
-        commandLock.lock()
-        commands.append(command)
-        commandLock.unlock()
+        let abandon: Bool
+        switch command {
+        case .startGame, .restart, .toTitle, .skipIntro: abandon = true
+        default: abandon = false
+        }
+        timeline.enqueue(command, at: gameplayClock.now(), abandon: abandon)
     }
 
     // MARK: - Scene setup
@@ -329,98 +379,85 @@ final class GameEngine: NSObject, SCNSceneRendererDelegate {
     }
 
     func renderer(_ renderer: SCNSceneRenderer, updateAtTime time: TimeInterval) {
-        let dt = lastTime.map { min(max(time - $0, 0), 1.0 / 20) } ?? 1.0 / 60
-        lastTime = time
-        clock += dt
-
+        let now = gameplayClock.now()
+        let dt = lastPresentationStamp.map { min(0.05, Double(max(0, now - $0)) / 1e9) } ?? 0
+        lastPresentationStamp = now
         let controller = ControllerInput.poll()
-        processCommands(controller)
-
-        switch session.phase {
-        case .title:
-            updateTitle(dt)
-        case .intro:
-            updateIntro(dt)
-        default:
-            updateGame(dt, controller: controller)
-        }
-        updateAmbience(dt)
-        updateCamera(dt)
-        publishHUD()
-    }
-
-    private func processCommands(_ controller: ControllerInput) {
-        commandLock.lock()
-        var pending = commands
-        commands.removeAll()
-        commandLock.unlock()
-
+        timeline.enqueueController(controller.state, at: now)
         if controller.pausePressed {
             switch session.phase {
-            case .play: pending.append(.pause)
-            case .paused: pending.append(.resume)
-            case .intro: pending.append(.skipIntro)
+            case .play: send(.pause)
+            case .paused: send(.resume)
+            case .intro: send(.skipIntro)
             default: break
             }
         }
         if controller.confirmPressed {
             switch session.phase {
-            case .title: pending.append(.startGame)
-            case .intro: pending.append(.skipIntro)
-            case .gameOver: pending.append(.restart)
-            case .paused: pending.append(.resume)
+            case .title: send(.startGame)
+            case .intro: send(.skipIntro)
+            case .gameOver: send(.restart)
+            case .paused: send(.resume)
             default: break
             }
         }
-
-        for command in pending {
-            switch command {
-            #if DEBUG
-            case .highscoreFixtureGameOver(let run):
-                guard HighscoreFixtureLaunch.parse(ProcessInfo.processInfo.arguments) != nil else { continue }
-                intro = nil; introSoundtrack = nil; session.completeForHighscoreFixture(run)
-            #endif
-            case .startGame where session.phase == .title:
-                session.startNewGame()
-                startIntro()
-            case .skipIntro where session.phase == .intro:
-                finishIntro()
-            case .pause where session.phase == .play:
-                session.pause()
-                AudioSystem.shared.pauseMusic()
-            case .resume where session.phase == .paused:
-                session.resume()
-                inputHub.clear()
-                AudioSystem.shared.resumeMusic()
-            case .restart where [.paused, .gameOver].contains(session.phase):
-                handle(session.restart())
-            case .toTitle:
-                AudioSystem.shared.stopMusic()
-                AudioSystem.shared.stopIntro()
-                intro = nil
-                introSoundtrack = nil
-                session.showTitle()
-                AudioSystem.shared.startMenuMusic()
-                buildLevel(session.level, tilt: 1)
+        var events: [SimEvent] = []
+        timeline.drain(to: now, advancing: { self.appActive && self.session.phase != .paused && self.session.phase != .gameOver }, command: { command in
+            let priorRun = self.session.runID
+            self.apply(command)
+            if self.session.runID != priorRun { events.removeAll(keepingCapacity: true) }
+        }, slice: { ns, input in
+            guard self.appActive else { return false }
+            let seconds = Double(ns) / 1e9
+            switch self.session.phase {
+            case .title: self.updateTitle(seconds); return false
+            case .intro:
+                self.updateIntro(seconds)
+                return self.session.phase != .intro
             default:
-                break
+                let before = self.session.phase
+                let control = self.options.autopilot ? self.autopilot.input(for: self.session.sim, dt: seconds) : input
+                events += self.session.update(ns: ns, input: control)
+                return before != self.session.phase
             }
-        }
+        })
+        handle(events)
+        let presentation = appActive ? dt : 0
+        clock += presentation
+        if session.phase != .intro && session.phase != .title { syncPlay(presentation, phase: session.phase) }
+        updateAmbience(presentation); updateCamera(presentation); publishHUD()
     }
 
-    private func mergedInput(_ controller: ControllerInput) -> (InputState, Int) {
-        let touch = inputHub.snapshot()
-        var input = touch.state
-        input.left = input.left || controller.state.left
-        input.right = input.right || controller.state.right
-        input.up = input.up || controller.state.up
-        input.down = input.down || controller.state.down
-        input.jumpHeld = input.jumpHeld || controller.state.jumpHeld
-        var presses = touch.presses - lastJumpPresses
-        lastJumpPresses = touch.presses
-        if controller.state.jumpHeld && !lastControllerJump { presses += 1 }
-        lastControllerJump = controller.state.jumpHeld
-        return (input, presses)
+    private func apply(_ command: EngineCommand) {
+        switch command {
+        case .activity(let active):
+            let wasActive = appActive
+            appActive = active
+            lastPresentationStamp = nil
+            if !active {
+                if wasActive { session.pause() }
+                inputHub.clear(); AudioSystem.shared.pauseMusic()
+            }
+        #if DEBUG
+        case .highscoreFixtureGameOver(let run):
+            guard GameplayFixtureLaunch.allowsPublication(ProcessInfo.processInfo.arguments), HighscoreFixtureLaunch.parse(ProcessInfo.processInfo.arguments) != nil else { return }
+            intro = nil; introSoundtrack = nil; session.completeForHighscoreFixture(run)
+        #endif
+        case .startGame where session.phase == .title:
+            accumulator = 0; session.startNewGame(); startIntro()
+        case .skipIntro where session.phase == .intro: finishIntro()
+        case .pause where session.phase == .play:
+            session.pause(); AudioSystem.shared.pauseMusic()
+        case .resume where session.phase == .paused && appActive:
+            session.resume(); inputHub.clear(); AudioSystem.shared.resumeMusic()
+        case .restart where [.paused, .gameOver].contains(session.phase):
+            accumulator = 0; handle(session.restart())
+        case .toTitle:
+            AudioSystem.shared.stopMusic(); AudioSystem.shared.stopIntro()
+            intro = nil; introSoundtrack = nil; accumulator = 0
+            session.showTitle(); AudioSystem.shared.startMenuMusic(); buildLevel(session.level, tilt: 1)
+        default: break
+        }
     }
 
     // MARK: Title (attract mode)
@@ -428,16 +465,7 @@ final class GameEngine: NSObject, SCNSceneRendererDelegate {
     private func updateTitle(_ dt: Double) {
         let sim = session.sim
         let input = titleDemo.input(for: sim, dt: dt)
-        var events: [SimEvent] = []
-        accumulator += dt
-        var first = true
-        while accumulator >= GameEngine.step {
-            accumulator -= GameEngine.step
-            var i = input
-            if !first { i.jumpPressed = false }
-            first = false
-            events += sim.step(dt: GameEngine.step, input: i)
-        }
+        let events = sim.step(dt: dt, input: input)
         // The demo never ends: hits and rescues just restart the level.
         if events.contains(where: { if case .hit = $0 { return true }; if case .rescued = $0 { return true }; return false }) {
             sim.load(sim.level)
@@ -554,31 +582,6 @@ final class GameEngine: NSObject, SCNSceneRendererDelegate {
 
     // MARK: Play
 
-    private func updateGame(_ dt: Double, controller: ControllerInput) {
-        let phase = session.phase
-        if phase == .paused || phase == .gameOver {
-            if phase == .gameOver { _ = session.update(dt: dt, input: InputState()) }
-            syncPlay(dt, phase: phase)
-            return
-        }
-        var (input, presses) = mergedInput(controller)
-        if options.autopilot {
-            input = autopilot.input(for: session.sim, dt: dt)
-            presses = input.jumpPressed ? 1 : 0
-        }
-        var events: [SimEvent] = []
-        accumulator += dt
-        while accumulator >= GameEngine.step {
-            accumulator -= GameEngine.step
-            var i = input
-            i.jumpPressed = presses > 0
-            if presses > 0 { presses -= 1 }
-            events += session.update(dt: GameEngine.step, input: i)
-        }
-        handle(events)
-        syncPlay(dt, phase: session.phase)
-    }
-
     private func handle(_ events: [SimEvent]) {
         let audio = AudioSystem.shared
         for event in events {
@@ -594,11 +597,14 @@ final class GameEngine: NSObject, SCNSceneRendererDelegate {
                     barrelNodes[b.id]?.childNodes.first?.removeAllParticleSystems()
                     shake = max(shake, 0.12)
                 }
-            case .barrelJumped(let b):
-                audio.play("score")
-                Haptics.impact(.soft, intensity: 0.8)
-                Effects.floatText("+\(ScoreRules.barrelJumpPoints)", color: UIColor(hex: 0xffd24a), at: WorldSpace.point(b.x, b.y - 30, z: 0.4), in: fxRoot)
-            case .hit:
+            case .barrelJumped, .hit:
+                break // detection is not a committed award or life loss
+            case .scoreAward(let award):
+                guard award.points > 0 else { break }
+                audio.play("score"); Haptics.impact(.soft, intensity: 0.8)
+                Effects.floatText("+\(award.points)", color: UIColor(hex: 0xffd24a), at: WorldSpace.point(award.position.x, award.position.y - 30, z: 0.4), in: fxRoot)
+            case .lost(let loss):
+                if loss.reason == .timeout { audio.play("gameOver") }
                 audio.play("hit")
                 audio.pauseMusic()
                 shake = max(shake, 0.6)
@@ -629,7 +635,6 @@ final class GameEngine: NSObject, SCNSceneRendererDelegate {
                 for color in [UIColor(hex: 0xc8102e), UIColor.white] {
                     scene.addParticleSystem(Effects.confetti(color), transform: SCNMatrix4MakeTranslation(p.x, p.y + 0.8, 0.3))
                 }
-                Effects.floatText("+\(ScoreRules.levelCompletePoints)", color: UIColor(hex: 0x7dffb0), at: SCNVector3(p.x, p.y + 2.2, 0.5), in: fxRoot, scale: 0.55)
             case .levelStarted(let index):
                 audio.play("levelStart")
                 audio.startMusic(level: index)
@@ -641,7 +646,7 @@ final class GameEngine: NSObject, SCNSceneRendererDelegate {
         }
     }
 
-    private func bossThrew(_ barrel: Barrel, sound: Bool) {
+    private func bossThrew(_ barrel: BarrelSnapshot, sound: Bool) {
         if sound { AudioSystem.shared.play("throw") }
         bossThrowTimer = 0.35
         let node = barrelNode(barrel.id)
@@ -843,6 +848,12 @@ final class GameEngine: NSObject, SCNSceneRendererDelegate {
         hud.phase = session.phase
         hud.runID = session.runID
         hud.completedRun = options.autopilot || options.autostart || options.iconShot || options.introAt != nil ? nil : session.completedRun
+        hud.remainingSeconds = ActiveDuration.displaySeconds(session.attempt?.remainingNs ?? ActiveDuration.attempt)
+        hud.levelReward = session.levelProgress?.completionReward
+        hud.lastLossReason = session.lastLossReason
+        #if DEBUG
+        if GameplayFixtureLaunch.isPresent(ProcessInfo.processInfo.arguments) { hud.completedRun = nil }
+        #endif
         hud.score = session.stats.score
         hud.best = session.best
         hud.lives = session.stats.lives

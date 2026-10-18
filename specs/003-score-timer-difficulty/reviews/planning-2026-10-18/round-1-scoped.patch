@@ -1,0 +1,624 @@
+=== STAGED ===
+
+=== UNSTAGED ===
+
+diff --git a/specs/003-score-timer-difficulty/plan.md b/specs/003-score-timer-difficulty/plan.md
+new file mode 100644
+--- /dev/null
++++ b/specs/003-score-timer-difficulty/plan.md
+@@ -0,0 +1,113 @@
++# Implementation Plan: Score, Attempt Timer and Level Pressure
++
++**Branch**: `main` (actual Git branch) | **Date**: 2026-10-18 | **Spec**: [spec.md](spec.md)
++
++**Input**: `specs/003-score-timer-difficulty/spec.md`. The setup script reports the resolved feature identity `003-score-timer-difficulty` as `BRANCH`; it did not create or switch a Git branch.
++
++## Summary
++
++Keep the existing native game/session/rendering ownership. Add retained level progress, a separately reset attempt budget, immutable reward events and pressure derived from unchanged level bases. Use integral active durations and a single injected monotonic timeline for render samples and input/lifecycle commands, retaining foreground elapsed time rather than the current 50 ms clipping. Resolve each attempt once and keep HUD, result, local best and optional publication on the same score.
++
++Widen the existing app/server/storage score domain from multiples of 100 to multiples of 5 without changing values, routes, storage schema or the one all-time ranking. Apply an evidence-derived per-level minimum release interval, with explicit ballistic-flight exceptions to speed scaling. [Research](research.md) records decisions and source evidence; [data model](data-model.md), [gameplay contract](contracts/gameplay.md), [score-domain contract](contracts/highscore-score-domain.md) and [quickstart](quickstart.md) define the design and future acceptance.
++
++This command ends after design. No application code, specification or checklist is changed; no tasks.md, build, application test or deployment is produced/run. Document checks and independent review are the acceptance evidence for this planning deliverable.
++
++## Technical Context
++
++**Language/Version**: Swift 5 language mode, Xcode 27.0 (27A266a); C# / .NET 10, repository-root SDK pin 10.0.401 with latestPatch. Inspected local tools report those Xcode/SDK versions.
++
++**Primary Dependencies**: Existing SceneKit, SwiftUI, UIKit, GameController, AVFoundation and Swift standard-library clocks; ASP.NET Core Minimal APIs, Azure.Storage.Blobs 12.29.2, Azure.Identity 1.21.0. No package, runtime, rendering-engine or hosting change.
++
++**Storage**: In-memory active run; existing UserDefaults personal best/settings and existing installation credential storage. Existing private Blob `highscores/global-v1.json` with storage/moderation schema 1/2, stable identities, ETag writes and existing managed identity. No saved active-run system or rules-version field.
++
++**Testing**: Existing Swift Testing app tests, XCTest UI tests and xUnit backend tests; isolated loopback Azurite 3.37.0 for real storage boundaries. Tests, smoke/contract scripts and gameplay checks are future work and require an explicit request under AGENTS.md. None executed in this planning workflow.
++
++**Target Platform**: iOS 26+, landscape iPhone; reference acceptance device iPhone 13. Simulator evidence is distinct from physical-device acceptance. iPad release acceptance is outside this change. Existing .NET 10 service remains on its existing App Service/Blob topology.
++
++**Project Type**: Native mobile app plus its existing optional highscore API.
++
++**Performance Goals**: Preserve 120 Hz core physics and usable rendering/UI; normal 30/60/120 Hz input timelines must meet the spec's 0.02 s timing tolerance and exact reference rewards. Initial catch-up budget is 32 physics slices/render callback, retaining remaining duration for later callbacks; no I/O or unbounded catch-up loop on the render/UI thread. Bounded recovery and ordinary-rate frame pacing need future runtime evidence, not an invented measured result.
++
++**Constraints**: Offline play/start/restart; bounded asynchronous online failure; no deferred uploads; integral duration precision; at most 20 rewarded lifetime IDs per level; one terminal commit per attempt; initial minimum throw interval from jump/spacing analysis; exact five-point score domain with unchanged remote ceiling. Preserve accessibility, settings, content, moderation, consent and private-data boundaries.
++
++**Scale/Scope**: Three repeating authored layouts with existing bounded endless base-difficulty ramp, at most 12 active barrels, one current run and one all-time top 100. No new telemetry, accounts, services, boards, migration or release operation.
++
++## Constitution Check
++
++Current constitution: [v1.0.0, 2026-09-26](../../.specify/memory/constitution.md). The pre-research check assessed the proposed scope/ownership before selecting detailed mechanisms; the post-design check assesses the artifacts below. PASS means compliant design, not passing future runtime acceptance.
++
++| Principle / gate | Before research | After design and evidence |
++| --- | --- | --- |
++| I. Native iPhone/offline/non-blocking UI | PASS: retain native local gameplay and optional existing API | PASS: core remains local; bounded slices; existing asynchronous highscore deadlines/navigation; landscape HUD and physical acceptance in quickstart |
++| II. Simple components/explicit ownership | PASS: extend existing GameSession/GameSimulation/BarrelSystem | PASS: session owns level/attempt/rewards; engine owns clock adapter/input queue; immutable events/HUD cross to main actor; no parallel engine/framework |
++| III. Shared data/bounded failure | PASS: no new persistence topology or retry policy | PASS: common score predicate covers stored reads/writes and snapshots; ETags/moderation/deadlines/unconfirmed/no-replay preserved; rollback must retain widened readability |
++| IV. Original content/deliberate data use | PASS: no content or data-collection change | PASS: no new assets, publication fields, credentials, tracking or logs; existing consent and HTTPS/loopback boundaries retained |
++| V. Evidence before claims | PASS: document-only acceptance now, future observable checks specified | PASS: quickstart maps every story scenario and all 19 intent cases to repeatable checks; fixtures and real API/storage and physical checks distinguished; no tests/builds claimed run |
++| Platform/scope/governance | PASS: same iOS/Swift/backend baseline, English documentation | PASS: no unjustified exception; old score-granularity rule explicitly superseded for this feature and reconciled during implementation; no release/production mutation |
++
++No constitution amendment or complexity exception is required. Future implementation must execute only checks authorized by its current prompt and disclose deliberately unrun tests. Physical-device evidence remains required before physical acceptance/release claims, not to finish a written plan.
++
++## Project Structure
++
++### Documentation (this feature)
++
++```text
++specs/003-score-timer-difficulty/
++├── spec.md                         # Existing approved input; unchanged
++├── plan.md
++├── research.md
++├── data-model.md
++├── quickstart.md
++├── contracts/
++│   ├── gameplay.md
++│   ├── highscore-score-domain.md
++│   └── highscore-score.schema.json
++├── checklists/requirements.md      # Existing specification checklist; unchanged
++└── tasks.md                        # Future speckit-tasks output; not created now
++```
++
++Scoped review evidence is recorded separately and does not alter previously reviewed specification manifests.
++
++### Source Code (repository root)
++
++```text
++src/DonkeyTrump3D/
++├── Core/
++│   ├── Rules.swift                 # Reward formulas and existing phases
++│   ├── Simulation.swift            # Session/attempt arbitration and rewards
++│   ├── GameplayProgress.swift      # Planned pure value state/reward data
++│   ├── GameplayTimeline.swift      # Planned integral duration/timeline helper
++│   ├── Barrels.swift               # Lifetime identity, immutable speed bases/schedule
++│   ├── Level.swift                 # Existing DifficultyRamp; base inputs retained
++│   └── Player.swift                # Existing movement retained; source for floor
++├── App/GameEngine.swift            # Clock/input boundary, immutable effects/HUD
++├── App/DonkeyTrump3DApp.swift       # Timestamped activity commands/main-actor UI
++├── UI/{RootView,Copy}.swift         # Timer, actual rewards and timeout/help copy
++└── Highscores/HighscoreModels.swift # Widen common validator; no transport redesign
++src/DonkeyTrump3DTests/              # Existing core/clock/score/transition tests
++src/DonkeyTrump3DUITests/            # Existing UI and real-loopback boundary tests
++src/backend/Highscores/             # Shared validation and unchanged CAS/storage
++src/backend.tests/                  # Score/ranking/document/endpoint/storage checks
++src/tests/fixtures/highscores.json  # Cross-language score contract cases
++```
++
++**Structure Decision**: Add only small pure state/timeline helpers under existing Core; no new engine, package, service or store. File names above are intended implementation locations, not files created by this plan. Keep the existing rendering command queue and main-actor HUD publication boundary.
++
++## Phase 0 — Research decisions
++
++Resolved in [research.md](research.md): active timing/precision and bounded catch-up, deterministic terminal registration, reward-source inventory and pooling, physics/interval floor and mode exceptions, score-domain/storage compatibility, same-run persistence, historical comparability and rollback. No product clarification or unresolved technology choice remains. Runtime validation is future evidence, not unresolved research.
++
++## Phase 1 — Design and integration order
++
++1. Establish pure level/attempt/reward state and integral clock/terminal contracts. Preserve existing public GameSession flow and freeze completed results once.
++2. Integrate clock/input/lifecycle accounting through the actual engine adapter, not only pure session calls. Keep presentation delta separate, bound catch-up work and retain unsimulated foreground intervals.
++3. Give each barrel release a lifetime ID; derive pressure/speed from immutable bases; implement the initial interval floor and documented ballistic exception. Preserve existing maximum active count and first-release delay.
++4. Present authoritative awarded values, attempt timer and correct life-loss reason via immutable HUD snapshots; update the existing completion banner and English help. Do not create a separate results screen.
++5. Widen the common score predicate in iPhone, backend, active API schema and cross-language fixtures. Preserve aggregate schema, stored history, moderation, identities and storage-enforced writes. Reconcile active numeric statements in prior feature contracts/docs; retain dated test/review/release evidence unchanged.
++6. Add observable acceptance work from quickstart, including real engine clock/lifecycle, exact storage round-trips and physical playability. Source inspection alone cannot close those gates. Generate dependency-ordered tasks with speckit-tasks after this design.
++
++The backend/client changes are one feature dependency; local gameplay work can proceed independently. A later separately authorized rollout must verify actual distribution constraints, deploy a widened-reader backend before updated clients submit new scores, and use a widened-reader rollback artifact. No production operation is authorized by this plan.
++
++## Complexity Tracking
++
++No constitution violations or additional architectural layers. The interval floor, integral timeline and immutable event payloads address concrete correctness constraints in the current code; their reasons and alternatives are documented in research.
+
+diff --git a/specs/003-score-timer-difficulty/research.md b/specs/003-score-timer-difficulty/research.md
+new file mode 100644
+--- /dev/null
++++ b/specs/003-score-timer-difficulty/research.md
+@@ -0,0 +1,111 @@
++# Research: Score, Attempt Timer and Level Pressure
++
++Date: 2026-10-18. Method: source inspection by the lead and three read-only research helpers (timing/ownership, physics/playability, highscore compatibility). No tests, simulations, builds, app runs or cloud operations were performed. Source baseline: `9483e8eff3732cb4816942f6c9988ac1165ec537`; current feature specification is pre-existing untracked input.
++
++## R1 — Retain the current ownership and inventory rewards
++
++**Decision**: Extend GameSession with per-level progress and per-attempt state. Keep GameSimulation for movement/contact candidates, BarrelSystem for hazards and GameEngine for adapter/rendering. Store a single run score and update best through its existing path. Reward events become immutable values with actual points and location.
++
++**Evidence**: `src/DonkeyTrump3D/Core/Simulation.swift:198-229` has only two production award paths: +100 per barrel and +1000 per rescue. `Core/Rules.swift:3-8` declares an unused combo constant; no production caller was found. `Simulation.swift:3-16` currently places mutable pooled Barrel references in events; `App/GameEngine.swift:569-600` batches events across ticks before rendering them. `UI/RootView.swift:449` and `GameEngine.swift:632` repeat the old completion constant.
++
++**Rationale**: Replace both old award paths; remove the obsolete combo rule/copy without inventing another bonus. Authoritative awarded values prevent non-paying clearances from showing +points and prevent pool reuse from changing delayed effects. The existing completion banner receives the two bonuses and cumulative score, rather than a new screen.
++
++**Alternatives considered**: Renderer-owned scoring or a second rule engine would duplicate state. Keeping mutable Barrel events as reward identity would allow later pool reuse to change historical payloads. The old constant may remain only where unrelated historical evidence quotes it, not in active scoring/help.
++
++## R2 — Exact active duration and bounded work
++
++**Decision**: Use one injected Swift ContinuousClock domain with engine-origin integral nanosecond stamps for render samples and queued input/pause/activity commands. The core accepts durations/stamps, not SceneKit or a system clock. Use checked Int64 duration arithmetic; derive floating seconds only for existing movement/pressure. One second is 1,000,000,000 ns. Compute fixed slice boundaries from the cumulative index, `floor(n × 1e9 / 120)`, using quotient/remainder arithmetic to avoid intermediate overflow. Split at commands/expiry exactly.
++
++**Evidence**: `GameEngine.swift:331-345` clips every frame to 0.05 s; `:557-577` then feeds its 120 Hz accumulator. This would lose foreground time below 20 fps or during stalls. `DonkeyTrump3DApp.swift:19-22` sends pause only on leaving active; the engine accepts pause only in play (`:388-394`). Adding repeated Double(1/120) can also cross an integer bonus boundary numerically.
++
++**External basis**: Apple's [ContinuousClock documentation](https://developer.apple.com/documentation/swift/clock/continuous) says the clock continues through system sleep; the explicit app-activity gate therefore excludes inactive periods. The [Swift clock proposal](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0329-clock-instant-duration.md) defines monotonic instant/duration use. Apple's [SceneKit callback documentation](https://developer.apple.com/documentation/scenekit/scnscenerendererdelegate/renderer%28_%3Aupdateattime%3A%29) describes a per-frame callback; it is not permission to mix unrelated clock epochs. These support clock selection, not a claim that the proposed adapter already works.
++
++**Rationale/design**: Retain raw foreground interval debt and recorded input changes, process oldest first with at most 32 physics slices per render callback, and retain the remainder. At 30/60/120 callbacks per second normal demand is 4/2/1 slices. A timestamped inactive/pause boundary closes the preceding active segment even if delivered after suspension. All phase progression suspends while app inactive; returning active rebases presentation time and does not automatically unpause play. Preserve pre-boundary debt rather than discarding it. Coalesce adjacent identical input spans; a jump press is a single dated edge, not repeated in every catch-up step.
++
++Only simulation registration time advances T/R. Under a long foreground stall, backlog can delay visible timer/terminal presentation while chronological physics catches up; elapsed active time is retained, never silently clipped. This is an explicit limitation outside the ordinary-rate tolerance, not an instantaneous wall-clock guarantee after arbitrary stalls. A terminal event closes the attempt; later recorded time belonging to it is inactive and cannot advance the retry/next level. Start transition presentation at delivery with its existing visible duration.
++
++**Alternatives considered**: Reusing the clamped frame delta loses active time. Advancing a separate wall-clock timer ahead of unresolved physics can timeout an earlier valid completion. An unbounded catch-up loop risks blocking rendering. A repeating UI timer drifts, duplicates ownership and does not solve event ordering. A small epsilon around bonus boundaries can award a real fractional second incorrectly; integral duration avoids it.
++
++## R3 — Terminal registration, identities and reset semantics
++
++**Decision**: Resolve terminal candidates centrally before applying mutations: earliest registered occurrence wins; exact ties use timeout, collision, rescue. Current contact detection is sampled at the end of each 120 Hz physics slice. That slice-end registration is the occurrence time for collision/rescue; split a slice at R=0 and register timeout there. This preserves existing registration semantics and does not claim swept, sub-slice physical contact ordering. A strictly earlier registered rescue remains final.
++
++**Evidence**: `Simulation.swift:70-119` detects clearances, collision and rescue in that order, returning on hit. `:212-229` currently applies array events without one terminal guard. `:45-53,238-247` reloads the simulation on retry/new level and resets barrel IDs/time. `Barrels.swift:113-137` reuses object IDs and clears jumpAwarded.
++
++**Rationale/design**: Add attempt serial and per-release spawn serial under run identity; retain existing object IDs only for scene-node reuse. Session level progress retains at most 20 rewarded lifetime IDs across all lives. A reward candidate must match run/attempt, be at or before the valid completion boundary and be strictly before a loss boundary; ties at collision/timeout earn no barrel reward. Process equal-time eligible barrels by stable lifetime order and remaining capacity. No stale attempt or completed level may reward again. Reset only attempt on retry; reset level progress only on next level/new run. See gameplay contract for the exact acceptance sequence.
++
++**Alternatives considered**: Callback ordering or object identity cannot enforce deterministic outcomes across pool reuse and retries. Swept contacts would change the collision system; existing 120 Hz registration plus exact terminal injection covers the requested registered-boundary semantics. If later physical evidence demands finer contact ordering, it must receive movement regression evidence before acceptance.
++
++## R4 — Preserve base difficulty; apply pressure by motion mode
++
++**Decision**: Freeze each `DifficultyRamp.level(at:)` output as this level's base. Recompute pressure from retained T and immutable sampled per-lifetime base speeds, never previously scaled values. Scale rolling/normal falling horizontal speed and ladder-drop speed; preserve gravity, vertical ballistic motion and direct-throw aiming until first landing.
++
++**Evidence**: `Core/Level.swift:109-140` bounds base interval at 800 ms, speed 240–280, direct chance .55 and active count 12. `Barrels.swift:79-109` computes direct vx from distance/fall time, capped ±320. `:154-178` changes thrown to falling before landing; checking only mode == thrown would accidentally overwrite remaining aim. Ladder drops use horizontal zero and base speed70; ordinary girder-edge falling uses horizontal factor .25.
++
++| Movement | Derived state |
++| --- | --- |
++| Rolling | direction × immutable baseSpeed × m |
++| Normal initial fall | base horizontal factor1 × baseSpeed × m |
++| After girder edge | base horizontal factor.25 × baseSpeed × m |
++| Ladder drop | vx0; vy = 70 × m; retain endpoint snap |
++| Direct ballistic flight, including pre-landing falling | retain launch vx, gravity and existing vertical integration; mark flight until first actual landing |
++| After direct first landing | use the same current scaled rolling base as other barrels |
++
++**Rationale**: Multiplying direct vx would overshoot its target without changing fall time. The ballistic phase is the explicit movement-type limitation permitted by FR-014. First-release delay remains1.5 s; existing maxActive and direct/ladder route probabilities remain unchanged by time pressure.
++
++**Alternatives considered**: Multiply all velocity components, multiply each frame or modify the immutable DifficultyRamp result in place: respectively breaks aiming/gravity, compounds scaling or loses the original base. A new spawn while-loop could replay inactive backlog; consume at most one due opportunity per bounded slice and schedule from that active point, even when maxActive prevents a release.
++
++## R5 — Initial playability floor derived from existing movement
++
++**Decision**: For each new level calculate one constant minimum release interval from its immutable base minimum rolling speed b and maximum absolute girder slope s:
++
++```text
++u = 120                          # existing player horizontal speed
++v = 210                          # existing jump velocity
++g = 500                          # existing gravity
++J = (2*v + 2*u*s) / g             # nominal downhill full-jump duration
++minimumInterval = ceil(10 * (J * (b + u) / b + 0.10)) / 10
++actualInterval(T) = max(baseInterval * (1 - 0.60*p), minimumInterval)
++```
++
++**Evidence/rationale**: `Player.swift:4-28` sets those movement constants; full flat jump lasts .84 s and apex is44.1 units. Layout slope maxima are20/740,26/740,32/740 (each `Resources/Levels/level*.json:32-56`), producing J≈.853/.857/.861 s. The speed ratio reserves time for a player running toward an incoming equal-speed rolling stream. The extra .10 s is a deliberate initial release-headway margin, then rounded up to .1 s; it is tuning, not a measured reaction-time guarantee. Desired .32 s at the ramp limit would permit equal-speed head-on encounters only .32×300/(300+120)≈.229 s apart. Existing visual windup .55 s plus post-release pose .35 s also exceeds that desired cadence (`Barrels.swift:45`, `GameEngine.swift:644-646,711-715`).
++
++| Base level | Base interval | Floor | Actual at T=0 / 60 / 120 / 180 s |
++| --- | ---: | ---: | --- |
++| 1 | 3.200 s | 2.1 s | 3.200 / 2.560 / 2.100 / 2.100 s |
++| 2 | 2.600 s | 2.0 s | 2.600 / 2.080 / 2.000 / 2.000 s |
++| 3 | 2.000 s | 1.9 s | 2.000 / 1.900 / 1.900 / 1.900 s |
++| 4 | 1.904 s | 1.9 s | 1.904 / 1.900 / 1.900 / 1.900 s |
++| 5 | 1.816 s | 1.8 s | 1.816 / 1.800 / 1.800 / 1.800 s |
++| 6 | 1.734 s | 1.8 s | 1.800 / 1.800 / 1.800 / 1.800 s |
++| Existing ramp limit | .800 s | 1.4 s | 1.400 / 1.400 / 1.400 / 1.400 s |
++
++All layouts reach the floor within an attempt. From level6 it can already slow the unpressured base cadence. Desired multipliers remain the approved formulas; actual cadence is explicitly constrained, while speed continues increasing. This is the FR-015 tradeoff, not a claim of full 60% actual interval reduction at every level.
++
++Different sampled speeds, routes and direct targeting can converge despite release spacing. This calculation is an initial safety envelope, not proof of all sequences or physical acceptance. Future repeatable rolling/direct/mixed sequence checks and reference-iPhone jumps/landings remain gates; a failure requires tuning interval/spacing within scope and rerunning affected authorized checks.
++
++**Alternatives considered**: No floor leaves intervals far below a full jump. A global2.1 s floor unnecessarily flattens higher levels. Changing jumps/gravity or removing direct throws changes established gameplay and is outside this design.
++
++## R6 — Score compatibility, old clients and historical comparability
++
++**Decision**: Widen the common predicate to integer multiples of5 in0…2,147,483,600. Keep `/api/v1/highscores`, exact returned scores, current public/request shape, installation credentials, private schema1/2, Blob name, one all-time list, rank/ties and ETag/moderation behaviour.
++
++**Evidence**: Swift `HighscoreModels.swift:5,23-28,57-84` validates submissions, every snapshot row and qualification. Backend `HighscoreValidation.cs:9-10,48-50` is also used by `HighscoreDocument.cs:20-40,76-99` and `HighscoreRanking.cs:8-10`. `HighscoreConfiguration.swift:9` and `HighscoreEndpoints.cs:7-17` expose one route. `schemaVersion` is a storage/moderation format, not a scoring season. Public records have no reliable old/new rules tag; divisibility cannot infer one because new scores may also be divisible by100.
++
++**Existing authorization and limitation**: [Single-API rollout decision, 2026-09-28](../../docs/releases/app-store/backend-single-api-rollout.md) records owner authorization to evolve v1 in place, rebuild the owner-only app and make no older-client compatibility promise. [Release record, 2026-09-29](../../docs/releases/app-store/1.0-2/release-record.md) describes a prepared, unsubmitted draft. These are dated source evidence, not current Apple/distribution verification. Design follows the recorded in-place compatibility boundary. A future rollout must confirm installation/distribution constraints; if continued old-client online support is newly required, resolve that prerequisite before deployment.
++
++Strict old apps reject entire mixed snapshots as soon as one score is not divisible by100, including a successful POST response whose write may already have committed. Never describe those binaries as compatible or replay their failed save. New apps must accept mixed old/new exact scores. Future sequence: compatible widened-reader backend first, rebuilt participating clients next. Once a non-hundred score persists, old strict backend binaries cannot deserialize the aggregate; rollback must retain widened score validation/readability and all existing data. No deletion, rounding, schema migration or operator rewrite is needed/authorized.
++
++**Comparability recommendation**: Retain the single all-time historical archive and document that it spans a scoring-rules change; old farming totals are not directly comparable to new totals. Do not re-score history or infer a rules tag. A new season/segmented board would require separate scope. Preserve local best unchanged, even if earned under old rules.
++
++**Alternatives considered**: Changing only POST validation still breaks serialization/readback/client snapshots. A new route alone cannot make an old decoder read five-point values. Filtering or rounding creates different list semantics or false scores. Separate boards, new fields/services and automatic history conversion exceed scope.
++
++## R7 — Persistence, numeric safety and acceptance boundaries
++
++**Decision**: No active-run save system. Session memory retains state through pause and retries; only existing best/settings/credential persistence remains. Keep Int run score and checked reward multiplication/addition, preserving exact values within representable bounds. The remote ceiling remains unchanged; an exact local result above it stays local with existing unsupported-result handling, no quantization/upload. Any representational arithmetic failure must be explicit and fail closed for scoring/publication, preserve the last valid score/best and restart navigation, never wrap or silently clamp a credited award.
++
++**Evidence**: `GameEngine.swift:111-120`, `Simulation.swift:125-142,198-203,218-227` and `docs/architecture_options.md:112-119` show in-memory run and independent saved best. `HighscoreCoordinator.swift:21-29` rejects unsupported results before publication. Endless progression makes remote-range exclusion possible in principle; it is not a reason to raise the API ceiling.
++
++**Validation decision**: Cover all19 intent cases, exact rounding boundaries, actual engine adapter/lifecycle and retained backlog, immutable events/pool reuse, old/new score document round-trips and unchanged failures. Synthetic completed-run fixtures prove transport/UI, not gameplay earning. Real loopback API + helper-owned Azurite proves serialization/storage boundaries. Physical gameplay/touch/readability/frame pacing is a separate reference-iPhone gate. Tests are only executed on a future explicit request; no runtime acceptance is claimed now.
++
++**Alternatives considered**: Saving/replaying runs or failed uploads is unnecessary and violates scope. Lowering local score to the remote ceiling alters earned points. Assuming existing helper starts with a missing blob is wrong: `src/tests/support/local-highscores.py:73-76` explicitly initializes an isolated empty schema2 aggregate.
+
+diff --git a/specs/003-score-timer-difficulty/data-model.md b/specs/003-score-timer-difficulty/data-model.md
+new file mode 100644
+--- /dev/null
++++ b/specs/003-score-timer-difficulty/data-model.md
+@@ -0,0 +1,96 @@
++# Data Model: Score, Attempt Timer and Level Pressure
++
++Design only — 2026-10-18. Implements [spec.md](spec.md) within the existing GameSession/GameSimulation ownership. No persisted schema migration is introduced. Fields below are intended additions/value contracts, not claims about current implementation.
++
++## Run state — owned by GameSession
++
++| Field | Representation / invariant |
++| --- | --- |
++| runID | Existing UUID; fresh on new game/restart; absent at title |
++| score | Existing nonnegative Int; one authoritative accumulated total, exact checked reward arithmetic |
++| lives | Existing life count; at most one decrement per attempt terminal commit |
++| levelIndex / visibleLevel | Existing zero-based index / L=index+1, checked conversion; repeated layout does not reset L |
++| levelProgress | Exactly one current LevelProgress |
++| attempt | Exactly one current AttemptState while playing/retrying |
++| completedRun | Existing immutable final UUID/score/visible-level tuple, frozen once on final-life Game Over |
++| best | Existing max(saved best, earned valid totals); retained independently of network |
++
++A result outside the existing remote score range stays exact locally and is ineligible for publication. A failed arithmetic operation must not mutate the previous valid total, wrap or falsely acknowledge an award. Preserve restart navigation and best; no invalid result may publish.
++
++## LevelProgress — survives life loss
++
++| Field | Representation / invariant |
++| --- | --- |
++| visibleLevel | Int L≥1; fixed until progression |
++| baseBarrelConfiguration | Immutable DifficultyRamp output for this visible level |
++| totalActiveNs | Int64 T≥0, accumulated only in eligible active slices; retained on retry |
++| rewardedLifetimes | Set of BarrelLifetimeID; count0…20; at most20 retained identifiers |
++| completionReward | Optional immutable LevelRewardBreakdown; set once on valid completion |
++| minimumReleaseInterval | Positive seconds derived once from immutable player/base-speed/layout inputs; constant for this level |
++
++Derived p = min(1, T/180s). Desired interval/base speed use the exact spec multipliers. `actualInterval=max(desiredInterval,minimumReleaseInterval)`. Completion bonus uses L; bonus seconds are integral `max(0,180e9-totalActiveNs)/1e9` with integer division. A new level/reset clears history and reward breakdown; death does not.
++
++## AttemptState — replaced on retry
++
++| Field | Representation / invariant |
++| --- | --- |
++| attemptSerial | Increasing UInt64 within run; never reused; checked rather than wrapping |
++| remainingNs | Int64 R in0…180e9; fresh retry180e9 |
++| outcome | active / lifeLost(collision or timeout) / completed; one terminal transition only |
++| terminalAt | Optional integral registered active timestamp; immutable after resolution |
++| spawnSerial | Increasing per attempt on every release including pool reuse |
++
++Do not use GameSimulation's reset time or render object IDs as cross-life history. No subsequent callback can change a terminal attempt or another generation. Retry retains level T/history/score and replaces attempt/simulation; fresh whole game replaces both.
++
++## Barrel lifetime — owned by current BarrelSystem
++
++- **BarrelLifetimeID**: `(runID, attemptSerial, spawnSerial)`, assigned on release, immutable for that lifetime. Object/pool `Barrel.id` is a separate render-node key.
++- **Immutable baseSpeed**: one existing random sample from this level's base min/max; pressure never resamples it or compounds its changed value.
++- **Movement provenance**: rolling / ordinary fall(horizontal factor1 or.25) / ladder drop / direct ballistic until first actual landing. Preserve direct-flight provenance through the existing thrown→falling intermediate mode.
++- **Reward detection flag**: marks a detected clearance for this lifetime; authoritative eligibility and the cap remain in LevelProgress. New release resets its flag and gets a fresh lifetime ID; recycle cannot alter copied historical events.
++- Existing x/y/velocity, direction, gravity, routes, maximum active count and node reuse remain with current movement ownership.
++
++## Immutable events and result presentation
++
++| Value | Required fields / meaning |
++| --- | --- |
++| ClearanceCandidate | run/attempt/lifetime IDs, registeredAtNs, copied position; does not imply awarded points |
++| TerminalCandidate | run/attempt IDs, registeredAtNs, timeout/collision/rescue; no mutation until arbitration |
++| ScoreAward | IDs, registeredAtNs, source(barrel/completion/time), exact awarded points, copied effect position; positive feedback only for an actual positive award |
++| LevelRewardBreakdown | visible L, completionPoints, bonusSeconds, timePoints, totalAfterCompletion; immutable one-time result, includes timePoints0 |
++| LifeLossSnapshot | reason(timeout/collision), remaining lives and attempt identity; timeout does not masquerade as a barrel hit |
++| HUDState additions | remaining display seconds, level reward breakdown and last loss reason; all values copied with existing score/phase/run identity |
++
++Batched events must not retain mutable pooled Barrel references as authoritative identity/feedback. Rendering may locate live nodes by the separate pool key but must use event-time copied positions for historical effects. Immutable HUD publication remains on the existing main-actor boundary.
++
++`registeredAtNs` and `terminalAt` mean cumulative active level time T at registration, scoped by run/attempt identity. Adapter command stamps instead mean monotonic nanoseconds since engine origin. The timeline projects adapter intervals into active T; comparisons must never mix these two coordinate systems or compare candidates from different attempts.
++
++## Gameplay timeline — engine-owned adapter, pure duration input to core
++
++- One injected monotonic source and origin produces nonnegative integral ns stamps for renderer and queued UI/activity/input events. No comparisons between different clock epochs.
++- The first renderer sample establishes its anchor without inventing a default frame duration. Starting a run clears prior title/demo accumulator state and anchors play at its stamped start.
++- Stamped commands include a stable enqueue sequence for equal stamps. Activity false and explicit pause close active intervals. Activity true rebases presentation but does not resume a paused game without its existing explicit action.
++- Ordered interval/input spans retain foreground debt. Coalesce adjacent identical spans; one press edge is consumed once. At most32 chronological slices are drained per render turn; remaining debt is retained and source time never clipped to the presentation cap.
++- Integer 120 Hz slice boundaries are computed from cumulative index and an anchor, including partial slices at commands/expiry. Fractional active time must be consumed before a pause boundary rather than dropped; resume starts a new phase anchor.
++- For equal-stamp state changes, inactivity/pause takes effect before advancing beyond that stamp. Start/restart/title abandons the old run generation, so its debt/events cannot appear in a new run. Abandonment/navigation may retire old debt immediately; normal pause preserves it.
++- When an attempt terminates, discard only its later gameplay interval as inactive, never apply it to retry/new level. Preserve visible death/retry/celebration timing from presentation delivery. Continue processing lifecycle/navigation boundaries to avoid stale app activity.
++
++The clocks reflect resolved simulation time. During a large foreground backlog their presentation can lag the source clock; no elapsed active time is silently lost. Neither a lagging HUD nor injected timestamps establish physical timing acceptance.
++
++## Persistence and highscore projection
++
++Current runs are memory-only; no process-death recovery is added. Preserve existing UserDefaults best/settings and installation credential lifetime. FR-021 would apply only if implementation inspection discovers a real existing same-run restore path; then it must serialize the same progress/attempt invariants rather than reset them.
++
++The existing CompletedRun freezes the final authoritative score. [Score-domain contract](contracts/highscore-score-domain.md) defines valid remote numbers. Do not add a score/rules version field, new board, deferred payload or hidden conversion. Stored moderation entries, identity, origin, successful-save sequence, timestamps and aggregate schemas remain unchanged.
++
++## State transitions
++
++| Event | Attempt / R | Level T and history | Score and outcome |
++| --- | --- | --- | --- |
++| New game / explicit Restart from Level1 | Fresh active attempt180s when play starts | New level0/empty | score0; existing lives; old generation retired |
++| New level after valid completion | Fresh attempt180s | New base/T0/history empty | Prior one-time bonuses/score retained |
++| Collision/timeout, lives remain | Commit loss once; R stops; fresh180s only when retry starts | Retained | Preserve score; timeout awards no completion/time bonus |
++| Final-life loss | Terminal, no replacement attempt | Frozen | Freeze CompletedRun once; preserve local best |
++| Pause / app inactive | Freeze; later resume preserves R | Preserve T/history | No new gameplay reward; app inactive also freezes phase progression |
++| Successful rescue before expiry | Commit completion once and stop R | Freeze T for bonuses | Add completion + time once, expose breakdown |
++| Duplicate/stale event | No transition | No mutation | No points, duplicate life loss or replacement outcome |
+
+diff --git a/specs/003-score-timer-difficulty/quickstart.md b/specs/003-score-timer-difficulty/quickstart.md
+new file mode 100644
+--- /dev/null
++++ b/specs/003-score-timer-difficulty/quickstart.md
+@@ -0,0 +1,133 @@
++# Quickstart and Future Acceptance: Score, Timer and Level Pressure
++
++Date:2026-10-18. **Design/validation guide, not executed evidence.** No application tests, builds, helper services, emulator, simulator or physical gameplay were run for this plan. Test commands, contract/smoke scripts and manual gameplay acceptance below may run only when explicitly requested in the then-current prompt, and only within that scope. A future implementation request alone does not authorize them.
++
++## Prerequisites and working directory
++
++Run every command below from the repository root, where `global.json` applies:
++
++```sh
++cd /Users/jesperhyldenbrandtbjerre/Documents/Development/Donkey-Trump-3D
++xcodebuild -version
++dotnet --version
++xcrun simctl list devices available
++```
++
++Baseline: Xcode27.0, iOS26+, .NET SDK10.0.401/latestPatch, existing backend project/packages, Azurite3.37.0 for isolated integration. Set `DT3D_SIM_ID` to an available iPhone simulator UUID from the list, not a physical-device UUID. The reference physical acceptance device is iPhone13. These are prerequisites, not a claim that a selected simulator/device has run this feature.
++
++The implementation must first add the planned state/timeline, feature tests and Debug-only gameplay fixtures described in the contracts. Named new suites/fixtures in this guide are intended implementation outputs and do not exist merely because this document contains commands.
++
++## Build commands for a future authorized implementation
++
++These compile, not test or publish; none were run by speckit-plan:
++
++```sh
++dotnet restore src/backend
++dotnet build src/backend -c Release --no-restore
++: "${DT3D_SIM_ID:?Set DT3D_SIM_ID from simctl device listing}"
++xcodebuild -project src/DonkeyTrump3D.xcodeproj \
++  -scheme 'DonkeyTrump3D Local' -configuration 'Debug Local' \
++  -destination "platform=iOS Simulator,id=$DT3D_SIM_ID" \
++  -derivedDataPath /tmp/dt3d-score-timer-build \
++  CODE_SIGNING_ALLOWED=NO build
++```
++
++A build does not establish clock correctness, physics playability, successful storage integration or release readiness.
++
++## Explicitly requested focused automated validation
++
++The following suites are planned additions within the existing targets. Implement observable journeys/boundaries rather than assertions that only repeat formula implementation. New Swift suites: `ScoreTimerDifficultyTests` (core), `GameplayTimelineTests` (actual clock/input adapter) and `ScoreTimerDifficultyUITests` (HUD/lifecycle/fixtures). New backend class: `ScoreGranularityTests` (parser/rank/document/endpoint domain). Extend existing contract/storage suites for real read/write and unchanged failure behaviour.
++
++```sh
++: "${DT3D_SIM_ID:?Set DT3D_SIM_ID from simctl device listing}"
++xcodebuild -project src/DonkeyTrump3D.xcodeproj -scheme DonkeyTrump3D \
++  -destination "platform=iOS Simulator,id=$DT3D_SIM_ID" \
++  -derivedDataPath /tmp/dt3d-score-timer-tests \
++  -only-testing:DonkeyTrump3DTests/ScoreTimerDifficultyTests \
++  -only-testing:DonkeyTrump3DTests/GameplayTimelineTests test
++
++dotnet test src/backend.tests -c Release \
++  --filter 'FullyQualifiedName~ScoreGranularityTests&Category!=StorageIntegration'
++```
++
++Run UI or real-storage scopes only when those scopes were explicitly requested. Do not expand a request for a pure scoring check into the full app/backend suite. Existing `src/scripts/validate-highscore-contract.py` and release/smoke scripts execute assertions/tests and need the same explicit authorization; they are not planning document checks.
++
++## Isolated real API/storage setup — future authorized integration only
++
++Use the existing helper-owned loopback API; never publish synthetic runs to DEV/PROD. Restore Debug dependencies first because the helper performs `dotnet build --no-restore` using `~/.dotnet/dotnet`:
++
++```sh
++~/.dotnet/dotnet restore src/backend
++```
++
++Terminal A, from repository root:
++
++```sh
++DT3D_AZURITE_DATA=$(mktemp -d /tmp/dt3d-score-timer-azurite.XXXXXX)
++npx --yes --package azurite@3.37.0 azurite-blob \
++  --blobHost 127.0.0.1 --blobPort 10000 \
++  --location "$DT3D_AZURITE_DATA" --silent --disableTelemetry
++```
++
++Terminal B, from repository root:
++
++```sh
++python3 src/tests/support/local-highscores.py \
++  --port 5281 --state-file /tmp/dt3d-score-timer-local-api.json
++```
++
++The helper owns a unique private emulator container, initializes an empty schema2 aggregate, builds/launches the real API on loopback and writes its owned process/origin state. Expect the normal starter projection and a real revision, not necessarily `empty`. Ctrl-C stops only its API and removes only its container; stop Azurite separately. Port conflicts require selecting a free port, not terminating unrelated processes.
++
++For future read checks in that authorized integration scope:
++
++```sh
++curl --fail http://127.0.0.1:5281/health/live
++curl --fail http://127.0.0.1:5281/api/v1/highscores
++```
++
++Use the Debug app with the existing integration arguments:
++
++```text
++-highscoreUITest -highscoreIntegration
++-highscoreLocalOrigin http://127.0.0.1:5281
++-highscoreCompletedRun -highscoreRunScore 1005
++```
++
++Repeat with a fresh completed-run UUID and score10. The list has fewer than100 rows, so both can qualify despite the starter scores. Enter a synthetic name and submit once using the app's existing installation-credential flow. Do not put credentials into shell commands, logs or recorded packet bodies. Read the exact returned snapshot, restart only the owned API while preserving its container using the helper's documented SIGUSR1 interface, then confirm the same scores/IDs via a fresh read. Do not send a second POST as a readback.
++
++The injected CompletedRun proves encoding/transport/ranking/storage/decoding, not that actual gameplay earned1,005. Separately prove gameplay score formation through core/engine checks. Ordinary injected `-highscoreFixture` services prove UI/failures only, not API/Blob behaviour. `DonkeyTrump3D Local` Run points at loopback5281; its Test action still uses existing Debug fixtures and is not retargeted merely by the scheme name. Explicit integration arguments/harness are required. Physical iPhone loopback is the phone, not the Mac; do not add a LAN HTTP or production-submission exception to make this recipe work.
++
++## Acceptance matrix
++
++All rows are planned. Execute only the requested check scope and record exact command, source/build identity, environment, real/fixture target, inputs, observed result and limitations. The scenario references below map every entry in all four stories; intent numbers refer to the original19 acceptance items.
++
++| Check | Story scenarios / intent | Required observable outcome |
++| --- | --- | --- |
++| V01 Reference journeys/visible L | US1.1–1.2; intent1–3 | 10 distinct level1 barrels + rescue at60s =1,700; level2 five barrels at120s adds2,700; total4,400; repeated layouts use current visible L |
++| V02 Cap/retry | US1.3–1.4; intent4,7 | First20 level1 barrels total200; 21st pays0; after12 then death only8 remain; score retained |
++| V03 Lifetime/multi-clearance | US1.5–1.6; intent5–6 | Repeated callbacks/same lifetime pay once; fresh pool release pays below cap; empty jump0; multiple eligible barrels pay normal rewards only within cap; immutable feedback positions/values survive reuse |
++| V04 Fractional/time/completion once | US1.7–1.8; intent10–11 | T60.2 has119 bonus seconds; exact60/120 retain reference points; just before/at/after integer boundary floors correctly; T≥180 stays0 after retry; duplicate completion no bonus duplication |
++| V05 Attempt reset/timeout/final life | US2.1–2.4; intent8–10 | Fresh/retry3:00; R expires once at180 active seconds; no timeout bonuses; final life Game Over/no replacement;60+death+60 gives T120/R120 |
++| V06 Inactive/lifecycle/real clock | US2.5, US3.3; intent14–15 | Actual adapter at30/60/120Hz meets0.02s tolerance and equal points away from rounding edges;60s pause/background changes T/R/pressure by0; app-inactive during intro/death/retry/celebration freezes phase progression; foreground stalls retain debt within32-slice budget, no lost active time or imported background interval |
++| V07 Terminal races/stale events | US2.6–2.8; intent16 | Permute callback arrays: expiry+hit loses≤1 life; goal before expiry completes once; equal/after expires; collision+goal same stamp loses; older valid completion wins later timeout; no rewards at/after a loss or stale attempt; no later debt advances replacement attempt |
++| V08 Pressure checkpoints/drift | US3.1–3.2,3.6; intent12–13 | Desired factors at0/60/120/180 match within.01pp; active/new rolling/drop derive from immutable bases; direct aiming preserved through pre-landing falling; no compounding; position does not change p; max retained after retry |
++| V09 New level/state reset | US3.4; intent17 | T/history reset, R180, new immutable base/floor and lifetime generation; prior score/bonuses retained; whole restart resets score/state |
++| V10 Floor/scheduling/playability | US3.5; intent19 | Research floor/actual interval table reproduced from current geometry/base inputs; first delay1.5s, capped opportunity consumed, no resume catch-up release; held/cut jumps, both movement directions and direct/rolling/mixed routes at maximum T each layout and ramp limits allow representative jumps/landings |
++| V11 HUD/result feedback | US4.1; intent18 | M:SS uses positive ceiling, starts3:00; exact awarded text only; current completion banner shows completion/time including0/total once; HUD/Game Over/CompletedRun/local best use same total; older best need not equal lower current run |
++| V12 Score boundary/storage | US4.2; intent18 | App encode + real local POST/rank/Blob serialize/read/deserialize/GET/Swift decode preserve10/1,005 and mixed historical values/identities/ties; reject fractional/negative/non5/out-of-range; above remote bound stays exact locally with no upload |
++| V13 History/failure continuity | US4.3,4.5 | Existing stored and best values unaltered; offline/hung/unconfirmed publication cannot block play/restart or create deferred/next-launch POST; ambiguous acknowledgement remains unconfirmed |
++| V14 Copy/accessibility/device | US4.4, US3.5 | English help matches cap/level/time rules; timeout message accurate including hit tie; landscape iPhone13 timer/score/actions readable and reachable, applicable VoiceOver/larger text/settings retained; sustained gameplay/frame pacing and real jumps checked physically |
++
++Conditional same-run restore check is unnecessary while code remains memory-only; if an existing restore path is discovered, add restart-of-that-same-run evidence retaining T/R/history/outcome. Do not add a new persistence system to satisfy a conditional scenario.
++
++## Debug gameplay fixtures and physical acceptance
++
++The [gameplay contract](contracts/gameplay.md#debug-acceptance-fixtures) defines planned fixtures for reaching upper areas and maximum retained pressure without hours of progression. They must simulate actual movement/hazards with controlled initial state/seed, not replace gameplay outcomes with a precomputed pass. The enforcing components are Debug-only launch parsing in GameEngine and matching GameModel service selection; any gameplay fixture selects UnavailableHighscoreService before production configuration. Release builds compile out the flags/state injection and reject these launch overrides. Repeatable future boundary checks must prove no credentialed POST/public service selection for any fixture/autopilot and no fixture code/behaviour in Release.
++
++GameEngine uses an in-memory best/save closure for any gameplay-fixture flag, including invalid input. Verify the real saved personal best is identical before/after fixture play, Game Over and restart; test setup must not contaminate ordinary local best data.
++
++For a future explicitly requested physical gameplay check, install the Debug build on the actual reference iPhone13 and select the documented fixture/seed. Run each authored layout/upper area through a full180-active-second attempt, then retry at retained maximum pressure and exercise each ramp-limit layout. Record actual falls/hits/jump and landing windows, safe subsequent jumps, direct/rolling convergence, touch input, readability, frame pacing and settings. A source-derived floor, simulator run or synthetic score submission is not physical acceptance. If a sequence fails, tune within the approved movement/spacing constraints and recheck affected authorized scenarios before claiming gameplay completion. If physical hardware is unavailable, record that gate as not executed.
++
++## Future coordinated rollout and rollback
++
++No deploy/release is performed here. Before a separately authorized rollout, confirm actual installed-client/distribution constraints using current evidence, apply widened-reader backend first and replace participating strict clients. The dated owner decision permits in-placev1 and promises no old-client online compatibility; do not turn that into a claim of present distribution. Keep one historical list and explain score comparability. Prepare a rollback backend that still accepts/reads multiples of5 before the first new-score write; never restore strict100 validation over mixed stored data. Deployment checks/workflows themselves may execute tests and need explicit current-prompt authorization for that scope.
+
+diff --git a/specs/003-score-timer-difficulty/contracts/gameplay.md b/specs/003-score-timer-difficulty/contracts/gameplay.md
+new file mode 100644
+--- /dev/null
++++ b/specs/003-score-timer-difficulty/contracts/gameplay.md
+@@ -0,0 +1,65 @@
++# Gameplay and Presentation Contract
++
++Normative planned interface for [spec.md](../spec.md); types/invariants are in [data-model.md](../data-model.md). Existing Core remains independent of SceneKit, SwiftUI and networking. Design date:2026-10-18; no runtime checks executed.
++
++## Ownership and command boundary
++
++GameEngine owns a single monotonic clock adapter, stamped lock-protected input/command queue, scene graph and bounded physics delivery. GameSession owns phase, score, lives, LevelProgress, AttemptState and the sole terminal commit. GameSimulation proposes movement/contact events; BarrelSystem owns current hazard motion and release lifetimes. GameModel/observable HUD stays on MainActor. No view mutates progress directly; no network/storage work enters the render/core path.
++
++New helpers are value/timeline support in existing Core, not a new engine or service. Clock values are injected: production uses one ContinuousClock origin, deterministic validation uses an owned source. Presentation/camera interpolation may retain a capped delta but gameplay duration must not inherit the old 50ms cap.
++
++## Active time and event chronology
++
++1. Record monotonic render/input/control/lifecycle stamps in one origin, as integral nanoseconds. Record the app's inactive state even during intro, life-loss, retry or level completion; suspend phase progression as well as T/R. Inactivity means app lifecycle, not a player standing still.
++2. Build ordered spans split at state/input changes. Charge T/R only for spans in app-active play with an active attempt. Input holds describe their recorded spans; jump press is a single edge. Do not apply a newly sampled control retroactively to earlier backlog.
++3. Drain at most32 slices per render callback. Normal fixed slice boundaries are cumulative `floor(n×1e9/120)`; split at a command/expiry boundary and use exact integral duration. Retain older foreground debt on budget exhaustion. Coalesce equal input spans; do not truncate time or process an unbounded catch-up loop.
++4. On pause, finish only eligible pre-pause time, preserve progress/debt and exclude the paused gap. On app activation, rebase presentation timestamps, keep the game paused until explicit Resume and never import background time. Navigation/abandonment may immediately retire the prior run and its debt; normal pause is not abandonment.
++5. For each active slice, bound duration to remaining R. Advance movement for that slice, register contact candidates at its end, and include timeout at the exact expiry if reached. Current120Hz contact registration is retained; no sub-slice swept collision claim.
++6. Resolve the earliest terminal registration; exact ties: timeout before collision before rescue. An earlier registered rescue wins even if reported after a later timeout. A candidate must match current run/attempt. The resolver's answer cannot depend on array/callback order.
++7. Commit once. A loss removes one life, freezes clocks and follows existing1.4s loss/.6s retry presentation or Game Over. A valid rescue adds the one-time reward breakdown and follows existing3.2s level-complete presentation. Later same-attempt time is inactive and cannot fast-forward a replacement attempt/celebration. Apply pending activity/navigation changes even when that attempt has closed.
++
++Clocks/terminal presentation can lag while a large foreground backlog drains; original chronological time/outcomes remain authoritative. Ordinary30/60/120Hz accuracy and bounded stall recovery must be validated through this adapter, not only direct session calls. This design does not promise instantaneous results after arbitrary unrendered time.
++
++## Reward protocol
++
++- L is visible one-based level. Rewarded lifetime set contains at most20 distinct IDs and survives retry.
++- A clearance candidate is eligible only for the current active attempt and an uncredited lifetime below the cap. At a loss boundary it must be strictly earlier than the loss; at valid completion it may be at the completion timestamp. Apply eligible candidates chronologically, then stable lifetime order for equal times. At most remaining cap entries pay `10×L`; every other clearance pays0 and emits no positive point effect.
++- Completion adds `1000×L` once; bonus seconds are integer `max(0,180e9−Tns)/1e9`; time points=`5×L×bonusSeconds`. Use completion-time T, not reset R. A zero time bonus is still shown in the result breakdown but is not a positive point effect.
++- Ordinary jumps pay0. Multi-barrel jumps sum only each eligible barrel's normal award; no combo bonus. Remove old parallel +100/+1000 reward paths/copy.
++- Use checked numeric conversion/multiplication/addition before committing a reward transaction. No partial bonus, wrap, silent ceiling clamp or false positive acknowledgement. Keep the last valid total/best and navigation if a representational calculation fails; do not publish an invalid result.
++- A ScoreAward carries copied IDs/time/position and exact value. All batched hazard/terminal feedback needed after a slice must be copied; a later pooled object state cannot rewrite an earlier award or effect.
++
++## Pressure and release scheduling
++
++`p=clamp(T/180s,0,1)`, interval multiplier=`1−.60p`, speed multiplier=`1+.25p`. Always use unchanged level base inputs. [Research R5](../research.md#r5--initial-playability-floor-derived-from-existing-movement) defines the constant-per-level floor and its checkpoint table. Actual interval is max(desired,floor); document the actual constraint, including base cadence slowed from level6. Do not claim actual40% interval where the floor binds.
++
++Use a normalized release-progress accumulator. Preserve the first1.5s delay separately. After the first release, increment progress by active dt/current actual interval and, at a due opportunity, consume one opportunity and reset progress. If maxActive prevents release, still consume it, matching current no-backlog behaviour. In a normal ≤1/120s slice at most one opportunity is possible; no while-loop to flush past pauses. Pauses/background advance neither schedule nor pressure. Visual timeToNextSpawn uses remaining normalized progress and current interval so windup follows the same due opportunity.
++
++A retry starts a fresh hazard system and first-release delay, with T's pressure already retained; new level resets T/base/floor. Preserve maxActive5/6/8 and existing ramp cap12; do not use player position to choose p. Existing direct targeting can still depend on position.
++
++Movement scaling follows the R4 table: immutable sampled base speed for rolling/ordinary fall; preserve factor1/.25; ladder vx0/vy70×m; direct ballistic aim/gravity frozen until first actual landing, including intermediate falling mode. After landing use current scaled rolling speed. No compounding/resampling and no scaling of gravity/player jumps.
++
++## HUD, result and help
++
++- HUD includes total score, remaining attempt time and existing level/lives/Pause. Display `ceil(Rns/1e9)` as M:SS: start3:00; positive fractional remainder never0:00. The display must not drive gameplay timing.
++- Reuse the existing levelComplete banner with completion points, time bonus including0 and cumulative score. Keep current flow duration/actions and original English parody text. No separate result screen.
++- Life-loss feedback distinguishes timeout from collision; when timeout and collision tie, timeout reason wins. Existing retry and Game Over flow remains.
++- Float positive points only for actual awards; reflect real L-scaled points. CompletedRun/local best/public submission receive that same unquantized score.
++- Landscape iPhone13: readable timer/score, no controls/safe-area overlap, reachable existing actions; preserve applicable larger text, VoiceOver, Reduce Motion, sound and haptics. Validate reference-device touch/visual use separately from simulator evidence.
++- Demo uses an isolated non-awarding simulation/pressure state; never mutates the real run. Autopilot sessions use the same gameplay/timer/pressure rules for repeatability, while existing production-publication restrictions remain enforced. Only explicit Debug loopback integration can submit synthetic owned results; Release has no override.
++
++## Required observable boundaries
++
++[Quickstart](../quickstart.md) assigns future checks for exact reference scores/rounding, cross-life cap, pooled identity, timeout/final life, contact/event ties, inactive timestamps, actual clock adapter/frame rates/stalls, pressure/floor/mode cases, existing banner/help, unchanged result publication and physical maximum-pressure sequences. These are planned checks, not passing outcomes.
++
++## Debug acceptance fixtures
++
++Planned, Debug-only command: `-gameplayFixture CASE -gameplaySeed UINT64`. Allowed cases: `upper-1`, `upper-2`, `upper-3`, `retry-max-1`, `retry-max-2`, `retry-max-3`, `limit-layout-1`, `limit-layout-2`, `limit-layout-3`. No arbitrary production state injection.
++
++- Upper cases use visible levels1/2/3, T0/R180, score0, normal lives and a valid standing position on the top girder outside the rescue zone. Derive the position from current layout geometry, verify no initial collision/goal, and leave real movement/reward/timeout rules active for the full attempt.
++- Retry-max cases use the same layout/position with retained T180 and fresh R180, representing a retry at capped pressure. The cap/history setup is explicitly labeled synthetic; separate core checks prove real cross-life retention.
++- Limit-layout cases use DifficultyRamp indices999/1000/1001 (layouts1/2/3 at the existing rounded limits) with T180/R180 and otherwise real hazard/player rules. Confirm the produced base values equal the existing limits rather than assuming an unbounded level index is needed.
++- Every case is tagged as fixture state, uses a reproducible supplied seed, and is prohibited from production publication. GameModel must select UnavailableHighscoreService whenever the flag is present, including malformed/unknown values, before default backend selection. GameEngine's parser only injects valid cases under `#if DEBUG`; malformed input fails closed, never enables online submission. Existing highscore fixtures/integration flags must not override this prohibition when combined with a gameplay fixture.
++- GameEngine must also use an in-memory best/save closure whenever a gameplay-fixture flag is present, including malformed flags. Fixture totals must never replace the real UserDefaults personal best; ordinary saved best/settings remain untouched. Future boundary checks compare the real best before/after fixture termination and restart.
++- A Debug gameplay fixture is for actual gameplay acceptance, not the existing synthetic CompletedRun API integration exception. Never combine them to publish. Existing explicit loopback CompletedRun integration remains separately available without a gameplay fixture.
++- Release must compile out fixture parsing/state injection and test-only clock inputs. A future Release configuration/binary/launch-boundary check must establish that the flags cannot change gameplay or service selection. No fixture result qualifies as a genuine published run.
+
+diff --git a/specs/003-score-timer-difficulty/contracts/highscore-score-domain.md b/specs/003-score-timer-difficulty/contracts/highscore-score-domain.md
+new file mode 100644
+--- /dev/null
++++ b/specs/003-score-timer-difficulty/contracts/highscore-score-domain.md
+@@ -0,0 +1,43 @@
++# Highscore Score-Domain Contract Addendum
++
++Design date:2026-10-18. This feature supersedes only the old multiples-of-100 score restriction in the [001 API schema](../../001-global-highscores/contracts/highscores.openapi.yaml). The [current moderation/authentication contract](../../002-app-store-release/contracts/moderation-api.md) and existing [iOS failure flow](../../001-global-highscores/contracts/ios-flow.md) continue to govern unchanged behaviour. Reconcile the active older score schema/docs during implementation; do not rewrite their historical review/test evidence.
++
++## Numeric domain and exactness
++
++The [score schema](highscore-score.schema.json) is the single planned numeric domain:
++
++- Integer multiple of5, minimum0, maximum2,147,483,600 (existing int32-compatible ceiling).
++- This applies to POST score, every GET/POST snapshot row, qualification/ranking, schema1/2 aggregate deserialization/validation and serialization. No submission-only exception.
++- Existing multiples-of-100 values remain valid and retain their exact value. New values such as10 and1,005 must persist, read back and display exactly; no rounding, multiplication, projection/filtering or modulo-based inference of rules provenance.
++- Invalid numbers (fractional, negative, not divisible by5 or beyond ceiling) retain existing validation/failure semantics. The new backend validation message describes multiples of5. Local run totals above the remote ceiling remain local, exact, and unpublished under existing unsupported-result behaviour.
++
++This is input/domain validation, not proof of honest gameplay. Do not infer that every accepted number is achievable or server-verified.
++
++## Unchanged public interface and storage
++
++| Interface | Preserved contract |
++| --- | --- |
++| GET `/api/v1/highscores` | Public read-only complete top100 snapshot: entries(entryId,rank,displayName,score), revision,fetchedAtUtc; no-store |
++| POST `/api/v1/highscores` | Existing installation authorization and strict JSON fields submissionId,displayName,score,levelReached; same ranked/notQualified and exact returned snapshot |
++| Ranking | Score descending; successful-save sequence ascending for ties; full-list cutoff must be beaten |
++| Identity / moderation | Existing stable run ID, bounded deduplication scope, installation attribution, blocks, removals, reports, retention and capacity unchanged |
++| Blob | Same private container/name, schema1/2, fields and existing identities/sequences/timestamps; widening numeric validation needs no schema rewrite |
++| Writes | Storage-enforced ETag/If-None-Match, current finite retry/deadline rules, no unconditional fallback |
++| Failed acknowledgement | Potentially committed POST is unconfirmed; never infer no-save from a malformed mixed-list response, never automatically replay |
++| Privacy / client | Existing explicit publication action, HTTPS, independent local best, no credentials in logs/code/arguments, no background/deferred upload |
++
++## Compatibility decision and deployment dependency
++
++Evolve v1 in place and rebuild/reinstall participating clients, matching the [2026-09-28 owner decision](../../../docs/releases/app-store/backend-single-api-rollout.md). Keep one all-time ranking; no season, new board/service, deletion or automatic re-scoring. Explain in relevant English help/release notes that retained historical and current totals use different scoring rules. Existing entries have no trustworthy rules tag; do not manufacture one.
++
++Old strict iPhone decoders cannot read a snapshot containing a non-hundred score; their online browsing/submission is not compatible. Old POST responses may fail decoding after a real committed write, so current unconfirmed/no-replay behaviour remains necessary. Dated owner-only/unreleased evidence is not current distribution verification. Before any later rollout, verify actual installation/distribution constraints; continued support for old binaries, if required, is a new prerequisite. No deployment is performed by this feature's planning workflow.
++
++Future coordinated order: widened backend reader/writer first, rebuilt clients next, then new-score publication. Validate old aggregate read plus mixed write/read on isolated real storage before relying on that sequence. Never enable new publication against an old strict backend.
++
++**Rollback invariant**: After the first non-hundred value persists, every rollback/recovery backend must still read/validate the widened domain and preserve the aggregate. An old strict100 validator would turn the existing document into storage_invalid. Prepare a widened-reader rollback artifact; do not delete, round or repair data to fit an old binary. Do not confuse an old client reinstall with backend data rollback.
++
++## Implementation surfaces and acceptance
++
++Update the common Swift predicate in HighscoreModels, the backend common predicate/message in HighscoreValidation, the active 001 OpenAPI Score component, shared fixture cases and active numeric documentation. HighscoreDocument and ranking call the common predicate; verify both paths rather than adding disconnected exceptions. No changes to publication transport/auth/ETags are required.
++
++Future boundary evidence must traverse parser→ranking→serialize→real Blob read→deserialize→GET→Swift decode for10/1,005 mixed with unchanged old entries. Confirm exact returned value, historical identities/tie order, bounds, invalid values, stable submission IDs and existing unconfirmed/no-replay paths. Injected fixtures are separate UI evidence, not real API/storage acceptance. See [quickstart](../quickstart.md).
+
+diff --git a/specs/003-score-timer-difficulty/contracts/highscore-score.schema.json b/specs/003-score-timer-difficulty/contracts/highscore-score.schema.json
+new file mode 100644
+--- /dev/null
++++ b/specs/003-score-timer-difficulty/contracts/highscore-score.schema.json
+@@ -0,0 +1,18 @@
++{
++  "$schema": "https://json-schema.org/draft/2020-12/schema",
++  "title": "Donkey Trump highscore score domain for feature 003",
++  "description": "Replaces only the prior multipleOf 100 score predicate; applies to submissions, snapshot entries and stored entry values. Acceptance is not proof of gameplay.",
++  "type": "integer",
++  "minimum": 0,
++  "maximum": 2147483600,
++  "multipleOf": 5,
++  "examples": [
++    0,
++    10,
++    1005,
++    1700,
++    2700,
++    4400,
++    2147483600
++  ]
++}

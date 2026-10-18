@@ -1,0 +1,37 @@
+{
+  "date": "2026-10-18",
+  "tool": "Claude Code 2.1.302",
+  "reviewer_vendor": "Anthropic",
+  "requested_model": "claude-opus-5-5",
+  "effort": "high via CLAUDE_CODE_EFFORT_LEVEL and --effort",
+  "plain_probe": {
+    "exit": 0,
+    "response": "REVIEW_ROUTE_OK",
+    "stdout_stderr_no_effort_warning": true,
+    "stderr_empty": true
+  },
+  "stream_probe": {
+    "exit": 0,
+    "session_id": "b9fc126e-f2a7-4af8-bce1-6452226b1efd",
+    "actual_assistant_model": "claude-opus-5-5",
+    "canonical_model": "claude-opus-5-5",
+    "provider": "firstParty",
+    "input_tokens": 2,
+    "output_tokens": 16,
+    "success": true
+  },
+  "effort_limit": "Provider does not separately attest effective effort; explicit settings, successful model probes and clean plain-text warning check are available evidence.",
+  "isolation": "temporary directory; safe mode; tools empty; strict empty MCP; no session persistence",
+  "invocation": "CLAUDE_CODE_EFFORT_LEVEL=high claude --safe-mode --print --model claude-opus-5-5 --effort high --tools '' --strict-mcp-config --mcp-config '{\"mcpServers\":{}}' --no-session-persistence",
+  "fallback": "not needed; primary works",
+  "lead": {
+    "tool": "Codex session",
+    "vendor": "OpenAI",
+    "model": "GPT-6 family; exact runtime identifier unavailable",
+    "reasoning": "not exposed",
+    "version_session": "not exposed"
+  },
+  "research_helpers": "3 independent read-only OpenAI research helpers; same vendor, not review",
+  "reviewer_independence": "Anthropic reviewer was not involved in authoring or research; first receives completed frozen candidate.",
+  "round_1_packet_sha256": "9ef9088ae66a16f05d66060dcd3273388caff724bc2f5faf220d81802ba733ad"
+}

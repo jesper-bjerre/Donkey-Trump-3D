@@ -72,6 +72,13 @@ struct RootView: View {
                     .accessibilityIdentifier("highscorePerformanceResult")
             }
         }
+        .overlay(alignment: .bottomTrailing) {
+            if LaunchOptions.current.gameplayFixture {
+                Text(verbatim: "storedBest=\(UserDefaults.standard.integer(forKey: "best"));best=\(hud.best)")
+                    .font(.system(size: 1)).foregroundStyle(.clear)
+                    .accessibilityIdentifier("gameplayFixtureEvidence")
+            }
+        }
         .overlay(alignment: .topLeading) {
             if HighscoreFixtureLaunch.parse(ProcessInfo.processInfo.arguments) != nil {
                 Text(verbatim: "reads=\(UserDefaults.standard.integer(forKey: "highscoreFixtureReads"));posts=\(UserDefaults.standard.integer(forKey: "highscoreFixturePosts"));best=\(hud.best)")
@@ -257,6 +264,7 @@ struct IntroOverlay: View {
                         .font(.arcade(20))
                         .foregroundStyle(.white.opacity(0.8))
                     Text(hud.levelName)
+                        .lineLimit(1).minimumScaleFactor(0.65)
                         .font(.arcade(40))
                         .foregroundStyle(.gold)
                     Text(Copy.cardGoal)
@@ -351,6 +359,8 @@ struct GameHUD: View {
                         .font(.arcade(10, .heavy))
                         .foregroundStyle(.white.opacity(0.7))
                     Text("\(hud.score)")
+                        .accessibilityIdentifier("gameScore")
+                        .lineLimit(1).minimumScaleFactor(0.5)
                         .font(.arcade(24))
                         .monospacedDigit()
                         .foregroundStyle(.gold)
@@ -374,6 +384,16 @@ struct GameHUD: View {
                 .padding(.vertical, 6)
                 .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 16))
 
+                VStack(spacing: 0) {
+                    Text("TIME").font(.arcade(10, .heavy)).foregroundStyle(.white.opacity(0.7))
+                    Text(String(format: "%d:%02d", hud.remainingSeconds / 60, hud.remainingSeconds % 60))
+                        .font(.arcade(22)).monospacedDigit().foregroundStyle(.white)
+                        .accessibilityLabel("Time remaining \(hud.remainingSeconds / 60) minutes \(hud.remainingSeconds % 60) seconds")
+                        .accessibilityIdentifier("attemptTimer")
+                }
+                .padding(.horizontal, 10).padding(.vertical, 6)
+                .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 16))
+
                 Spacer()
 
                 VStack(spacing: 0) {
@@ -381,6 +401,7 @@ struct GameHUD: View {
                         .font(.arcade(12, .heavy))
                         .foregroundStyle(.white.opacity(0.75))
                     Text(hud.levelName)
+                        .lineLimit(1).minimumScaleFactor(0.65)
                         .font(.arcade(16, .bold))
                         .foregroundStyle(.white)
                 }
@@ -443,10 +464,12 @@ struct PhaseOverlay: View {
     var body: some View {
         switch hud.phase {
         case .lifeLost, .retrying:
-            Banner(title: hud.phase == .lifeLost ? Copy.lifeLost : Copy.retrying, subtitle: hud.phase == .lifeLost ? "Lives left: \(hud.lives)" : nil, color: .red)
+            Banner(title: hud.phase == .lifeLost ? (hud.lastLossReason == .timeout ? Copy.timeout : Copy.lifeLost) : Copy.retrying, subtitle: hud.phase == .lifeLost ? "Lives left: \(hud.lives)" : nil, color: .red)
                 .allowsHitTesting(false)
         case .levelComplete:
-            Banner(title: Copy.rescued, subtitle: "+\(ScoreRules.levelCompletePoints)   ·   " + Copy.nextFaster, color: .green)
+            Banner(title: Copy.rescued, subtitle: hud.levelReward.map {
+                "Completion +\($0.completionPoints) · Time +\($0.timePoints) · Total \($0.totalAfterCompletion)"
+            }, color: .green)
                 .allowsHitTesting(false)
         case .paused:
             MenuPanel(title: Copy.paused) {

@@ -1,0 +1,83 @@
+{
+  "base_commit": "9483e8eff3732cb4816942f6c9988ac1165ec537",
+  "branch": "main",
+  "candidate": [
+    {
+      "path": "specs/003-score-timer-difficulty/spec.md",
+      "sha256": "6b75005033b0e36378368bee724cf4779c718052e81ae1980399a7c3021f69ff",
+      "git_status": "?? specs/003-score-timer-difficulty/spec.md"
+    },
+    {
+      "path": "specs/003-score-timer-difficulty/checklists/requirements.md",
+      "sha256": "6bc35466a7d2a1350f3235946c1de95bfe8b912d16a07732cc631eb877b48793",
+      "git_status": "?? specs/003-score-timer-difficulty/checklists/requirements.md"
+    },
+    {
+      "path": ".specify/feature.json",
+      "sha256": "c3aaaf25baf58489fc4ea1c7f608cab7c8af6d437ccc6ff2f625f1098b650d88",
+      "git_status": "!! .specify/feature.json"
+    }
+  ],
+  "context": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "4811d999ef9e04f917218bb0338d5cb252f8cb8b9fd5d78819929676b2c091e2"
+    },
+    {
+      "path": ".specify/memory/constitution.md",
+      "sha256": "48aad1c55de956264342aa88070cb3d9a21a3f0985f684f19ce77cc095b73129"
+    },
+    {
+      "path": ".agents/skills/speckit-specify/SKILL.md",
+      "sha256": "a505028de7f6489878696d6656c7d057f3a66119ebb8c0cc82d69fabb7b344ff"
+    },
+    {
+      "path": ".specify/templates/spec-template.md",
+      "sha256": "3945437fc35cd30a5b2bf7beea680337c3516826d3efa5a6b92c4a7eca1ba28e"
+    },
+    {
+      "path": ".specify/init-options.json",
+      "sha256": "d04801e81da40e870f59cc7f8fb87dab01339f2270a685724c3d40056593f5ee"
+    },
+    {
+      "path": "docs/intents/Donkey_Trump_3D_Codex_Point_Timer_Svaerhedsgrad.md",
+      "sha256": "ef468dc5d8f7f97e07353cac6bfb9a684988ddd37ee712902b45aad5364bda99"
+    },
+    {
+      "path": "src/DonkeyTrump3D/Core/Rules.swift",
+      "sha256": "6b6b7e5f025563dfe2b4be9f03807e7ea628005a7d1f994466f34120fd6f56e1"
+    },
+    {
+      "path": "src/DonkeyTrump3D/Core/Simulation.swift",
+      "sha256": "210ea28c4a2931abb2376b0795f0f65853852083fb4f2b15fb45dba51f9cb8b1"
+    },
+    {
+      "path": "src/DonkeyTrump3D/Core/Level.swift",
+      "sha256": "9eabab4e83a584f74dc41a15bbd208dd63a4843f78f9c0830bfb2568c4ef91f6"
+    },
+    {
+      "path": "src/DonkeyTrump3D/Highscores/HighscoreModels.swift",
+      "sha256": "c055b14cb09a3882d6d0ea95eeac18fac56c47986552cda42ca17d40dd7b48e2"
+    },
+    {
+      "path": "src/backend/Highscores/HighscoreValidation.cs",
+      "sha256": "42f529a1ad7b8ab4e636a1d9aa966296805e7489da22f6ee2967243b03611890"
+    },
+    {
+      "path": "specs/001-global-highscores/contracts/ios-flow.md",
+      "sha256": "416148f630a39a93d1f32cfe4217346b2930f61be1ae8e6c581ce51319eaccb9"
+    },
+    {
+      "path": "specs/001-global-highscores/contracts/highscores.openapi.yaml",
+      "sha256": "bbe83c45479992d35836b2c889ecac991b1a33164812387e0e780241f8216238"
+    }
+  ],
+  "acceptance_evidence": [
+    {
+      "path": "specs/003-score-timer-difficulty/reviews/specification-2026-10-18/document-checks.json",
+      "sha256": "36c7df22a877757896d8a32e07739016fb0fd0793300508edc74821717bbf9d8"
+    }
+  ],
+  "new_files_base": "spec and checklist absent before this invocation; feature pointer previously specs/002-app-store-release; user intent is pre-existing untracked input and is unchanged",
+  "excluded_from_payload_identity": "review records, manifests, packet and verdict metadata only"
+}

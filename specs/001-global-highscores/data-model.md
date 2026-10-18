@@ -20,7 +20,7 @@ The publication flow owns this snapshot until dismissed, completed or failed. It
 |---|---|---|
 | `submissionId` | UUID string | Non-zero UUID; canonicalize to lowercase hyphenated form |
 | `displayName` | string | See normalization below |
-| `score` | int32 | 0–2,147,483,600 inclusive; multiple of 100 |
+| `score` | int32 | 0–2,147,483,600 inclusive; multiple of 5 |
 | `levelReached` | int32 | 1–2,147,483,647 inclusive |
 
 Require all four fields, valid JSON object, JSON numbers rather than numeric strings, and `application/json`. Reject unknown fields, including client-supplied rank/sequence/timestamp. Bound the received body to 4,096 bytes, including chunked input, before materializing it. Use explicit validation so missing integers cannot silently become valid zero scores.

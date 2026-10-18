@@ -16,7 +16,10 @@ enum Copy {
         ("arrowshape.up.fill", "Right thumb: tap anywhere on the right half to jump over barrels"),
         ("gamecontroller.fill", "Game controllers and keyboards work too: A / Space jumps, Menu / P pauses"),
         ("stairs", "You cannot jump from one floor to the next. Use the ladders."),
-        ("star.fill", "+100 per barrel jumped, +1000 per rescue. A hit retries the level and keeps your score."),
+        ("star.fill", "Earn 10 × level for each of the first 20 different barrels across all lives on that level. Other jumps earn no points."),
+        ("flag.checkered", "Each rescue earns 1,000 × level plus 5 × level per whole bonus second left from 180 seconds of total active level time."),
+        ("timer", "Each life has a three-minute attempt. A hit or timeout costs one life; a retry keeps your points, barrel cap and level time. Pause freezes time."),
+        ("chart.bar.fill", "Barrels get faster and more frequent as active level time grows. The all-time highscore list retains totals earned under different scoring rules."),
     ]
     static let privacy = "No accounts or tracking. Your personal best and settings stay on this iPhone. If you choose to submit a highscore, your chosen name and score are public. Failed submissions are not queued or sent later."
     static let highscoreUnconfirmed = "We couldn't confirm whether your score was saved."
@@ -30,6 +33,7 @@ enum Copy {
     static let restart = "Restart from Level 1"
     static let toTitle = "Return to Title"
 
+    static let timeout = "Time is up!"
     static let lifeLost = "Ouch! A barrel got you."
     static let retrying = "Try again..."
     static let gameOver = "GAME OVER"

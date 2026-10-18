@@ -1,0 +1,44 @@
+{
+  "date": "2026-10-18",
+  "tool": "Claude Code",
+  "version": "2.1.283",
+  "reviewer_vendor": "Anthropic",
+  "requested_model": "claude-opus-5-5",
+  "requested_effort": "high",
+  "explicit_effort_settings": [
+    "CLAUDE_CODE_EFFORT_LEVEL=high",
+    "--effort high"
+  ],
+  "invocation": "CLAUDE_CODE_EFFORT_LEVEL=high claude --safe-mode --print --model claude-opus-5-5 --effort high --tools '' --strict-mcp-config --mcp-config '{\"mcpServers\":{}}' --no-session-persistence",
+  "isolation": "temporary directory outside repository; safe mode; built-in tools and MCP disabled; no session persistence",
+  "plain_probe": {
+    "exit_code": 0,
+    "prompt": "Reply exactly REVIEW_ROUTE_OK. Do not use any tools.",
+    "stdout": "REVIEW_ROUTE_OK",
+    "stderr_empty": true,
+    "effort_limit_warning": false
+  },
+  "stream_probe": {
+    "exit_code": 0,
+    "session_id": "11fbc964-78e2-43c8-973b-eaf8e240b2d3",
+    "subtype": "success",
+    "is_error": false,
+    "assistant_model": "claude-opus-5-5",
+    "canonical_model": "claude-opus-5-5",
+    "provider": "firstParty",
+    "input_tokens": 2,
+    "output_tokens": 16,
+    "stderr_empty": true
+  },
+  "effort_verification_limit": "Provider response does not separately attest effective effort. Explicit high CLI/environment settings, successful model probe and clean plain-text warning check are the available evidence.",
+  "fallback": "Not attempted; required primary route works.",
+  "packet_sha256": "4852f8671dbefdfd9d0bb7868987f1407c6a0287965074e0fa80f851a1ecde82",
+  "lead": {
+    "vendor": "OpenAI",
+    "tool": "Codex session",
+    "model": "GPT-6 family (system supplied); exact model identifier unavailable",
+    "reasoning": "not exposed in session context",
+    "tool_version_session_id": "not exposed"
+  },
+  "independence": "Reviewer first received the finished frozen candidate; it did not author the spec or checklist."
+}

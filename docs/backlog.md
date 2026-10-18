@@ -13,7 +13,7 @@ Updated: 2026-09-26. This replaces the imported web-game work orders, estimates 
 | IOS-003 | Touch, controller and keyboard | Implemented: [Input.swift](../src/DonkeyTrump3D/Input/Input.swift) merges floating-stick/jump touches with controller/keyboard input |
 | IOS-004 | Slopes, jumps and ladders | Implemented: [Player.swift](../src/DonkeyTrump3D/Core/Player.swift) and [Slope.swift](../src/DonkeyTrump3D/Core/Slope.swift); short jumps, no double jump, slope contacts and mid-air ladder grabs |
 | IOS-005 | Barrel hazards | Implemented: [Barrels.swift](../src/DonkeyTrump3D/Core/Barrels.swift); rolling, end drops, ladder routing and direct throws |
-| IOS-006 | Score, lives and run flow | Implemented: [Simulation.swift](../src/DonkeyTrump3D/Core/Simulation.swift); three lives, +100/barrel, +1000/rescue, retry preserving score, pause, game over and restart |
+| IOS-006 | Score, lives and run flow | Implemented: [Simulation.swift](../src/DonkeyTrump3D/Core/Simulation.swift); three lives, L-scaled capped barrel/completion/time rewards and180s attempts, retry preserving score, pause, game over and restart |
 | IOS-007 | Three layouts and endless progression | Implemented: [Level.swift](../src/DonkeyTrump3D/Core/Level.swift) and bundled JSON; layouts repeat with bounded increases in difficulty |
 | IOS-008 | Cinematic intro | Implemented: [IntroTimeline.swift](../src/DonkeyTrump3D/Core/IntroTimeline.swift) and engine; carrying, signing, girder tilt, level card, Skip and reduced-motion shortcut |
 | IOS-009 | Sound through physical silent mode | Implemented: [AudioSystem.swift](../src/DonkeyTrump3D/Audio/AudioSystem.swift) uses playback mode with mixing; in-game mute persists and silences active voices. Physical switch verification remains open |
@@ -53,7 +53,7 @@ Acceptance checks:
 - Test simultaneous movement/jump, short/full jumps, ladder entry/exit, mid-air grabs and finger cancellation.
 - No movement or jump remains stuck after releasing fingers, pausing, resuming or returning to the title.
 - Complete the three authored layouts and enter level 4; the first layout returns at higher difficulty instead of ending the game.
-- Confirm +100 per barrel, +1000 per rescue, one life per hit, score-preserving retry and fresh barrel patterns.
+- Confirm10×L capped barrel rewards,1000×L completion plus retained-T time bonus, one life per hit/timeout, retained score/T/cap on retry and fresh barrel patterns.
 - Confirm Game Over, Play Again, restart from pause and best-score persistence at rescue/game-over save points.
 
 ### IOS-QA-03 — App lifecycle and audio recovery
@@ -132,3 +132,7 @@ New authored layouts, Danish localisation, additional accessibility options, clo
 The copied tasks for Phaser/Vite/npm setup, browser boot manifests, sprite sheets, DOM overlays, browser compatibility pages, HTTP security headers, Azure Static Web Apps, static-site smoke tests, analytics event adapters and terminal victory flow have been replaced by the native scope above. Their old work-order IDs, story-point estimates and calendar dates are not current iOS commitments.
 
 Product rules are maintained in [prd_spec.md](prd_spec.md); implementation boundaries are in [architecture_options.md](architecture_options.md).
+
+## Feature003 delivery status — 2026-10-18
+
+Score/timer/pressure implementation and authored core/UI/storage checks are delivered in source. Tests/manual gameplay are not executed under the implementation prompt. Physical iPhone13 full-attempt/max-pressure/landing/touch/readability/frame-pacing gates remain open; one passing source-derived floor calculation cannot close them. See [tasks](../specs/003-score-timer-difficulty/tasks.md) and [validation disposition](../specs/003-score-timer-difficulty/evidence/validation.md). No production rollout or App Store delivery is included.

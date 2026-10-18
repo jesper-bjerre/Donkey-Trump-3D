@@ -193,3 +193,11 @@ capacity and neighboring-app availability checks remain required.
 The deployment [evidence and independent review](reviews/backend-deployment-2026-09-26.md)
 records the executed checks and observed resources. App Store moderation, physical
 iPhone acceptance remain separate release work. The [iOS Xcode schemes](ios-backend-environments.md) select Local/DEV/PROD for Run and PROD for Archive.
+
+## Score-domain change (feature003, 2026-10-18)
+
+The implemented source accepts exact integer scores divisible by5 in0…2,147,483,600 through the common app/backend/storage validators. Preserve the existing single all-time ranking and every historical total/identity. Old/new scoring models are not directly comparable; do not infer a rules tag from divisibility or delete/recalculate history. No new board/service/schema or deployment is part of this implementation.
+
+Before a separately authorized rollout, confirm current installed-client/distribution constraints. The dated 2026-09-28 owner decision permits evolving v1 in place and replacing participating clients; it is not current distribution evidence. Old strict100 clients cannot decode mixed lists, including responses after a committed POST. Maintain unconfirmed/no-replay handling. If continued support for those clients is now required, resolve that rollout prerequisite first.
+
+Rollout order: validate on owned isolated storage when explicitly requested, prepare a widened-reader recovery artifact, deploy widened backend first, replace participating clients, then allow five-point publication. Once any non-hundred score is stored, rollback must retain widened reads/validation. Never restore a strict100 backend over that aggregate or round/delete data to make it readable. No rollout or recovery artifact is claimed deployed by the feature implementation.

@@ -1,0 +1,240 @@
+# Tasks: Score, Attempt Timer and Level Pressure
+
+**Input**: Design documents in `specs/003-score-timer-difficulty/`.
+**Prerequisites**: [plan.md](plan.md), [spec.md](spec.md), [research.md](research.md), [data-model.md](data-model.md), [gameplay contract](contracts/gameplay.md), [score-domain contract](contracts/highscore-score-domain.md), [numeric schema](contracts/highscore-score.schema.json), [quickstart.md](quickstart.md).
+**Created**: 2026-10-18. Actual Git branch: `main`; feature identity: `003-score-timer-difficulty`.
+
+**Review policy**: Apply [the owner's exception](review-policy.md) and [AGENTS.md](../../AGENTS.md). Do not run/require Claude Code review or a substitute cross-vendor completion gate, including during implementation. Ordinary lead source/document inspection remains required.
+
+**Tests and acceptance**: The spec/plan request repeatable feature checks and named test suites. Tasks below author those checks. Authoring a test is distinct from executing it: run unit/integration/UI/end-to-end/smoke/contract scripts or manual gameplay acceptance only when explicitly requested in the then-current user prompt, and only in the requested scope. Do not trigger CI/deployment to bypass this rule. No routine permission question is required. If not requested, record `not run` and its limits; intentionally unrun tests alone do not block otherwise authorized implementation. Never mark an execution as passed because its source was written. No tests, builds, application implementation or release actions were performed while generating this list.
+
+**Organization**: Setup → common foundations → US1(P1) → US2(P1) → US3(P2) → US4(P2) → cross-cutting completion. Backend/client score-domain work in US4 may start on its explicit foundation-only prerequisites, but its final integration follows the other stories. All four stories are required for the complete feature. US1 is an internal scoring MVP, not release acceptance or authority to publish a partially integrated client.
+
+## Format: `[ID] [P?] [Story] Description`
+
+Every executable task has one checkbox, a sequential T-number, an optional `[P]`, a story label in story phases, and exact repository-relative file paths. `[P]` means it can share the explicitly described ready batch with tasks touching different files; it never overrides prerequisites or same-file serialization. IDs in parentheses are prerequisites, not extra tasks. All markers are initially unchecked and refer to future work.
+
+## Path Conventions
+
+Use the existing `src/DonkeyTrump3D`, `src/DonkeyTrump3DTests`, `src/DonkeyTrump3DUITests`, `src/backend`, `src/backend.tests` and `src/tests` layout. New Core helpers remain small pure value/timeline support, not a parallel game engine. Existing Xcode filesystem-synchronized groups discover files in these directories. Backend commands run from repository root so `global.json` covers both API and sibling tests. Evidence files named below are planned outputs, not existing passing results. Preserve unrelated changes and dated review/release/test evidence. No commits, pushes, deployments, App Store actions, new services, saved-run system, leaderboard or history conversion are authorized by this task list.
+
+## Phase 1: Setup (Shared Infrastructure)
+
+**Purpose**: Establish the actual implementation baseline and existing build boundaries without new infrastructure.
+
+- [ ] T001 [P] Initialize `specs/003-score-timer-difficulty/evidence/implementation.md` with current base commit, scoped staged/unstaged/untracked SHA-256 identities, the owner review exception and current-prompt check scope; preserve pre-edit copies of relevant untracked files and distinguish implementation, authored checks, executed checks and release readiness.
+- [ ] T002 [P] Record the existing Swift5/iOS26/Xcode27 target discovery, repository-root `global.json` SDK10.0.401/latestPatch, `src/backend/DonkeyTrump.Highscores.Api.csproj`, `src/backend.tests/DonkeyTrump.Highscores.Api.Tests.csproj` and shared schemes in `specs/003-score-timer-difficulty/evidence/build-context.md`; preserve existing packages/configuration and document compile-only destinations without running tests or booting services.
+
+## Phase 2: Foundational (Blocking Prerequisites)
+
+**Purpose**: Shared clock, identity, state and terminal boundaries used by every story. Complete T001–T010 before story integration. A test source can be authored before its implementation; the owner policy overrides any automatic red/green execution instruction.
+
+- [ ] T003 Author common state/timeline contract checks in `src/DonkeyTrump3DTests/GameplayStateTests.swift` and `src/DonkeyTrump3DTests/GameplayTimelineTests.swift`: exact integral60/120/180s boundaries, first-sample anchoring, state reset/retention, overflow rejection, command versus active-time coordinates and immutable snapshots; do not execute them. (T001,T002)
+- [ ] T004 [P] Define additive LevelProgress/AttemptState/lifetime types in `src/DonkeyTrump3D/Core/GameplayProgress.swift`: visibleLevel “Int L≥1; fixed until progression”; baseBarrelConfiguration “Immutable DifficultyRamp output for this visible level”; totalActiveNs “Int64 T≥0, accumulated only in eligible active slices; retained on retry”; rewardedLifetimes “Set of BarrelLifetimeID; count0…20; at most20 retained identifiers”; completionReward “Optional immutable LevelRewardBreakdown; set once on valid completion”; minimumReleaseInterval “Positive seconds derived once from immutable player/base-speed/layout inputs; constant for this level”; attemptSerial “Increasing UInt64 within run; never reused; checked rather than wrapping”; remainingNs “Int64 R in0…180e9; fresh retry180e9”; outcome “active / lifeLost(collision or timeout) / completed; one terminal transition only”; terminalAt “Optional integral registered active timestamp; immutable after resolution”; spawnSerial “Increasing per attempt on every release including pool reuse”. (T003)
+- [ ] T005 [P] Implement pure integral duration and stamped-span handling in `src/DonkeyTrump3D/Core/GameplayTimeline.swift`: one injected monotonic origin, nonnegative checked Int64ns, cumulative120Hz boundaries by quotient/remainder, exact partial slices at commands/expiry, stable equal-stamp enqueue order, coalesced held input, once-only press edges and a32-slice/render budget retaining foreground debt; no invented initial frame or comparisons between adapter stamps and projected active T. (T003)
+- [ ] T006 Define immutable event payloads in `src/DonkeyTrump3D/Core/GameplayProgress.swift` with the model's exact required fields: ClearanceCandidate “run/attempt/lifetime IDs, registeredAtNs, copied position; does not imply awarded points”; TerminalCandidate “run/attempt IDs, registeredAtNs, timeout/collision/rescue; no mutation until arbitration”; ScoreAward “IDs, registeredAtNs, source(barrel/completion/time), exact awarded points, copied effect position; positive feedback only for an actual positive award”; LevelRewardBreakdown “visible L, completionPoints, bonusSeconds, timePoints, totalAfterCompletion; immutable one-time result, includes timePoints0”; LifeLossSnapshot “reason(timeout/collision), remaining lives and attempt identity; timeout does not masquerade as a barrel hit”; registeredAtNs/terminalAt use active level T, not engine-origin time. (T004)
+- [ ] T007 Assign immutable `(runID, attemptSerial, spawnSerial)` identity on every release/reuse in `src/DonkeyTrump3D/Core/Barrels.swift`, preserving separate render/pool IDs; copy “one existing random sample from this level's base min/max; pressure never resamples it or compounds its changed value” as baseSpeed, preserve “rolling / ordinary fall(horizontal factor1 or.25) / ladder drop / direct ballistic until first actual landing” provenance, and give the reward detection flag the constraint “marks a detected clearance for this lifetime; authoritative eligibility and the cap remain in LevelProgress. New release resets its flag and gets a fresh lifetime ID; recycle cannot alter copied historical events.” (T004,T006)
+- [ ] T008 Integrate state ownership and one terminal resolver in `src/DonkeyTrump3D/Core/Simulation.swift`: runID “Existing UUID; fresh on new game/restart; absent at title”; score “Existing nonnegative Int; one authoritative accumulated total, exact checked reward arithmetic”; lives “Existing life count; at most one decrement per attempt terminal commit”; levelIndex/visibleLevel “Existing zero-based index / L=index+1, checked conversion; repeated layout does not reset L”; levelProgress “Exactly one current LevelProgress”; attempt “Exactly one current AttemptState while playing/retrying”; completedRun “Existing immutable final UUID/score/visible-level tuple, frozen once on final-life Game Over”; best “Existing max(saved best, earned valid totals); retained independently of network”. Collect copied candidates at slice-end registration, choose earliest then timeout/collision/rescue tie order, reject stale IDs and reset only the appropriate run/level/attempt lifetime. (T004–T007)
+- [ ] T009 Connect the real clock/input adapter in `src/DonkeyTrump3D/App/GameEngine.swift` and stamped changes in `src/DonkeyTrump3D/Input/Input.swift`: share ContinuousClock origin across rendering/commands/input, remove50ms clipping from gameplay accounting, retain capped presentation delta separately, feed chronological spans into the existing session, clear title/demo remainder at new-run anchor and preserve pre-pause debt; never replay a newly sampled control over older time or perform network/storage I/O in the loop. (T005–T008)
+- [ ] T010 Send timestamped activity/pause/resume/navigation boundaries from `src/DonkeyTrump3D/App/DonkeyTrump3DApp.swift` through `src/DonkeyTrump3D/App/GameEngine.swift`; gate intro/loss/retry/completion as well as play while app inactive, rebase on activation without auto-resuming paused play, allow abandonment to retire old generation/debt and preserve the existing MainActor immutable HUD ownership. (T009)
+
+**Checkpoint**: One shared clock/identity/state path exists; subsequent stories add rewards, timeout behaviour, pressure and presentation. No independent story is claimed complete by scaffolding alone.
+
+## Phase 3: User Story 1 — Earn bounded rewards and progress bonuses (Priority: P1) — Internal MVP
+
+**Goal**: Progress is more rewarding than farming; a barrel lifetime pays once, at most20 per level across lives, and completion/time bonuses use visible L and retained active T.
+
+**Independent test criteria**: V01–V04:1,700 on level1,2,700 additional on level2,4,400 combined; cap200×L;12+death leaves8; pooled replacement distinct; no empty/repeated/extra/combo reward; fractional time floors and one-time completion. Use deterministic recorded active time, not the highscore service.
+
+### Authored checks (execution requires a separate current-prompt request)
+
+- [ ] T011 [P] [US1] Author US1.1–US1.8 journeys in `src/DonkeyTrump3DTests/ScoreTimerDifficultyTests.swift`: reference totals, visible/repeated levels,20/21st barrel,12+death+8, duplicate callbacks, new pooled lifetimes, empty/multi-barrel jumps with one cap slot, T60.2→119 bonus seconds, exact/adjacent integer boundaries, T≥180 across lives and duplicate completion; assert observable score/award payloads without executing tests. (T010)
+- [ ] T012 [P] [US1] Reconcile obsolete flat-score expectations and completed-result assertions in `src/DonkeyTrump3DTests/CoreTests.swift` and `src/DonkeyTrump3DTests/CompletedRunTests.swift`; retain original movement/identity/retry coverage and add exact final-score/best preservation cases as test source only. (T010)
+
+### Implementation
+
+- [ ] T013 [US1] Replace fixed/unused reward constants with checked visible-L reward calculations in `src/DonkeyTrump3D/Core/Rules.swift`:10×L per eligible barrel,1000×L completion,5×L×integer(max(0,180e9−Tns)/1e9) time bonus; remove obsolete combo authority and define fail-closed arithmetic without wrapping, partial awards, silent clamping or changing the remote ceiling. (T011,T012)
+- [ ] T014 [US1] Apply clearance eligibility/cap in `src/DonkeyTrump3D/Core/Simulation.swift`: current run/attempt/lifetime, chronologically before loss or at/before valid completion, stable lifetime order for ties, at most20 retained IDs across retries, no empty/repeated/excess award and no cap reset on death; emit ScoreAward only for a committed positive addition. (T007,T008,T013)
+- [ ] T015 [US1] Commit the completion/time breakdown atomically once in `src/DonkeyTrump3D/Core/Simulation.swift` using completion-time T; keep earned score on loss, no timeout bonus, no double legacy award, preserve local best and stop duplicate/stale completion; on unrepresentable arithmetic retain last valid total/best and navigation without publishing a false result. (T014)
+- [ ] T016 [US1] Render copied actual ScoreAward values/positions and publish the immutable completion breakdown in `src/DonkeyTrump3D/App/GameEngine.swift`; remove hard-coded positive float text and mutable pooled-event dependence, including zero/excess clearance feedback. (T006,T014,T015)
+- [ ] T017 [US1] Update the existing completion banner in `src/DonkeyTrump3D/UI/RootView.swift` to show actual completion bonus, time bonus including0 and cumulative total once; do not introduce a new results screen or use rendering to recalculate/add score. (T016)
+- [ ] T018 [US1] Record the actual reward-source inventory and US1 source/validation disposition in `specs/003-score-timer-difficulty/evidence/implementation.md`: identify replacement of both original award paths and the unused combo constant, list any additional source discovered and show none bypasses the cap or rewards waiting; do not equate authored cases with passing executions. (T011–T017)
+
+**Checkpoint**: US1 is a usable internal scoring slice on the shared timing foundation. Public highscore compatibility, full attempt timing and physical pressure acceptance remain part of the complete feature, not this MVP claim.
+
+## Phase 4: User Story 2 — Play a fair three-minute attempt (Priority: P1)
+
+**Goal**: Every still-active attempt has180 active seconds, loses exactly one life on expiry and retries without replenishing level rewards/time history. Pauses/background and transitions are free of gameplay time.
+
+**Independent test criteria**: V05–V07: fresh/retry3:00; expiry once; final-life Game Over;60+death+60 means T120/R120; inactive clocks frozen; timeout/contact/completion permutations deterministic; no stale-event or remainder effect. Pure attempts and real adapter checks are separate scopes.
+
+### Authored checks (execution requires a separate current-prompt request)
+
+- [ ] T019 [P] [US2] Extend `src/DonkeyTrump3DTests/ScoreTimerDifficultyTests.swift` and `src/DonkeyTrump3DTests/CompletedRunTests.swift` with US2.1–US2.4,US2.6–US2.8: exact expiry, last life, retry after collision/timeout, retained60+60 time/cap/score, goal before/equal/after expiry, collision/goal tie, callback permutations, no reward at/after loss and final result frozen once; use registered times and no sub-slice swept-contact claim. (T018)
+- [ ] T020 [P] [US2] Extend `src/DonkeyTrump3DTests/GameplayTimelineTests.swift` against the production clock/input adapter with a controlled source:30/60/120Hz within0.02s, exact score away from rounding boundaries, fractional command/expiry splits,60s inactive gap, no invented first frame,32-slice limit with retained foreground debt, once-only presses and pending lifecycle commands after terminal delivery; author checks without running them. (T010)
+- [ ] T021 [P] [US2] Author timer/start/pause/background/lifecycle UI cases in `src/DonkeyTrump3DUITests/ScoreTimerDifficultyUITests.swift` using the existing non-publishing autostart/test setup; combine observable HUD assertions with T019/T020's deterministic full-duration/terminal checks rather than treating a UI fixture as elapsed gameplay proof. Do not execute UI or manual gameplay checks. (T018)
+
+### Implementation
+
+- [ ] T022 [US2] Decrement remainingNs only for active play in `src/DonkeyTrump3D/Core/Simulation.swift`, split the terminal slice at exact R0, generate the timeout candidate for the sole resolver, preserve T/history/score on every life loss, reset R180e9 only on fresh attempt and freeze Game Over without replacement or timeout bonuses. (T008,T019–T021)
+- [ ] T023 [US2] Publish HUD additions in `src/DonkeyTrump3D/App/GameEngine.swift` with the exact constraint “remaining display seconds, level reward breakdown and last loss reason; all values copied with existing score/phase/run identity”; derive positive ceiling seconds from Rns, not a second UI timer, and carry timeout reason when collision ties it. (T022)
+- [ ] T024 [US2] Present M:SS starting3:00 and accessible timer text in `src/DonkeyTrump3D/UI/RootView.swift`, and distinct English timeout/collision feedback in `src/DonkeyTrump3D/UI/Copy.swift`; positive fractions must not show0:00 and timeout must not say a barrel hit occurred. (T023)
+- [ ] T025 [US2] Integrate terminal delivery/debt retirement in `src/DonkeyTrump3D/App/GameEngine.swift` and `src/DonkeyTrump3D/Core/Simulation.swift`: no later finished-attempt interval advances a retry/next level, but pending lifecycle/navigation boundaries still apply; preserve visible1.4s loss/.6s retry/3.2s completion transitions from presentation delivery and freeze them while app inactive. (T022–T024)
+- [ ] T026 [US2] Record US2 time/race/adapter coverage and actual check limitations in `specs/003-score-timer-difficulty/evidence/validation.md`; identify preserved foreground debt and delayed presentation after arbitrary stalls separately from ordinary-rate accuracy, and mark every unrequested execution `not run`. (T019–T025)
+
+**Checkpoint**: US2 can be evaluated with no pressure ramp or online service. Its declared outcomes require actual execution evidence only when that scope is explicitly requested; authoring cases does not establish a pass.
+
+## Phase 5: User Story 3 — Face increasing but playable pressure (Priority: P2)
+
+**Goal**: Time pressure follows retained T and immutable level bases, with an explicit initial floor and movement-type limits that preserve existing physical rules.
+
+**Independent test criteria**: V06,V08–V10,V14: checkpoint factors100/80/60/40% interval and100/108.33/116.67/125% speed; no compounding/position dependency; retry retention/new-level reset; no resume release burst; initial interval table and real moving hazards; physical upper-area/max-pressure sequences remain a distinct acceptance scope.
+
+### Authored checks (execution requires a separate current-prompt request)
+
+- [ ] T027 [P] [US3] Author pressure/reset/mode/scheduler cases in `src/DonkeyTrump3DTests/ScoreTimerDifficultyTests.swift`: T0/60/120/180/after180 factors within0.01 percentage point, unchanged-T drift, active/new barrels, retry/new level/position,1.5s first delay, consumed maxActive opportunity and no pause backlog; check actual level1–6/ramp-limit floor effects and direct-flight provenance through thrown→falling. (T026)
+- [ ] T028 [P] [US3] Author publication/personal-best/Release-boundary cases in `src/DonkeyTrump3DTests/GameplayFixtureBoundaryTests.swift`, extend `src/DonkeyTrump3DUITests/ScoreTimerDifficultyUITests.swift` for valid/missing/invalid/combined fixture flags, and add assertions to `src/scripts/validate-ios-release.py` for Release exclusion; prove fixture service precedence, no credentialed POST, no real UserDefaults best write and no Release state/clock injection when later executed. These scripts/tests must not be run automatically. (T026)
+- [ ] T029 [P] [US3] Author repeatable real-simulation sequence cases in `src/DonkeyTrump3DTests/DifficultySequenceTests.swift` for all authored layouts and capped base configurations, controlled seeds, held/cut jumps, both directions and rolling/direct/mixed convergence; observe airborne/landing/next-jump windows and capped rewards rather than asserting only the floor formula. Separate these fixtures from physical-device evidence. (T026)
+
+### Implementation
+
+- [ ] T030 [US3] Implement pure p/interval/speed/floor derivations in `src/DonkeyTrump3D/Core/Rules.swift` and `src/DonkeyTrump3D/Core/GameplayProgress.swift`: freeze DifficultyRamp base; use p=clamp(T/180,0,1), multipliers1−.60p and1+.25p; with immutable u120,v210,g500, slope s and base minimum speed b, J=(2v+2us)/g and floor=ceil(10×(J×(b+u)/b+.10))/10; actual interval=max(desired,floor), including floors2.1/2.0/1.9s and1.4s at existing limits. (T027–T029)
+- [ ] T031 [US3] Derive active/new barrel velocities from immutable baseSpeed in `src/DonkeyTrump3D/Core/Barrels.swift`: rolling direction×base×m, ordinary fall factor1/.25, ladder vx0/vy70×m, unchanged gravity/player physics and ballistic aim through the first actual landing including intermediate falling; then use current rolling scale. Do not compound/resample or silently multiply direct-flight vx. (T007,T030)
+- [ ] T032 [US3] Implement normalized release progress and matching timeToNextSpawn in `src/DonkeyTrump3D/Core/Barrels.swift`: preserve first1.5s delay and maxActive5/6/8 with existing ramp cap12; consume one due opportunity even when capped, schedule only active slices, freeze pause/background and never flush accumulated release opportunities with a backlog loop. (T031)
+- [ ] T033 [US3] Pass current retained T/base/floor into hazards from `src/DonkeyTrump3D/Core/Simulation.swift` and align boss windup/throw feedback in `src/DonkeyTrump3D/App/GameEngine.swift`; retry keeps capped pressure but gets its existing fresh hazard system/first delay; new level resets progress and uses its own base. Player position must not choose p and unchanged callbacks must not mutate bases. (T030–T032)
+- [ ] T034 [US3] Install the Debug fixture safety boundary before enabling injection in `src/DonkeyTrump3D/App/DonkeyTrump3DApp.swift` and `src/DonkeyTrump3D/App/GameEngine.swift`: any gameplayFixture flag, including malformed/unknown/combined flags, selects UnavailableHighscoreService before other backend/integration selection and an in-memory best/save closure instead of real UserDefaults; keep settings and ordinary best untouched, and compile the override out of Release. (T028,T033)
+- [ ] T035 [US3] Add Debug-only `-gameplayFixture CASE -gameplaySeed UINT64` parsing/injection in `src/DonkeyTrump3D/App/GameEngine.swift` for exactly upper-1/2/3, retry-max-1/2/3 and limit-layout-1/2/3; derive a valid standing top-girder position outside rescue/initial collision, use T0 or180/R180/score0/normal lives as contracted, use DifficultyRamp indices999/1000/1001 for limit layouts and validate produced limits; reject invalid inputs without enabling publication. (T034)
+- [ ] T036 [US3] Keep title demo state non-awarding and isolated, apply actual gameplay timing/pressure to autopilot sessions, and retain production-submission restrictions in `src/DonkeyTrump3D/App/GameEngine.swift` and `src/DonkeyTrump3D/App/DonkeyTrump3DApp.swift`; gameplay fixtures must never gain the separate synthetic CompletedRun loopback-submission exception. (T033–T035)
+- [ ] T037 [US3] Document actual base/floor/interval tables, slope/jump/spacing derivation, ballistic exceptions, capped schedules and any in-scope tuning in `specs/003-score-timer-difficulty/evidence/playability.md`; record each upper-area full180-active-second attempt, retained-max retry, layout/ramp-limit/mixed sequence and iPhone13 touch/readability/frame-pacing outcome only if that execution scope is explicitly requested; otherwise mark unrun gates honestly and do not present calculations/simulator fixtures as physical acceptance. (T027–T036)
+
+**Checkpoint**: The pressure feature includes an explicitly constrained initial cadence; level6+ may already be floor-limited at T0. Source arithmetic is not a passing sequence/physical check. A confirmed in-scope failure requires correction and affected authorized checks before a passing claim.
+
+## Phase 6: User Story 4 — Understand and retain the exact final result (Priority: P2)
+
+**Goal**: All views and optional submissions preserve the same exact result, including10/1,005; old records remain unchanged and failure/navigation/privacy behaviour stays bounded.
+
+**Independent test criteria**: V11–V14: actual HUD/banner/Game Over/CompletedRun totals, local max best, client/real API/storage mixed old/new scores and bounds, accurate English help, preserved history, no deferred upload and readable landscape iPhone controls. A synthetic CompletedRun proves transport, not gameplay earning.
+
+### Contracts and authored checks (execution requires a separate current-prompt request)
+
+- [ ] T038 [US4] Reconcile the active Score component in `specs/001-global-highscores/contracts/highscores.openapi.yaml` and cross-language cases in `src/tests/fixtures/highscores.json` with `specs/003-score-timer-difficulty/contracts/highscore-score.schema.json`: integer multiple5, minimum0, maximum2,147,483,600; include0/5/10/1005/old hundreds/max and invalid negative/fractional/non5/above-max without rewriting other fields or historical evidence. (T010)
+- [ ] T039 [P] [US4] Author `src/backend.tests/ScoreGranularityTests.cs` and `src/backend.tests/ScoreGranularityStorageTests.cs`: common parser/rank/schema1/2 serialize/deserialize domain; real helper-owned Azurite schema2 public POST→stored document→GET round-trip of10/1005 mixed with historical rows/IDs/ties; no schema1 auto-migration, data repair or unconditional write fallback. Use existing storage-integration category/ownership and credential helpers; no execution. (T038)
+- [ ] T040 [P] [US4] Author encoding/qualification/mixed-snapshot/bounds cases in `src/DonkeyTrump3DTests/ScoreDomainTests.swift`, preserving exact returned score validation,0 and maximum, unchanged historical rows and exact local totals above the remote ceiling with no submission; fixture/injected transport is not real storage evidence. (T038)
+- [ ] T041 [P] [US4] Extend `src/DonkeyTrump3DUITests/HighscoreRealSubmissionUITests.swift` for separately identified10/1005 completed runs through explicit owned-loopback integration, each with a fresh run UUID and one POST followed by read-only readback/API restart; retain the existing2600 case and reject production/non-loopback or combined gameplay-fixture publication. Do not execute or expose credentials in commands/logs. (T038)
+
+### Implementation
+
+- [ ] T042 [P] [US4] Widen the single common Swift score predicate in `src/DonkeyTrump3D/Highscores/HighscoreModels.swift` to0…2,147,483,600 and `%5==0` for submission, every GET/POST row and qualification; preserve exact values/identities and existing validation failures without a submission-only exception, ceiling change or fake server-verification claim. (T039–T041)
+- [ ] T043 [P] [US4] Widen the backend common predicate/message in `src/backend/Highscores/HighscoreValidation.cs` to the same domain and inspect its `src/backend/Highscores/HighscoreDocument.cs`/`src/backend/Highscores/HighscoreRanking.cs` read/write callers for consistent use; keep schema/Blob/ETags, moderation guards, identities, sequence ties and finite retry/deadline behaviour unchanged. (T039–T041)
+- [ ] T044 [US4] Reconcile the final-score path in `src/DonkeyTrump3D/Core/CompletedRun.swift`, `src/DonkeyTrump3D/App/GameEngine.swift`, `src/DonkeyTrump3D/App/DonkeyTrump3DApp.swift` and `src/DonkeyTrump3D/UI/RootView.swift` so current run results are identical without re-awarding/quantizing; preserve an older higher local best, existing unsupported-range handling and one frozen final result, and record already-correct paths rather than changing them unnecessarily. (T018,T026,T037,T042,T043)
+- [ ] T045 [US4] Update affected five-point cases in `src/DonkeyTrump3DTests/HighscoreFailureTests.swift`, `src/DonkeyTrump3DTests/HighscorePublicationTests.swift` and `src/DonkeyTrump3DTests/HighscoreServiceTests.swift` to cover exact new totals, hung/unconfirmed/late old-run outcomes, local-best preservation and no automatic/deferred/next-launch POST; preserve existing transport/coordinator guards and author only necessary regressions. (T040,T042,T044)
+- [ ] T046 [US4] Update English scoring/time/help/comparability copy in `src/DonkeyTrump3D/UI/Copy.swift`: cap20 across lives,10×L barrels,1000×L completion plus retained-T time bonus, three-minute attempts and accurate timeout; explain retained all-time totals span rule changes without inferring a historical rules tag, adding a separate board or changing parody/privacy/consent promises. (T024,T033,T044)
+- [ ] T047 [US4] Extend `src/DonkeyTrump3DUITests/ScoreTimerDifficultyUITests.swift` and adjust `src/DonkeyTrump3D/UI/RootView.swift` only as needed for actual reward/time0/total presentation, no fake positive feedback, existing navigation, safe areas, landscape iPhone13, applicable larger text/VoiceOver and preserved Reduce Motion/sound/haptics; fixture tests remain non-publishing and cannot establish physical usability. (T021,T028,T044,T046)
+- [ ] T048 [US4] Reconcile active numeric statements in `src/backend/README.md`, `specs/001-global-highscores/data-model.md` and `specs/001-global-highscores/quickstart.md` with the five-point domain and mixed-document behaviour; keep dated checks/review/release records unchanged and do not claim old strict clients can read new mixed snapshots. (T038,T042,T043)
+- [ ] T049 [US4] Document the in-placev1 recommendation, historical comparability, current-distribution prerequisite, widened-backend-before-client order and widened-reader rollback invariant in `docs/backend-deployment.md` and `docs/ios-backend-environments.md`; retain one historical list, no deletion/recalculation and no deployment/publication action. A newly required old-client service promise is a rollout prerequisite, not silently solved by filtering/rounding/new boards. (T043,T048)
+
+**Checkpoint**: US4's isolated exact-score journey can be evaluated independently using a synthetic CompletedRun and real loopback API/storage; it does not prove US1 gameplay or public release readiness. Final integrated views depend on the earlier gameplay stories. Existing publication consent/deadlines/unconfirmed/no-replay behaviour remains authoritative.
+
+## Phase 7: Polish & Cross-Cutting Concerns
+
+**Purpose**: Reconcile actual implementation with documentation and compile-only checks; report every acceptance execution accurately. All story implementation and authored-check tasks precede final completion.
+
+- [ ] T050 [P] Update `docs/architecture_options.md`, `docs/prd_spec.md` and `docs/backlog.md` for actual score/time/pressure ownership, integral clock/bounded debt, reward-source removal, explicit interval floor/mode limits and unchanged memory-only run persistence; retain historical evidence dates and avoid marking unexecuted runtime criteria passed. (T018,T026,T037,T049)
+- [ ] T051 [P] Reconcile `specs/003-score-timer-difficulty/quickstart.md` with actual suite/file/selector names, implemented fixture arguments, owned-loopback setup, root SDK working directory and iPhone versus simulator targets; preserve explicit current-prompt test authorization and distinguish injected fixtures from real API/Blob and gameplay evidence. (T012,T020,T021,T028,T029,T039–T041,T045,T047)
+- [ ] T052 Perform the lead's scoped source/contract consistency inspection and record findings/dispositions in `specs/003-score-timer-difficulty/evidence/code-inspection.md`: exact reset/terminal/rounding rules, copied thread/event ownership, no render-loop I/O or unbounded catch-up, common score validation, history/privacy/no-replay and Debug/Release fixture/best isolation; fix confirmed authorized defects without invoking Claude Code or a substitute review gate. (T049,T050,T051)
+- [ ] T053 Run only the affected compile-only Debug Local/Release iOS and backend builds documented in `specs/003-score-timer-difficulty/quickstart.md`, first inspecting commands/targets for indirect tests; record exact tool/configuration/destination/source identity/results in `specs/003-score-timer-difficulty/evidence/builds.md`, fix compilation failures within scope and report unavailable environment prerequisites without claiming a pass. Do not execute test/smoke/contract scripts or deploy. (T052)
+- [ ] T054 Complete the V01–V14 execution-disposition matrix in `specs/003-score-timer-difficulty/evidence/validation.md`: execute only explicitly requested current-prompt scopes against their proper targets, otherwise record `not run`; identify schema1 domain versus real schema2 integration, actual adapter versus pure rules, synthetic CompletedRun versus earned score and physical iPhone versus simulator, retaining actual failures/limitations and no fabricated pass. (T053)
+- [ ] T055 Finalize `specs/003-score-timer-difficulty/evidence/implementation.md` with final scoped diff/hashes, changed behaviour, other reward sources, actual floor and movement exceptions, highscore comparability/rollout/rollback recommendation, builds and authorized/unrun checks; link `specs/003-score-timer-difficulty/evidence/playability.md` and separate implementation completion from release/physical acceptance. (T037,T049,T054)
+- [ ] T056 Reconcile actual task markers in `specs/003-score-timer-difficulty/tasks.md` and the completion statement in `specs/003-score-timer-difficulty/evidence/implementation.md` against delivered files/checks; preserve the reviewer-owned spec-quality checklist, apply the owner review exception, disclose unrequested tests as unrun without making them a routine blocker and claim no commit/push/deployment/publication. (T055)
+
+## Dependencies & Execution Order
+
+### Phase dependencies
+
+```mermaid
+flowchart TD
+  Setup[Setup T001–T002] --> Foundation[Foundation T003–T010]
+  Foundation --> US1[US1 T011–T018]
+  US1 --> US2[US2 T019–T026]
+  US2 --> US3[US3 T027–T037]
+  Foundation --> Domain[US4 domain branch T038–T043]
+  Domain --> US4[US4 integrated result T044–T049]
+  US3 --> US4
+  US4 --> Polish[Polish T050–T056]
+```
+
+The diagram shows integration dependencies, not permission to work concurrently in overlapping files. The default single-agent execution order is task-number order. The early domain branch is an optional scheduling optimization with the exact prerequisites shown on its tasks; no separate service, deployed API or story-completion claim is implied.
+
+### Within each phase/story
+
+Author named checks first where listed; execute them only under the current-prompt rule. Types/contracts precede their consumers. Shared-file edits are serialized even when parts of stories are otherwise independently evaluable. Contract/model changes require their in-scope callers/docs/test sources to be reconciled. Read-only inspection of existing supporting source is always allowed; a named already-correct source file need not be changed to complete an inspection task.
+
+Every task's parenthesized IDs are its direct prerequisites; ranges are inclusive. No dependency points forward. Story integration checkpoint tasks also require all earlier non-optional work in their phase. T053–T056 may record unrun tests without a passing runtime verdict; authoring and source/build completion must remain truthful.
+
+### Story dependency and acceptance boundaries
+
+- **US1**: Needs the shared real-time/identity/terminal foundation because its time bonus and cross-life cap are real gameplay rules. It does not need pressure or network submission for its independent scoring journey.
+- **US2**: Integrates after US1 because both own Simulation/GameEngine/result fields; independently check its attempts with fixed score/pressure inputs and no network.
+- **US3**: Integrates after US2's real clock/attempt path; independently check pressure with fixed T and controlled physical configurations. Its maximum-pressure fixtures require the non-publication/best boundary before injection.
+- **US4**: Common schema/client/server numeric domain can proceed after foundation on separate files. Integrated result/presentation needs all previous stories. A real local API/storage check is not replaced by an injected UI service.
+- **Complete feature**: All four stories and applicable authorized checks. Physical acceptance and any public rollout need their own real evidence/authorization; no MVP shortcut waives them.
+
+## Parallel Execution Examples
+
+These are task scheduling examples, not instructions to spawn agents, execute tests or publish. Each batch starts only after its listed prerequisites are complete; all tasks in it touch separate files.
+
+| Batch | Ready after | Tasks that can share the batch | Boundary |
+| --- | --- | --- | --- |
+| Setup | Invocation scope established | T001 + T002 | Separate evidence files; no code or test execution |
+| Foundation | T003 | T004 + T005 | GameplayProgress.swift versus GameplayTimeline.swift |
+| US1 | T010 | T011 + T012 | New scoring checks versus existing CoreTests/CompletedRun checks; no execution |
+| US2 | T018 (and T010) | T019 + T020 + T021 | Core/completed-run checks versus timeline checks versus UI check source |
+| US3 | T026 | T027 + T028 + T029 | Score tests versus fixture/UI/release-check sources versus sequence tests |
+| US4 authoring | T038 | T039 + T040 + T041 | Backend domain/storage checks versus Swift domain checks versus real-API UI source |
+| US4 implementation | T039 + T040 + T041 | T042 + T043 | App common predicate versus backend common predicate |
+| Polish docs | Both tasks' listed story prerequisites | T050 + T051 | Product/architecture docs versus feature quickstart |
+
+All marked story batches are safe only within their phase and after the stated prerequisites. ScoreTimerDifficultyTests.swift and the UI suite are shared across phases and must remain serialized between stories. Do not parallelize later GameEngine, Simulation, RootView, Copy or shared test-source edits merely because they have different story labels.
+
+## Acceptance Traceability
+
+Execution prerequisites include the indicated implementation tasks and final applicable build/safety checks. Test-authoring IDs identify repeatable check source; none is recorded as passing by task generation. V-identifiers refer to [quickstart.md](quickstart.md).
+
+| Acceptance | Scenarios | Intent items | Implementation / integration | Authored check / evidence |
+| --- | --- | --- | --- | --- |
+| V01 | US1.1–US1.2 | 1–3 | T013–T017 | T011,T012; T054 |
+| V02 | US1.3–US1.4 | 4,7 | T007,T008,T014 | T011; T054 |
+| V03 | US1.5–US1.6 | 5,6 | T007,T014,T016 | T011; T054 |
+| V04 | US1.7–US1.8 | 10,11 | T005,T009,T010,T013,T015 | T011,T020; T054 |
+| V05 | US2.1–US2.4 | 8–10 | T008–T010,T022–T025 | T019,T020; T026,T054 |
+| V06 | US2.5,US3.3 | 14,15 | T005,T009,T010,T025,T032 | T020,T021,T027; T026,T054 |
+| V07 | US2.6–US2.8 | 16 | T008,T014,T015,T022,T025 | T019,T020; T026,T054 |
+| V08 | US3.1–US3.2,US3.6 | 12,13 | T030–T033 | T027,T029; T037,T054 |
+| V09 | US3.4 | 17 | T008,T022,T033 | T019,T027; T054 |
+| V10 | US3.5 | 19 | T030–T036 | T027–T029; T037,T054 |
+| V11 | US4.1 | 18 | T016,T017,T023,T024,T044 | T012,T021,T047; T054 |
+| V12 | US4.2 | 18 | T038,T042–T044 | T039–T041; T054 |
+| V13 | US4.3,US4.5 | No separate intent number | T008,T015,T034,T044 | T028,T040,T045; T054 |
+| V14 | US4.4,US3.5 | 19 and HUD/help scope | T024,T035,T036,T046,T047 | T021,T028,T047; T037,T054 |
+
+Requirement trace: FR-001–FR-006 → T007,T008,T011–T018; FR-007–FR-012 → T004–T010,T019–T026; FR-013–FR-015 → T027–T037; FR-016–FR-017 → T016,T017,T023,T024,T047; FR-018 → T038–T045; FR-019 → researchR6 (existing decision), T046,T048,T049; FR-020 → T024,T028,T035,T037,T046,T047,T050; FR-021 → T001,T008,T050 (existing memory-only design, no new save system); FR-022 → T009,T010,T028,T034,T036,T044,T045,T049,T052.
+
+If implementation discovers an already-existing same-run restore path, T008 must preserve its clocks/history/outcome under FR-021 and the executor must add the corresponding scoped restore check source/evidence; do not invent persistence because a conditional requirement exists.
+
+## Implementation Strategy
+
+### Internal MVP first
+
+Complete setup/foundation and US1. Demonstrate bounded rewards and progression on known active times; use only authorized check scopes. This is an internal scoring increment. It is neither the full anti-farming feature nor an online-compatible/public release. No deployment/publishing step belongs to the MVP.
+
+### Incremental delivery
+
+Add US2's bounded attempts, then US3's retained playable pressure, then US4's integrated result/score compatibility. US4's numeric-domain branch may be authored/implemented earlier in its separate files, but complete presentation/real API acceptance follows integration. Keep the common model and clock single-owned throughout. Finish source/document/compile checks and record exactly which runtime/physical checks were requested/executed or remain unrun.
+
+### Completion semantics
+
+There are56 future tasks: setup2, foundation8, US1 eight, US2 eight, US3 eleven, US4 twelve, polish7. No checkbox means a passing test by itself. Record real failures and resolve confirmed authorized defects; do not ask the owner to adjudicate routine implementation choices or demand a waived review. Follow existing controlled-action permissions for any later commit/merge/deployment/release, which this list does not grant.
+
+## Notes
+
+Keep exact constraints quoted above rather than replacing them with vague defaults. The initial floor and ballistic exception are designed limits, not proven physical outcomes. SDK selection depends on working directory; Run scheme environment does not retarget Test. Do not convert a synthetic run, simulator observation, dated release record or unexecuted command into current gameplay/device/deployment evidence. The task-generation workflow only writes this task artifact and its document-validation evidence; it does not implement or execute the tasks.

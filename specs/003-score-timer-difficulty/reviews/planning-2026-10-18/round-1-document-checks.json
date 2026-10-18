@@ -1,0 +1,142 @@
+{
+  "date": "2026-10-18",
+  "kind": "document consistency/source inspection only",
+  "generated_files": [
+    "plan.md",
+    "research.md",
+    "data-model.md",
+    "quickstart.md",
+    "contracts/gameplay.md",
+    "contracts/highscore-score-domain.md",
+    "contracts/highscore-score.schema.json"
+  ],
+  "placeholders_fences_whitespace": "pass",
+  "relative_links": [
+    {
+      "file": "plan.md",
+      "target": "spec.md",
+      "exists": true
+    },
+    {
+      "file": "plan.md",
+      "target": "research.md",
+      "exists": true
+    },
+    {
+      "file": "plan.md",
+      "target": "data-model.md",
+      "exists": true
+    },
+    {
+      "file": "plan.md",
+      "target": "contracts/gameplay.md",
+      "exists": true
+    },
+    {
+      "file": "plan.md",
+      "target": "contracts/highscore-score-domain.md",
+      "exists": true
+    },
+    {
+      "file": "plan.md",
+      "target": "quickstart.md",
+      "exists": true
+    },
+    {
+      "file": "plan.md",
+      "target": "../../.specify/memory/constitution.md",
+      "exists": true
+    },
+    {
+      "file": "plan.md",
+      "target": "research.md",
+      "exists": true
+    },
+    {
+      "file": "research.md",
+      "target": "../../docs/releases/app-store/backend-single-api-rollout.md",
+      "exists": true
+    },
+    {
+      "file": "research.md",
+      "target": "../../docs/releases/app-store/1.0-2/release-record.md",
+      "exists": true
+    },
+    {
+      "file": "data-model.md",
+      "target": "spec.md",
+      "exists": true
+    },
+    {
+      "file": "data-model.md",
+      "target": "contracts/highscore-score-domain.md",
+      "exists": true
+    },
+    {
+      "file": "quickstart.md",
+      "target": "contracts/gameplay.md#debug-acceptance-fixtures",
+      "exists": true
+    },
+    {
+      "file": "contracts/gameplay.md",
+      "target": "../spec.md",
+      "exists": true
+    },
+    {
+      "file": "contracts/gameplay.md",
+      "target": "../data-model.md",
+      "exists": true
+    },
+    {
+      "file": "contracts/gameplay.md",
+      "target": "../research.md#r5--initial-playability-floor-derived-from-existing-movement",
+      "exists": true
+    },
+    {
+      "file": "contracts/gameplay.md",
+      "target": "../quickstart.md",
+      "exists": true
+    },
+    {
+      "file": "contracts/highscore-score-domain.md",
+      "target": "../../001-global-highscores/contracts/highscores.openapi.yaml",
+      "exists": true
+    },
+    {
+      "file": "contracts/highscore-score-domain.md",
+      "target": "../../002-app-store-release/contracts/moderation-api.md",
+      "exists": true
+    },
+    {
+      "file": "contracts/highscore-score-domain.md",
+      "target": "../../001-global-highscores/contracts/ios-flow.md",
+      "exists": true
+    },
+    {
+      "file": "contracts/highscore-score-domain.md",
+      "target": "highscore-score.schema.json",
+      "exists": true
+    },
+    {
+      "file": "contracts/highscore-score-domain.md",
+      "target": "../../../docs/releases/app-store/backend-single-api-rollout.md",
+      "exists": true
+    },
+    {
+      "file": "contracts/highscore-score-domain.md",
+      "target": "../quickstart.md",
+      "exists": true
+    }
+  ],
+  "score_schema_json_parse": "pass; no contract examples/tests executed",
+  "spec_checklist_pointer_unchanged": true,
+  "tasks_not_created": true,
+  "constitution_pre_research": "PASS design scope; no exception",
+  "constitution_post_design": "PASS design compliance; future runtime gates explicit",
+  "manual_acceptance_mapping": "27 story scenarios and all 19 intent acceptance items covered by V01–V14; checked against original spec and intent",
+  "sdk_working_directory": "repository-root global.json inspected; installed dotnet10.0.401 and Xcode27.0 confirmed using version commands only",
+  "git_diff_check_exit": 0,
+  "hooks_before_and_after": "extensions.yml absent; none to dispatch",
+  "tests_builds_gameplay_deploy": "not run; current prompt requests planning only",
+  "research_helpers": "3 read-only OpenAI helpers dispatched by explicit plan skill; not independent reviewers"
+}

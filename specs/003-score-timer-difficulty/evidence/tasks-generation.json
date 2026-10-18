@@ -1,0 +1,263 @@
+{
+  "date": "2026-10-18",
+  "workflow": "speckit-tasks",
+  "base_commit": "9483e8eff3732cb4816942f6c9988ac1165ec537",
+  "actual_branch": "main",
+  "tasks_file": "specs/003-score-timer-difficulty/tasks.md",
+  "tasks_sha256": "e526c875c40efd759fa580f88df07dcb2a6c4018da53a4351143243946a63b7f",
+  "task_count": 56,
+  "counts_by_phase": {
+    "1": 2,
+    "2": 8,
+    "3": 8,
+    "4": 8,
+    "5": 11,
+    "6": 12,
+    "7": 7
+  },
+  "counts_by_story": {
+    "US1": 8,
+    "US2": 8,
+    "US3": 11,
+    "US4": 12
+  },
+  "format": {
+    "all_checkboxes_unchecked": true,
+    "ids_sequential_T001_T056": true,
+    "story_labels_correct": true,
+    "every_task_has_exact_file_paths": true,
+    "all_dependencies_earlier_and_acyclic": true,
+    "data_model_table_constraints_quoted_verbatim": 25
+  },
+  "parallel": {
+    "marked_tasks": 19,
+    "batches": [
+      {
+        "name": "Setup",
+        "tasks": [
+          "T001",
+          "T002"
+        ],
+        "paths_disjoint": true
+      },
+      {
+        "name": "Foundation",
+        "tasks": [
+          "T004",
+          "T005"
+        ],
+        "paths_disjoint": true
+      },
+      {
+        "name": "US1",
+        "tasks": [
+          "T011",
+          "T012"
+        ],
+        "paths_disjoint": true
+      },
+      {
+        "name": "US2",
+        "tasks": [
+          "T019",
+          "T020",
+          "T021"
+        ],
+        "paths_disjoint": true
+      },
+      {
+        "name": "US3",
+        "tasks": [
+          "T027",
+          "T028",
+          "T029"
+        ],
+        "paths_disjoint": true
+      },
+      {
+        "name": "US4 authoring",
+        "tasks": [
+          "T039",
+          "T040",
+          "T041"
+        ],
+        "paths_disjoint": true
+      },
+      {
+        "name": "US4 implementation",
+        "tasks": [
+          "T042",
+          "T043"
+        ],
+        "paths_disjoint": true
+      },
+      {
+        "name": "Polish docs",
+        "tasks": [
+          "T050",
+          "T051"
+        ],
+        "paths_disjoint": true
+      }
+    ],
+    "same_file_write_collisions": 0
+  },
+  "acceptance_coverage": {
+    "story_scenarios": [
+      "US1.1",
+      "US1.2",
+      "US1.3",
+      "US1.4",
+      "US1.5",
+      "US1.6",
+      "US1.7",
+      "US1.8",
+      "US2.1",
+      "US2.2",
+      "US2.3",
+      "US2.4",
+      "US2.5",
+      "US2.6",
+      "US2.7",
+      "US2.8",
+      "US3.1",
+      "US3.2",
+      "US3.3",
+      "US3.4",
+      "US3.5",
+      "US3.6",
+      "US4.1",
+      "US4.2",
+      "US4.3",
+      "US4.4",
+      "US4.5"
+    ],
+    "intent_items": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19
+    ],
+    "validation_rows": [
+      "V01",
+      "V02",
+      "V03",
+      "V04",
+      "V05",
+      "V06",
+      "V07",
+      "V08",
+      "V09",
+      "V10",
+      "V11",
+      "V12",
+      "V13",
+      "V14"
+    ]
+  },
+  "relative_links": [
+    {
+      "target": "plan.md",
+      "exists": true
+    },
+    {
+      "target": "spec.md",
+      "exists": true
+    },
+    {
+      "target": "research.md",
+      "exists": true
+    },
+    {
+      "target": "data-model.md",
+      "exists": true
+    },
+    {
+      "target": "contracts/gameplay.md",
+      "exists": true
+    },
+    {
+      "target": "contracts/highscore-score-domain.md",
+      "exists": true
+    },
+    {
+      "target": "contracts/highscore-score.schema.json",
+      "exists": true
+    },
+    {
+      "target": "quickstart.md",
+      "exists": true
+    },
+    {
+      "target": "review-policy.md",
+      "exists": true
+    },
+    {
+      "target": "../../AGENTS.md",
+      "exists": true
+    },
+    {
+      "target": "quickstart.md",
+      "exists": true
+    }
+  ],
+  "preserved_design_inputs": {
+    "spec.md": "0b16c35401a08b6001d99b14f15ced4ecbfb7b0cba9753a5780dadcc04948702",
+    "plan.md": "198258b85f110b362fe52e2f1d824fd0d9f98d81fb41448d423a753ed904315b",
+    "research.md": "1fabe18f4ccadebf95c4fd7ebbed7e4df7786038e8fc65927611e240c8d029f6",
+    "data-model.md": "2527c90e2aa00b881563f07b7363600065e27c92b421519d66ac3a2ea45a4735",
+    "quickstart.md": "7b76a9bb36864479baf5434b0f5729c83945211c718fcab928df81878e173e54",
+    "review-policy.md": "19760297d89bcd7a6e8f73f804a19bc86b124c9bab38324213dd39e7a4b2fa2f",
+    "checklists/requirements.md": "6bc35466a7d2a1350f3235946c1de95bfe8b912d16a07732cc631eb877b48793",
+    "contracts/gameplay.md": "928400593195178478b1c18fdd8e7f63245adf22d750983b3e463d789bae4bed",
+    "contracts/highscore-score-domain.md": "84e1b06a00a24b460cb29b5e00066de9f4bcb2b089974de2171123559d24826f",
+    "contracts/highscore-score.schema.json": "8d268e034eb73f119d944c13495103a788eee544aa5a66fe6131dab6f5ad88c3"
+  },
+  "current_feature_pointer": {
+    "feature_directory": "specs/003-score-timer-difficulty"
+  },
+  "document_validation": {
+    "syntax_labels_ids_dependency_order_coverage_constraints_paths_links_fences_whitespace": "pass",
+    "git_diff_check_exit": 0,
+    "initial_draft": "Story labels and test-authoring order normalized before final validation",
+    "planned_nonexistent_files": "Only named new Core/test helpers and future implementation evidence; existing source paths resolve"
+  },
+  "setup": {
+    "command": ".specify/scripts/bash/setup-tasks.sh --json",
+    "exit": 0,
+    "template": ".specify/templates/tasks-template.md",
+    "available_docs": [
+      "research.md",
+      "data-model.md",
+      "contracts/",
+      "quickstart.md"
+    ]
+  },
+  "hooks": "extensions.yml absent before/after; no hooks",
+  "review": "not required under feature owner exception; none invoked",
+  "not_executed": [
+    "application tests or test scripts",
+    "builds",
+    "application implementation",
+    "runtime or manual gameplay checks",
+    "Claude Code or substitute review",
+    "CI workflows",
+    "commit/push/deployment/publication"
+  ],
+  "completion_boundary": "Task artifact generation/document validation only. US1 after common foundation is internal MVP; complete feature requires all four stories. Future test execution needs explicit current-prompt request. No task completed by this workflow."
+}

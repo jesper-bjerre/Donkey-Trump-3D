@@ -13,7 +13,7 @@ struct HighscoreFailureTests {
                 errors: code == "score-validation" ? ["score": ["Invalid score"]] : nil))
         })
         let coordinator = HighscoreCoordinator(service: service)
-        let run = CompletedRun(id: UUID(), score: 1200, levelReached: 2)
+        let run = CompletedRun(id: UUID(), score: 1005, levelReached: 2)
         coordinator.complete(run)
         #expect(await eventually { coordinator.state == .enteringName(run, error: nil) })
         coordinator.submit(name: "Løkke")
@@ -33,7 +33,7 @@ struct HighscoreFailureTests {
                 throw HighscoreServiceError.rejected(.init(type: "about:blank", title: "Unavailable", status: 500, code: code, errors: nil))
             })
             let coordinator = HighscoreCoordinator(service: service)
-            let run = CompletedRun(id: UUID(), score: 1200, levelReached: 1)
+            let run = CompletedRun(id: UUID(), score: 1005, levelReached: 1)
             if fromTitle { coordinator.openTitle() } else { coordinator.complete(run) }
             #expect(await eventually { if case .failed = coordinator.state { true } else { false } })
             guard case .failed(let message, _) = coordinator.state else { continue }
@@ -48,7 +48,7 @@ struct HighscoreFailureTests {
     @Test func FailedQualificationDoesNotInferRankOrPublishLater() async {
         let response = MutableHighscoreRead(); await response.set(.failure(.unavailable))
         let service = ScriptedHighscoreService(read: { try await response.read() })
-        let coordinator = HighscoreCoordinator(service: service); let run = CompletedRun(id: UUID(), score: 1200, levelReached: 1)
+        let coordinator = HighscoreCoordinator(service: service); let run = CompletedRun(id: UUID(), score: 1005, levelReached: 1)
         coordinator.complete(run)
         #expect(await eventually { if case .failed = coordinator.state { true } else { false } })
         await response.set(.success(HighscoreFixtureService.prepared(count: 0))); coordinator.refresh()
@@ -60,7 +60,7 @@ struct HighscoreFailureTests {
     func LateSaveCannotInterruptNewState(_ action: String) async {
         let response = DelayedHighscoreResponse(); let clock = ManualHighscoreClock()
         let service = ScriptedHighscoreService(read: { HighscoreFixtureService.prepared(count: 0) }, submit: { _ in try await response.value() })
-        let coordinator = HighscoreCoordinator(service: service, clock: clock); let run = CompletedRun(id: UUID(), score: 1200, levelReached: 1)
+        let coordinator = HighscoreCoordinator(service: service, clock: clock); let run = CompletedRun(id: UUID(), score: 1005, levelReached: 1)
         coordinator.complete(run); #expect(await eventually { coordinator.state == .enteringName(run, error: nil) })
         coordinator.submit(name: "Test"); #expect(await eventually { await response.isWaiting })
         switch action {
@@ -71,7 +71,7 @@ struct HighscoreFailureTests {
         default: coordinator.invalidate()
         }
         let prior = coordinator.state
-        let ranked = HighscoreSnapshot(entries: [.init(entryId: run.id, rank: 1, displayName: "Test", score: 1200)], revision: "committed", fetchedAtUtc: Date(), outcome: .ranked, entryId: run.id, rank: 1)
+        let ranked = HighscoreSnapshot(entries: [.init(entryId: run.id, rank: 1, displayName: "Test", score: 1005)], revision: "committed", fetchedAtUtc: Date(), outcome: .ranked, entryId: run.id, rank: 1)
         await response.resolve(ranked); try? await Task.sleep(for: .milliseconds(20))
         #expect(coordinator.state == prior); coordinator.complete(run); coordinator.submit(name: "Again")
         #expect(await service.posts.count == 1)

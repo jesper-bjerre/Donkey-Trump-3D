@@ -17,7 +17,7 @@ public class HighscoreRankingTests
             else Assert.Null(actual);
         }
         foreach (var item in data.RootElement.GetProperty("scores").EnumerateArray())
-            Assert.Equal(item.GetProperty("valid").GetBoolean(), HighscoreValidation.ValidScore(item.GetProperty("value").GetInt32()));
+            Assert.Equal(item.GetProperty("valid").GetBoolean(), item.GetProperty("value").TryGetInt32(out var value) && HighscoreValidation.ValidScore(value));
     }
 
     [Fact] public void EmptyListAcceptsZeroAndReplayDoesNotChangeTieOrder()

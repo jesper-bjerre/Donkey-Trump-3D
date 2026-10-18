@@ -47,6 +47,24 @@ The lead agent owns this workflow. An agent assigned only as the independent
 reviewer returns findings and a verdict to the lead; it must not recursively launch
 another reviewer. Same-vendor helpers do not satisfy the cross-vendor requirement.
 
+### Owner exception: score, timer and difficulty feature
+
+The owner's 2026-10-18 instruction exempts
+`specs/003-score-timer-difficulty` from Claude Code review in every phase,
+including implementation: “Denne spec skal ikke have review af Claude Code.
+Heller ikke ved implementering.”
+
+For work on this feature, do not run or require Claude Code review and do not
+require a substitute cross-vendor review to satisfy the waived gate. Complete
+the authorized work using source/document inspection and the checks authorized
+by the current prompt. This applies to implementation files outside the feature
+directory when changed for this feature. The explicit-request rule for tests
+still applies. See the feature's
+[review policy](specs/003-score-timer-difficulty/review-policy.md).
+
+This exception does not change review requirements for other features or
+retroactively alter existing review records.
+
 ## When review starts
 
 ### Implementation or authorized remediation

@@ -2,10 +2,25 @@ import Foundation
 
 enum ScoreRules {
     static let startingLives = 3
-    static let levelCompletePoints = 1000
-    static let barrelJumpPoints = 100
-    /// Jumping several barrels in one leap pays a combo multiplier.
-    static let comboBonusPerExtraBarrel = 100
+    static func barrel(level: Int) -> Int? { multiply(10, level) }
+    static func completion(level: Int) -> Int? { multiply(1000, level) }
+    static func bonusSeconds(totalActiveNs: Int64) -> Int {
+        Int(max(0, ActiveDuration.attempt - max(0, totalActiveNs)) / ActiveDuration.second)
+    }
+    static func time(level: Int, totalActiveNs: Int64) -> Int? {
+        guard let perSecond = multiply(5, level) else { return nil }
+        return multiply(perSecond, bonusSeconds(totalActiveNs: totalActiveNs))
+    }
+    private static func multiply(_ a: Int, _ b: Int) -> Int? {
+        guard a >= 0, b >= 0 else { return nil }
+        let (value, overflow) = a.multipliedReportingOverflow(by: b)
+        return overflow ? nil : value
+    }
+    static func minimumInterval(baseSpeed: Double, slope: Double) -> Double {
+        let player = PlayerSettings()
+        let jump = (2 * player.jumpVelocity + 2 * player.moveSpeed * abs(slope)) / Physics.gravity
+        return ceil(10 * (jump * (baseSpeed + player.moveSpeed) / baseSpeed + 0.10)) / 10
+    }
 }
 
 enum PlayTimings {

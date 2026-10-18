@@ -137,7 +137,7 @@ struct FlowTests {
         _ = session.beginPlay()
         let sim = session.sim
         // Drop a barrel right onto the player.
-        let barrel = sim.barrels.spawn(at: LevelPoint(x: sim.player.x, y: sim.player.feet - 60))
+        let barrel = sim.barrels.spawn(at: LevelPoint(x: sim.player.x, y: sim.player.feet - Barrel.radius))
         barrel.vx = 0
         var sawHit = false
         for _ in 0..<240 {
@@ -163,7 +163,7 @@ struct FlowTests {
             if session.phase == .gameOver { break }
         }
         #expect(completed)
-        #expect(session.stats.score >= ScoreRules.levelCompletePoints)
+        #expect(session.stats.score >= (ScoreRules.completion(level: 1) ?? 1000))
     }
 
     @Test func introTimelineIsOrdered() {

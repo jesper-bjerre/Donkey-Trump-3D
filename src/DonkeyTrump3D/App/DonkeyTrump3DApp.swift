@@ -16,9 +16,8 @@ struct DonkeyTrump3DApp: App {
         .onChange(of: scenePhase, initial: true) { _, phase in
             AudioSystem.shared.setMenuMusicActive(phase == .active)
         }
-        .onChange(of: scenePhase) { old, phase in
-            // Only pause when leaving an active session, not during the launch transition.
-            if old == .active && phase != .active { model.engine.send(.pause) }
+        .onChange(of: scenePhase, initial: true) { _, phase in
+            model.engine.send(.activity(phase == .active))
             if phase == .background { model.highscores.background(); model.reports.close() }
         }
     }
@@ -42,7 +41,9 @@ final class GameModel {
     init(service: (any HighscoreService)? = nil) {
         let selected: any HighscoreService
         let options = LaunchOptions.current
-        if let service { selected = service }
+        let gameplayFixture = options.gameplayFixture
+        if gameplayFixture { selected = UnavailableHighscoreService() }
+        else if let service { selected = service }
         else if options.autopilot || options.autostart || options.iconShot || options.introAt != nil {
             selected = UnavailableHighscoreService()
         } else {
@@ -78,6 +79,7 @@ final class GameModel {
             else { reportConfiguration = nil }
         }
         #endif
+        if gameplayFixture { reportConfiguration = nil }
         reports = ReportCoordinator(service: reportConfiguration.map { URLSessionReportService(configuration: $0) as any ReportService } ?? UnavailableReportService())
         engine = GameEngine()
         engine.firstFrameSink = { [weak self] in

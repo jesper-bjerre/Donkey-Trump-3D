@@ -23,7 +23,7 @@ The Xcode target also includes iPad. iPhone is the primary product and validatio
 | Characters | Procedural, jointed 3D caricatures of Jumpman Løkke, Donkey Trump and Motzfeldt |
 | Controls | Floating thumb stick, jump touch zone, optional controller and keyboard |
 | Progression | Three authored layouts repeated endlessly, with bounded increases in barrel difficulty |
-| Scoring | Three starting lives, +100 per barrel jumped, +1000 per rescue |
+| Scoring | Three lives;10×level for the first20 cleared barrel lifetimes per level across lives,1000×level rescue plus retained-time bonus |
 | Local storage | Best score and sound/haptics preferences in `UserDefaults` |
 | Sound | Original synthesized WAVs, background music, looping intro march and eight synchronized intro effects |
 | Silent mode | With in-game sound enabled and device volume audible, audio is configured to play even when the iPhone Ring/Silent switch is silent |
@@ -36,7 +36,7 @@ The Xcode target also includes iPad. iPhone is the primary product and validatio
 3. Use Skip, controller confirm/menu, or keyboard Enter/P/Esc to leave the intro and enter level 1. Reduce Motion skips the choreography to the level card.
 4. Move along girders, jump barrels and climb ladders to reach Motzfeldt. The camera follows the action.
 5. A hit costs one life. With lives left, the current level restarts after hit/retry feedback, preserving the score and generating fresh barrel randomness.
-6. A rescue adds 1000 points, shows celebration effects, saves the best score and advances to the next, harder level.
+6. A rescue adds1000×level plus5×level per whole remaining bonus second from180−total active level time, shows celebration effects, saves the best score and advances to the next, harder level.
 7. At zero lives, Game Over shows the score and level reached. Play Again starts level 1 with three lives and zero score. Returning to the title allows a new game with the intro.
 
 There is no terminal victory screen after layout 3. The rescue celebration and victory jingle accompany each successful level; play continues until the player loses all lives or leaves the run. Restart from the pause menu and Play Again bypass the intro.
@@ -64,8 +64,8 @@ The current touch implementation allocates the leftmost 45% of the view to the s
 | Slopes | Player feet and rolling barrels follow line-segment girder geometry |
 | Hazards | The boss occupies the right side; rolling barrels start leftward, follow slopes, drop from girder ends and may take ladders. Direct throws target the player |
 | Hit and retry | One life lost per hit; 1.4-second hit phase plus 0.6-second retry phase when lives remain |
-| Rescue | +1000 points and a 3.2-second celebration before the next level |
-| Barrel points | +100 once per cleared barrel. No time bonus or active combo multiplier is implemented |
+| Rescue |1000×level plus time bonus once;3.2-second celebration before the next level|
+| Barrel points |10×level once per lifetime, first20 across lives on this level; no empty-jump/combo bonus|
 | Best score | Updated in memory during play and persisted on rescue or game over; active runs are not saved for relaunch |
 | Restart | Level 1, zero score and three lives; retained local best score |
 
@@ -116,7 +116,7 @@ Skipping the intro or returning to the title stops all intro voices. Reduce Moti
 | IOS-US-03 | Climb to the rescue | Ladders require overlap, can be caught in mid-air, and remain necessary for floor progression |
 | IOS-US-04 | Understand the 3D scene | Character, barrel, ladder and girder positions remain legible through camera motion on iPhone 13 |
 | IOS-US-05 | Recover from a hit | One life is deducted; retry keeps score and restarts the current level |
-| IOS-US-06 | Continue after a rescue | Rescue awards 1000 points and transitions through layouts 1, 2, 3, then 1 again at higher difficulty |
+| IOS-US-06 | Continue after a rescue | Rescue awards the L-scaled completion/time bonuses and transitions through layouts 1, 2, 3, then 1 again at higher difficulty |
 | IOS-US-07 | Start another run | Game Over and pause-menu restart reset the run and retain the saved best score |
 | IOS-US-08 | Hear the complete intro | March and eight effects follow the animation; Skip stops intro audio before gameplay |
 | IOS-US-09 | Control sound explicitly | Enabled audio works with physical silent mode; in-game mute and persisted preferences work |
@@ -147,3 +147,9 @@ The following remain outside current scope: online multiplayer, accounts, cloud 
 Before a public release, establish physical-device QA evidence, iPad support expectations, signing/distribution ownership and an actual release channel. No launch date, App Store approval, TestFlight availability or automatic publishing pipeline is asserted here.
 
 See [architecture](architecture_options.md), [implementation and QA backlog](backlog.md), and [iOS smoke/recovery runbook](production-smoke-and-rollback.md).
+
+## Active attempt budget and pressure — implemented source, 2026-10-18
+
+Each attempt has180 active seconds; HUD uses positive ceiling M:SS, starting3:00. Timeout removes exactly one life and retains earned score, level time T and rewarded-barrel history. Retry resets only remaining R; a new level resets T/history and uses its own base. Pause/inactivity/intro/loss/retry/transitions/Game Over consume neither clock. Registered terminal ties resolve timeout, collision, rescue, and no stale attempt may award again.
+
+Time-based desired interval decreases to40% and barrel speed rises to125% over180 cumulative active seconds, retaining maximum through retries. An evidence-derived minimum release interval constrains actual cadence (including slower base cadence from level6); ballistic aim is preserved until landing. Existing historical totals remain unchanged and are not directly comparable to current scoring. Five-point totals remain exact through local results and optional highscores. Runtime/physical acceptance is not claimed by source delivery; see [feature validation disposition](../specs/003-score-timer-difficulty/evidence/validation.md).

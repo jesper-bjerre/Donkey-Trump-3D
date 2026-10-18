@@ -14,7 +14,7 @@ def settings(configuration, platform, action, origin, conditions):
         if platform != 'iphonesimulator' or action not in ('build', 'analyze') or origin != CAPTURE or 'DEBUG' in flags or 'APPSTORE_CAPTURE' not in flags:
             raise ValueError('AppStoreCapture is simulator-only, uses isolated DEV HTTPS, and cannot archive/export')
     elif not configuration.startswith('Debug'):
-        if configuration != 'Release' or origin != PROD or 'DEBUG' in flags or 'APPSTORE_CAPTURE' in flags:
+        if configuration != 'Release' or origin != PROD or 'DEBUG' in flags or 'APPSTORE_CAPTURE' in flags or 'GAMEPLAY_FIXTURE' in flags:
             raise ValueError('A distribution configuration must use PROD HTTPS and exclude test/capture compilation')
 
 
@@ -28,6 +28,10 @@ def archive(path):
     if info.get('UIDeviceFamily') != [1]: raise ValueError('The final candidate must be iPhone-only after verified account history')
     if info.get('CFBundleSupportedPlatforms') != ['iPhoneOS']: raise ValueError('Archive is not an iOS device build')
     if not (apps[0] / 'PrivacyInfo.xcprivacy').exists(): raise ValueError('Privacy manifest missing')
+    binary = apps[0] / info.get('CFBundleExecutable', 'DonkeyTrump3D')
+    if binary.exists() and any(marker in binary.read_bytes() for marker in
+                               [b'-gameplayFixture', b'-gameplaySeed', b'GameplayFixtureLaunch']):
+        raise ValueError('Debug gameplay fixture override leaked into distribution binary')
     return info['CFBundleShortVersionString'], info['CFBundleVersion']
 
 

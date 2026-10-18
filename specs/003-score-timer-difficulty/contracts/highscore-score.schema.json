@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Donkey Trump highscore score domain for feature 003",
+  "description": "Replaces only the prior multipleOf 100 score predicate; applies to submissions, snapshot entries and stored entry values. Acceptance is not proof of gameplay.",
+  "type": "integer",
+  "minimum": 0,
+  "maximum": 2147483600,
+  "multipleOf": 5,
+  "examples": [
+    0,
+    10,
+    1005,
+    1700,
+    2700,
+    4400,
+    2147483600
+  ]
+}

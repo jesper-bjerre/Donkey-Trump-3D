@@ -21,7 +21,7 @@ struct CompletedRunTests {
         let runID = session.runID
         for life in 1...3 {
             let sim = session.sim
-            let barrel = sim.barrels.spawn(at: .init(x: sim.player.x, y: sim.player.feet - 60)); barrel.vx = 0
+            let barrel = sim.barrels.spawn(at: .init(x: sim.player.x, y: sim.player.feet - Barrel.radius)); barrel.vx = 0
             for _ in 0..<240 {
                 _ = session.update(dt: 1.0 / 120, input: InputState())
                 if session.phase != .play { break }

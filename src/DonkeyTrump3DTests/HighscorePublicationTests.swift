@@ -51,4 +51,20 @@ struct HighscorePublicationTests {
         await delayed.resolve(HighscoreFixtureService.prepared(count: 0))
         await Task.yield(); #expect({ if case .failed = coordinator.state { true } else { false } }())
     }
+    @Test(arguments: [10, 1005]) func exactFivePointPublication(_ score: Int) async {
+        let service = HighscoreFixtureService("empty")
+        let c = HighscoreCoordinator(service: service)
+        let run = CompletedRun(id: UUID(), score: score, levelReached: 1)
+        c.complete(run)
+        #expect(await eventually { c.state == .enteringName(run, error: nil) })
+        c.submit(name: "Exact")
+        #expect(await eventually { if case .browsing = c.state { true } else { false } })
+        if case .browsing(let browse) = c.state {
+            #expect(browse.snapshot.entries.first { $0.id == run.id }?.score == score)
+        }
+        #expect(await service.requestCounts().posts == 1)
+        c.invalidate(); c.complete(run); c.submit(name: "Again")
+        #expect(await service.requestCounts().posts == 1)
+    }
+
 }

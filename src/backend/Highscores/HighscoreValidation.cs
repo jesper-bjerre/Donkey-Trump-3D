@@ -7,7 +7,7 @@ namespace DonkeyTrump.Highscores;
 public static class HighscoreValidation
 {
     public const int MaximumScore = 2_147_483_600;
-    public static bool ValidScore(int score) => score >= 0 && score <= MaximumScore && score % 100 == 0;
+    public static bool ValidScore(int score) => score >= 0 && score <= MaximumScore && score % 5 == 0;
 
     public static string? NormalizeName(string? value)
     {
@@ -47,7 +47,7 @@ public static class HighscoreValidation
             errors["displayName"] = ["Enter a single-line name containing 1–20 characters (at most 256 UTF-8 bytes)."];
         if (!body.TryGetProperty("score", out var scoreJson) || scoreJson.ValueKind != JsonValueKind.Number ||
             !scoreJson.TryGetInt32(out score) || !ValidScore(score))
-            errors["score"] = ["Score must be a multiple of 100 from 0 to 2147483600."];
+            errors["score"] = ["Score must be a multiple of 5 from 0 to 2147483600."];
         if (!body.TryGetProperty("levelReached", out var levelJson) || levelJson.ValueKind != JsonValueKind.Number ||
             !levelJson.TryGetInt32(out level) || level < 1)
             errors["levelReached"] = ["Level must be an integer from 1 to 2147483647."];

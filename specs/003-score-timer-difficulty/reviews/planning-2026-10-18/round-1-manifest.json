@@ -1,0 +1,349 @@
+{
+  "base_commit": "9483e8eff3732cb4816942f6c9988ac1165ec537",
+  "actual_git_branch": "main",
+  "setup_feature_identity": "003-score-timer-difficulty",
+  "candidate": [
+    {
+      "path": "specs/003-score-timer-difficulty/plan.md",
+      "sha256": "92d1bfcd6a7910168bcff43ac0ac937aba103ecc0ba67ff1a94643e3c8803dc9",
+      "base": "absent before this workflow and absent from Git base; new untracked artifact"
+    },
+    {
+      "path": "specs/003-score-timer-difficulty/research.md",
+      "sha256": "1fabe18f4ccadebf95c4fd7ebbed7e4df7786038e8fc65927611e240c8d029f6",
+      "base": "absent before this workflow and absent from Git base; new untracked artifact"
+    },
+    {
+      "path": "specs/003-score-timer-difficulty/data-model.md",
+      "sha256": "2527c90e2aa00b881563f07b7363600065e27c92b421519d66ac3a2ea45a4735",
+      "base": "absent before this workflow and absent from Git base; new untracked artifact"
+    },
+    {
+      "path": "specs/003-score-timer-difficulty/quickstart.md",
+      "sha256": "7b76a9bb36864479baf5434b0f5729c83945211c718fcab928df81878e173e54",
+      "base": "absent before this workflow and absent from Git base; new untracked artifact"
+    },
+    {
+      "path": "specs/003-score-timer-difficulty/contracts/gameplay.md",
+      "sha256": "928400593195178478b1c18fdd8e7f63245adf22d750983b3e463d789bae4bed",
+      "base": "absent before this workflow and absent from Git base; new untracked artifact"
+    },
+    {
+      "path": "specs/003-score-timer-difficulty/contracts/highscore-score-domain.md",
+      "sha256": "84e1b06a00a24b460cb29b5e00066de9f4bcb2b089974de2171123559d24826f",
+      "base": "absent before this workflow and absent from Git base; new untracked artifact"
+    },
+    {
+      "path": "specs/003-score-timer-difficulty/contracts/highscore-score.schema.json",
+      "sha256": "8d268e034eb73f119d944c13495103a788eee544aa5a66fe6131dab6f5ad88c3",
+      "base": "absent before this workflow and absent from Git base; new untracked artifact"
+    }
+  ],
+  "governing_context": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "4811d999ef9e04f917218bb0338d5cb252f8cb8b9fd5d78819929676b2c091e2",
+      "supplied_ranges": "full"
+    },
+    {
+      "path": ".specify/memory/constitution.md",
+      "sha256": "48aad1c55de956264342aa88070cb3d9a21a3f0985f684f19ce77cc095b73129",
+      "supplied_ranges": "full"
+    },
+    {
+      "path": ".agents/skills/speckit-plan/SKILL.md",
+      "sha256": "db2406adfa50103fc04ca8109ac934cd715086fba64365fb404630a88c62bda5",
+      "supplied_ranges": "full"
+    },
+    {
+      "path": ".specify/templates/plan-template.md",
+      "sha256": "a828ad6206526574ab3fc99be6d0154588cb1c9774c5919d71b81ab5b2dbffa0",
+      "supplied_ranges": "full"
+    },
+    {
+      "path": ".specify/feature.json",
+      "sha256": "c3aaaf25baf58489fc4ea1c7f608cab7c8af6d437ccc6ff2f625f1098b650d88",
+      "supplied_ranges": "full"
+    },
+    {
+      "path": "specs/003-score-timer-difficulty/spec.md",
+      "sha256": "6b75005033b0e36378368bee724cf4779c718052e81ae1980399a7c3021f69ff",
+      "supplied_ranges": "full"
+    },
+    {
+      "path": "specs/003-score-timer-difficulty/checklists/requirements.md",
+      "sha256": "6bc35466a7d2a1350f3235946c1de95bfe8b912d16a07732cc631eb877b48793",
+      "supplied_ranges": "full"
+    },
+    {
+      "path": "docs/intents/Donkey_Trump_3D_Codex_Point_Timer_Svaerhedsgrad.md",
+      "sha256": "ef468dc5d8f7f97e07353cac6bfb9a684988ddd37ee712902b45aad5364bda99",
+      "supplied_ranges": "full"
+    },
+    {
+      "path": "src/DonkeyTrump3D/Core/Rules.swift",
+      "sha256": "6b6b7e5f025563dfe2b4be9f03807e7ea628005a7d1f994466f34120fd6f56e1",
+      "supplied_ranges": "full"
+    },
+    {
+      "path": "src/DonkeyTrump3D/Core/Simulation.swift",
+      "sha256": "210ea28c4a2931abb2376b0795f0f65853852083fb4f2b15fb45dba51f9cb8b1",
+      "supplied_ranges": "full"
+    },
+    {
+      "path": "src/DonkeyTrump3D/Core/Player.swift",
+      "sha256": "bc2bced2b24bb72b58cca3bc0055d3e6903849cec7ef3d0dcb67016878bc9c56",
+      "supplied_ranges": "full"
+    },
+    {
+      "path": "src/DonkeyTrump3D/Core/Barrels.swift",
+      "sha256": "736b7631254a0db2bd5e224357e1f9f2989e3a864900d7ad630a4175e34cfe50",
+      "supplied_ranges": "full"
+    },
+    {
+      "path": "src/DonkeyTrump3D/Core/Level.swift",
+      "sha256": "9eabab4e83a584f74dc41a15bbd208dd63a4843f78f9c0830bfb2568c4ef91f6",
+      "supplied_ranges": "full"
+    },
+    {
+      "path": "src/DonkeyTrump3D/Core/Slope.swift",
+      "sha256": "af5706da092ee82d5e1e7f161a14980db824e15464ee2615409fb2816aea570d",
+      "supplied_ranges": "full"
+    },
+    {
+      "path": "src/DonkeyTrump3D/Resources/Levels/level1.json",
+      "sha256": "0b0f14448fe1c1ddcfc6411acf57e6a55db6f38da0feb1ea903ddcc3868ddf2e",
+      "supplied_ranges": "full"
+    },
+    {
+      "path": "src/DonkeyTrump3D/Resources/Levels/level2.json",
+      "sha256": "2a8d5c561b653cd698d31237c09a49af942e69e5b7dd707a3683ffb636f3b93e",
+      "supplied_ranges": "full"
+    },
+    {
+      "path": "src/DonkeyTrump3D/Resources/Levels/level3.json",
+      "sha256": "243662361d70533e865661a5c2fd8726e0d0c66e0c36a08cff53007976e39b7d",
+      "supplied_ranges": "full"
+    },
+    {
+      "path": "src/DonkeyTrump3D/App/GameEngine.swift",
+      "sha256": "49695b2263617bc57fdd9c84bdd35cfeeb85acc6b564e453f4b29953eb1ca083",
+      "supplied_ranges": [
+        [
+          1,
+          165
+        ],
+        [
+          330,
+          410
+        ],
+        [
+          425,
+          450
+        ],
+        [
+          552,
+          655
+        ],
+        [
+          700,
+          720
+        ],
+        [
+          839,
+          866
+        ]
+      ]
+    },
+    {
+      "path": "src/DonkeyTrump3D/App/DonkeyTrump3DApp.swift",
+      "sha256": "f8a2ec06aadc6a1766e44303b7c26a36fe76a226dec65d23d646beec26018097",
+      "supplied_ranges": [
+        [
+          1,
+          140
+        ]
+      ]
+    },
+    {
+      "path": "src/DonkeyTrump3D/UI/RootView.swift",
+      "sha256": "d6afc83cfb9ce658aa7c1dc95f8f67e8d2f951391ac1288d539ebf75767a7f5a",
+      "supplied_ranges": [
+        [
+          340,
+          485
+        ]
+      ]
+    },
+    {
+      "path": "src/DonkeyTrump3D/UI/Copy.swift",
+      "sha256": "fc5a464f0fb57a60cd3f4c2a0ac557783af70724045d6e58b94d5158812323d9",
+      "supplied_ranges": "full"
+    },
+    {
+      "path": "src/DonkeyTrump3D/Highscores/HighscoreModels.swift",
+      "sha256": "c055b14cb09a3882d6d0ea95eeac18fac56c47986552cda42ca17d40dd7b48e2",
+      "supplied_ranges": [
+        [
+          1,
+          105
+        ]
+      ]
+    },
+    {
+      "path": "src/DonkeyTrump3D/Highscores/HighscoreCoordinator.swift",
+      "sha256": "ced451d43d617198915ed7e9300bcd028fb74067db39e43836a9f049e3542404",
+      "supplied_ranges": [
+        [
+          1,
+          90
+        ]
+      ]
+    },
+    {
+      "path": "src/DonkeyTrump3D/Highscores/HighscoreConfiguration.swift",
+      "sha256": "7c31a70c4821c33e727e98d5d7459e53413b51fab2099ccb78f80c8bc396cbdc",
+      "supplied_ranges": "full"
+    },
+    {
+      "path": "src/DonkeyTrump3D/Highscores/URLSessionHighscoreService.swift",
+      "sha256": "7cf3166cf4286af6cc6d45d1d867d771ab93bc8b1bd7f9e9e64108ef065f39d0",
+      "supplied_ranges": "full"
+    },
+    {
+      "path": "src/backend/Highscores/HighscoreValidation.cs",
+      "sha256": "42f529a1ad7b8ab4e636a1d9aa966296805e7489da22f6ee2967243b03611890",
+      "supplied_ranges": "full"
+    },
+    {
+      "path": "src/backend/Highscores/HighscoreDocument.cs",
+      "sha256": "a2bd24220b0ef53bcfa1e0aa08a5ce96d42400e54ab0ab9f61430eae84c90818",
+      "supplied_ranges": "full"
+    },
+    {
+      "path": "src/backend/Highscores/HighscoreRanking.cs",
+      "sha256": "28e34535febc84e0e7d4ba1eea0fdb1d61625a54c65197c35f00dcd887c311e4",
+      "supplied_ranges": "full"
+    },
+    {
+      "path": "src/backend/Highscores/BlobHighscoreStore.cs",
+      "sha256": "16193e35595471bdcffed98c8cbd489f07e6f7be39cb75243cf0ecd3fad970a0",
+      "supplied_ranges": [
+        [
+          1,
+          140
+        ]
+      ]
+    },
+    {
+      "path": "src/backend/Highscores/HighscoreEndpoints.cs",
+      "sha256": "d4e224595c8ed232dd35addf0a4b45fc7cb204cb7277f98542d709ec36fcdde9",
+      "supplied_ranges": "full"
+    },
+    {
+      "path": "src/backend/DonkeyTrump.Highscores.Api.csproj",
+      "sha256": "aaa478afca3bddd3214677fa1e1488dc07abbcd1e94960f596ea33cf22aac4ca",
+      "supplied_ranges": "full"
+    },
+    {
+      "path": "src/backend.tests/DonkeyTrump.Highscores.Api.Tests.csproj",
+      "sha256": "5661ca1c9d64c1bf1f424c60034a01b1b09733c09548fc4f6f79af7409633e95",
+      "supplied_ranges": "full"
+    },
+    {
+      "path": "global.json",
+      "sha256": "ce61f5ae207d33d00594c77c5999c7f0dc66434e85a85f38090335d588438974",
+      "supplied_ranges": "full"
+    },
+    {
+      "path": "src/DonkeyTrump3D.xcodeproj/project.pbxproj",
+      "sha256": "f41fdb8573bb970f2bd274a8b594eff2eb2ef44ff20f80f46c9048954a9ffbcc",
+      "supplied_ranges": [
+        [
+          330,
+          340
+        ],
+        [
+          390,
+          400
+        ]
+      ]
+    },
+    {
+      "path": "specs/001-global-highscores/contracts/ios-flow.md",
+      "sha256": "416148f630a39a93d1f32cfe4217346b2930f61be1ae8e6c581ce51319eaccb9",
+      "supplied_ranges": "full"
+    },
+    {
+      "path": "specs/001-global-highscores/contracts/highscores.openapi.yaml",
+      "sha256": "bbe83c45479992d35836b2c889ecac991b1a33164812387e0e780241f8216238",
+      "supplied_ranges": [
+        [
+          350,
+          396
+        ]
+      ]
+    },
+    {
+      "path": "specs/002-app-store-release/contracts/moderation-api.md",
+      "sha256": "2d51939e3f9118e9b40e0b1685763d7817a4e478532677117e779863fa2913db",
+      "supplied_ranges": [
+        [
+          1,
+          85
+        ]
+      ]
+    },
+    {
+      "path": "docs/releases/app-store/backend-single-api-rollout.md",
+      "sha256": "5938614809daf93f87d9bed73b8efb40366feba24aab7a95b7cbd70cf4be0ca1",
+      "supplied_ranges": [
+        [
+          1,
+          8
+        ]
+      ]
+    },
+    {
+      "path": "docs/releases/app-store/1.0-2/release-record.md",
+      "sha256": "fba67d69a31d75c37777707a9dfb930787ba92648a0b0ac22356b6acc6634822",
+      "supplied_ranges": [
+        [
+          1,
+          15
+        ]
+      ]
+    },
+    {
+      "path": "docs/ios-backend-environments.md",
+      "sha256": "02377168f283531a237abf9eb6d7db693c8575b52a1fcc3cc34fc652990877db",
+      "supplied_ranges": "full"
+    },
+    {
+      "path": "src/tests/support/local-highscores.py",
+      "sha256": "8e5babfedd797177420f8768163f2bdd2a42aa90f29e41749d24a0ced0b973a8",
+      "supplied_ranges": "full"
+    },
+    {
+      "path": "src/DonkeyTrump3DUITests/HighscoreRealSubmissionUITests.swift",
+      "sha256": "256f8f42673aa7c7ed25a9178721a63614fdc89c2f6fbb69f9bcf1be7ba30a61",
+      "supplied_ranges": "full"
+    },
+    {
+      "path": "src/DonkeyTrump3D.xcodeproj/xcshareddata/xcschemes/DonkeyTrump3D.xcscheme",
+      "sha256": "50cfdcf7b1276765db543511110c30ff8437e7852c779abecd2d1b12214ccdc5",
+      "supplied_ranges": [
+        [
+          1,
+          90
+        ]
+      ]
+    }
+  ],
+  "acceptance_evidence": {
+    "path": "round-1-document-checks.json",
+    "sha256": "83e2602546d11d79af2e400c19490335a99e854ccdc8d6e11d8db2ac6c03615d"
+  },
+  "source_mutations": "none; pre-existing untracked spec/checklist/intent and pointer unchanged",
+  "review_record_exclusion": "review records/manifests/route/packet/result metadata only; generated design and acceptance evidence included"
+}

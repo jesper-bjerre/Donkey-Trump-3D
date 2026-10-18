@@ -34,7 +34,7 @@ struct HighscoreServiceTests {
         #expect(throws: (any Error).self) { try HighscoreSnapshot.decode(Data(json.utf8), submission: true) }
     }
     @Test func contradictoryNonqualificationIsAnUnconfirmedSave() async throws {
-        let run = CompletedRun(id: UUID(), score: 200, levelReached: 1)
+        let run = CompletedRun(id: UUID(), score: 10, levelReached: 1)
         let rows = HighscoreFixtureService.prepared(count: 100).entries.map { row in
             ["entryId": row.rank == 100 ? run.id.uuidString : row.id.uuidString,
              "rank": row.rank, "displayName": row.rank == 100 ? "Test" : row.displayName, "score": row.score] as [String: Any]
